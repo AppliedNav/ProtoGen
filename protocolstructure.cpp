@@ -621,6 +621,32 @@ QString ProtocolStructure::getDeclaration(void) const
 
 
 /*!
+ * Return the string used to declare this encodable as property in a Qt class.
+ * This includes the spacing, typename, name, semicolon, comment, and linefeed
+ * \return the declaration string for this encodable
+ */
+QString ProtocolStructure::getQtPropertyDeclaration(void) const
+{
+    QString output = TAB_IN;
+
+    if(array.isEmpty()) {
+        output += "QML_CONSTANT_PROPERTY_PTR(" + typeName + ", " + name + ")";
+    } else if(array2d.isEmpty()) {
+        emitWarning("1D arrays are not supported to expose them to QML");
+    } else {
+        emitWarning("2D arrays are not supported to expose them to QML");
+    }
+
+    if(!comment.isEmpty())
+        output += " //!< " + comment;
+
+    output += "\n";
+
+    return output;
+
+}
+
+/*!
  * Get the declaration that goes in the header which declares this structure
  * and all its children.
  * \param alwaysCreate should be true to force creation of the structure, even if there is only one member
@@ -682,6 +708,58 @@ QString ProtocolStructure::getStructureDeclaration(bool alwaysCreate) const
 
 }// ProtocolStructure::getStructureDeclaration
 
+
+/*!
+ * Get the declaration that goes in the header which declares this structure
+ * and all its children in order to expose them in QML.
+ * \return the string that represents the structure declaration
+ */
+QString ProtocolStructure::getQtClassDeclaration() const
+{
+    QString output;
+    QString structure;
+
+    if(getNumberInMemory() > 0)
+    {
+        // Declare our childrens structures first
+        for(int i = 0; i < encodables.length(); i++)
+        {
+            if(!encodables[i]->isPrimitive())
+            {
+                output += encodables[i]->getQtClassDeclaration();
+                ProtocolFile::makeLineSeparator(output);
+            }
+
+        }// for all children
+
+        // The top level comment for the class definition
+        if(!comment.isEmpty())
+        {
+            output += "/*!\n";
+            output += ProtocolParser::outputLongComment(" *", comment) + "\n";
+            output += " */\n";
+        }
+
+        // The opening to the class
+        output += "class " + structName + " : public QObject\n";
+        output += "{\n";
+        output += TAB_IN + "Q_OBJECT\n";
+        for(int i = 0; i < encodables.length(); i++)
+            structure += encodables[i]->getDeclaration();
+
+        // Class ctor to expose the class to QML
+        output += TAB_IN + structName + "() {\n";
+        output += TAB_IN + TAB_IN + "qmlRegisterInterface<" + structName + ">(\"" +
+                structName + "\");\n";
+        output += TAB_IN + "}\n";
+
+        // Close out the class
+        output += ";\n";
+
+    }// if we have some data to encode
+
+    return output;
+}
 
 /*!
  * Make a structure output be prettily aligned

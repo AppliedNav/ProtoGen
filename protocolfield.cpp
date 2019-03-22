@@ -1631,6 +1631,52 @@ QString ProtocolField::getDeclaration(void) const
 
 }// ProtocolField::getDeclaration
 
+/*!
+ * Get the declaration for this field as a property of a class derived from QObject
+ * \return the declaration string
+ */
+QString ProtocolField::getQtPropertyDeclaration(void) const
+{
+    QString output;
+
+    if(isNotInMemory())
+        return output;
+
+    const QString setter = QString("set") + name.at(0).toUpper() + name.mid(1);
+
+    output = "    ";
+    if(is2dArray()) {
+        emitWarning("2D arrays are not supported to expose them to QML");
+    } else if(isArray()) {
+        output = "QML_WRITABLE_PROPERTY(QList<" + typeName + ">, " + name + ", " +
+                setter + ", QList<" + typeName + ">())";
+    } else {
+        if (isDefault()) {
+            output = "QML_WRITABLE_PROPERTY(" + typeName + ", " + name + ", " +
+                    setter + ", " + defaultString + ")";
+        } else {
+            output = "QML_WRITABLE_PROPERTY_NO_INIT(" + typeName + ", " + name + ", " +
+                    setter + ")";
+        }
+    }
+
+    if(comment.isEmpty())
+    {
+        if(!constantString.isEmpty())
+            output += " //!< Field is encoded constant.";
+    }
+    else
+    {
+        output += " //!< " + comment;
+        if(!constantString.isEmpty())
+            output += ". Field is encoded constant.";
+    }
+
+    output += "\n";
+
+    return output;
+
+}// ProtocolField::getQtPropertyDeclaration
 
 /*!
  * Append the include directives needed for this encodable. Mostly this is empty,

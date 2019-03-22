@@ -163,8 +163,14 @@ public:
     //! Get the declaration for this structure as a member of another
     virtual QString getDeclaration(void) const Q_DECL_OVERRIDE;
 
+    //! Get the declaration for this structure as property in a Qt class
+    virtual QString getQtPropertyDeclaration(void) const Q_DECL_OVERRIDE;
+
     //! Get the declaration that goes in the header which declares this structure and all its children
     virtual QString getStructureDeclaration(bool alwaysCreate) const Q_DECL_OVERRIDE;
+
+    //! Get the declaration that goes in the header which declares this as a class and all its children in order to expose them in QML
+    virtual QString getQtClassDeclaration() const Q_DECL_OVERRIDE;
 
     //! Return the string that gives the prototype of the function used to encode this encodable, may be empty
     virtual QString getPrototypeEncodeString(bool isBigEndian, bool includeChildren = true) const Q_DECL_OVERRIDE;

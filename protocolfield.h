@@ -145,6 +145,9 @@ public:
     //! Get the declaration for this field
     virtual QString getDeclaration(void) const Q_DECL_OVERRIDE;
 
+    //! Return the string that is used to declare this encodable as property in a Qt class
+    virtual QString getQtPropertyDeclaration(void) const Q_DECL_OVERRIDE;
+
     //! Return the include directives needed for this encodable
     virtual void getIncludeDirectives(QStringList& list) const Q_DECL_OVERRIDE;
 
