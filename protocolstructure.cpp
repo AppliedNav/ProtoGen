@@ -741,20 +741,39 @@ QString ProtocolStructure::getQtClassDeclaration() const
         }
 
         // The opening to the class
-        output += "class " + structName + " : public QObject\n";
+        QString className = structName;
+        className.remove("_t");
+        className += "Prop";//make the class name unique
+        output += "class " + className + " : public QObject\n";
         output += "{\n";
         output += TAB_IN + "Q_OBJECT\n";
         for(int i = 0; i < encodables.length(); i++)
             output += encodables[i]->getQtPropertyDeclaration();
 
         // Class ctor to expose the class to QML
-        output += TAB_IN + structName + "() {\n";
-        output += TAB_IN + TAB_IN + "qmlRegisterInterface<" + structName + ">(\"" +
-                structName + "\");\n";
+        output += TAB_IN + className + "() {\n";
+        output += TAB_IN + TAB_IN + "qmlRegisterInterface<" + className + ">(\"" +
+                className + "\");\n";
+        output += TAB_IN + "}\n";
+
+        // Setter and geter for all data members
+        output += TAB_IN + "void setData(const " + structName + "* pData) {\n";
+        for(int i = 0; i < encodables.length(); i++) {
+            const QString &variableName = encodables[i]->name;
+            output += TAB_IN + TAB_IN + "set" + variableName.at(0).toUpper() +
+                    variableName.mid(1) + "(pData->" + variableName + ");\n";
+        }
+        output += TAB_IN + "}\n";
+        output += TAB_IN + "void getData(" + structName + "* pData) {\n";
+        for(int i = 0; i < encodables.length(); i++) {
+            const QString &variableName = encodables[i]->name;
+            output += TAB_IN + TAB_IN + "pData->" + variableName + " = " +
+                    variableName + "();\n";
+        }
         output += TAB_IN + "}\n";
 
         // Close out the class
-        output += ";\n";
+        output += "};\n";
 
     }// if we have some data to encode
 
