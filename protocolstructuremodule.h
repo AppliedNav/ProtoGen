@@ -36,6 +36,9 @@ public:
     //! Get the name of the header file that encompasses this structure definition
     QString getDefinitionFileName(void) const {return structfile->fileName();}
 
+    //! Get the name of the header file that encompasses the class definition of properties for QML
+    QString getPropertiesDefinitionFileName(void) const {return defpropheader.fileName();}
+
     //! Get the name of the header file that encompasses this structure interface functions
     QString getHeaderFileName(void) const {return header.fileName();}
 
@@ -44,6 +47,9 @@ public:
 
     //! Get the path of the header file that encompasses this structure definition
     QString getDefinitionFilePath(void) const {return structfile->filePath();}
+
+    //! Get the path of the header file that encompasses the class definition of properties for QML
+    QString getPropertiesDefinitionFilePath(void) const {return defpropheader.filePath();}
 
     //! Get the path of the header file that encompasses this structure interface functions
     QString getHeaderFilePath(void) const {return header.filePath();}
@@ -128,6 +134,7 @@ protected:
     ProtocolSourceFile source;      //!< The source file (*.c)
     ProtocolHeaderFile header;      //!< The header file (*.h)
     ProtocolHeaderFile defheader;   //!< The header file name for the structure definition
+    ProtocolHeaderFile defpropheader;//!< The header file name for the class definition exposed to QML
     ProtocolSourceFile verifySource;//!< The source file for verify code (*.c)
     ProtocolHeaderFile verifyHeader;//!< The header file for verify code (*.h)
     ProtocolSourceFile compareSource;       //!< The source file for comparison code (*.cpp)

@@ -745,7 +745,7 @@ QString ProtocolStructure::getQtClassDeclaration() const
         output += "{\n";
         output += TAB_IN + "Q_OBJECT\n";
         for(int i = 0; i < encodables.length(); i++)
-            structure += encodables[i]->getDeclaration();
+            output += encodables[i]->getQtPropertyDeclaration();
 
         // Class ctor to expose the class to QML
         output += TAB_IN + structName + "() {\n";

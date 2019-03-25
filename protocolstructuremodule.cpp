@@ -31,6 +31,7 @@ ProtocolStructureModule::ProtocolStructureModule(ProtocolParser* parse, Protocol
     printHeader.setCpp(true);
     mapSource.setCpp(true);
     mapHeader.setCpp(true);
+    defpropheader.setCpp(true);
 
 }
 
@@ -50,6 +51,7 @@ void ProtocolStructureModule::clear(void)
     source.clear();
     header.clear();
     defheader.clear();
+    defpropheader.clear();
     compareHeader.clear();
     compareSource.clear();
     printHeader.clear();
@@ -155,6 +157,7 @@ void ProtocolStructureModule::parse(void)
     // Write to disk, note that duplicate flush() calls are OK
     header.flush();    
     structfile->flush();
+    defpropheader.flush();
 
     // We don't write the source to disk if we are not encoding or decoding anything
     if(encode || decode)
@@ -412,6 +415,16 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
         // In this instance we know that the normal header file needs to include
         // the file with the structure definition
         header.writeIncludeDirective(structfile->fileName());
+
+        // Create header file for exposing classes with properties in QML
+        defpropheader.setLicenseText(support.licenseText);
+        defpropheader.setModuleNameAndPath(defheadermodulename + "_props", support.outputpath);
+        if(defpropheader.isAppending()) {
+            defpropheader.makeLineSeparator();
+        }
+        defpropheader.writeIncludeDirective("qmlhelpers.h");
+        defpropheader.writeIncludeDirective(structfile->fileName());
+        defpropheader.writeIncludeDirective("QQmlEngine", QString(), true);
     }
 
     // The verify, comparison, print, and map files needs access to the struct file
@@ -453,6 +466,11 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
 
         // White space is good
         structfile->makeLineSeparator();
+
+        // Create classes that expose properties in QML
+        defpropheader.makeLineSeparator();
+        defpropheader.write(getQtClassDeclaration());
+        defpropheader.makeLineSeparator();
     }
 
     // White space is good

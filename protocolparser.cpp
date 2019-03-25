@@ -244,6 +244,8 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
         // Keep a list of all the file names
         fileNameList.append(module->getDefinitionFileName());
         filePathList.append(module->getDefinitionFilePath());
+        fileNameList.append(module->getPropertiesDefinitionFileName());
+        filePathList.append(module->getPropertiesDefinitionFilePath());
         fileNameList.append(module->getHeaderFileName());
         filePathList.append(module->getHeaderFilePath());
         fileNameList.append(module->getSourceFileName());
@@ -392,6 +394,9 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
             QFile::copy(sourcePath + "floatspecial.c", support.outputpath + ProtocolFile::tempprefix + "floatspecial.c");
             QFile::copy(sourcePath + "floatspecial.h", support.outputpath + ProtocolFile::tempprefix + "floatspecial.h");
         }
+        fileNameList.append("qmlhelpers.h");
+        filePathList.append(support.outputpath);
+        QFile::copy(sourcePath + "qmlhelpers.h", support.outputpath + ProtocolFile::tempprefix + "qmlhelpers.h");
 
     }
 

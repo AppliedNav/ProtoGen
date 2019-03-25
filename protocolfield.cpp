@@ -1644,18 +1644,26 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
 
     const QString setter = QString("set") + name.at(0).toUpper() + name.mid(1);
 
-    output = "    ";
+    output = TAB_IN;
     if(is2dArray()) {
         emitWarning("2D arrays are not supported to expose them to QML");
     } else if(isArray()) {
-        output = "QML_WRITABLE_PROPERTY(QList<" + typeName + ">, " + name + ", " +
+        output += "QML_WRITABLE_PROPERTY(QList<" + typeName + ">, " + name + ", " +
                 setter + ", QList<" + typeName + ">())";
     } else {
         if (isDefault()) {
-            output = "QML_WRITABLE_PROPERTY(" + typeName + ", " + name + ", " +
+            output += "QML_WRITABLE_PROPERTY";
+            if (inMemoryType.isFloat) {
+                output += "_FLOAT";
+            }
+            output += "(" + typeName + ", " + name + ", " +
                     setter + ", " + defaultString + ")";
         } else {
-            output = "QML_WRITABLE_PROPERTY_NO_INIT(" + typeName + ", " + name + ", " +
+            output += "QML_WRITABLE_PROPERTY";
+            if (inMemoryType.isFloat) {
+                output += "_FLOAT";
+            }
+            output += "_NO_INIT(" + typeName + ", " + name + ", " +
                     setter + ")";
         }
     }
