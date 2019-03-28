@@ -202,10 +202,22 @@ protected:
     QString inputpath;
     QString inputfile;
 
+    ProtocolSourceFile controllerSource;//!< The source file for controller class that allow to access global structures in QML
+    ProtocolHeaderFile controllerHeader;//!< The header file for controller class that allow to access global structures in QML
+
 private:
+
+    //! Get the declaration that goes in the header which declares this as a controller class to access its properties in QML
+    QString getQtControllerClassDeclaration() const;
 
     //! Create the header file for the top level module of the protocol
     void createProtocolHeader(const QDomElement& docElem);
+
+    //! Create the source file for the controller class that allows to access global structures in QML
+    void createControllerSource(void);
+
+    //! Create the header file for the controller class that allows to access global structures in QML
+    void createControllerHeader(void);
 
     //! Finish the protocol header file
     void finishProtocolHeader(void);

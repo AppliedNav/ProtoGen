@@ -31,6 +31,7 @@ ProtocolStructureModule::ProtocolStructureModule(ProtocolParser* parse, Protocol
     printHeader.setCpp(true);
     mapSource.setCpp(true);
     mapHeader.setCpp(true);
+
     defpropheader.setCpp(true);
 
 }
@@ -51,7 +52,6 @@ void ProtocolStructureModule::clear(void)
     source.clear();
     header.clear();
     defheader.clear();
-    defpropheader.clear();
     compareHeader.clear();
     compareSource.clear();
     printHeader.clear();
@@ -64,6 +64,7 @@ void ProtocolStructureModule::clear(void)
     verifyheaderfile = &header;
     verifysourcefile = &source;
 
+    defpropheader.clear();
     // Note that data set during constructor are not changed
 
 }
@@ -157,6 +158,8 @@ void ProtocolStructureModule::parse(void)
     // Write to disk, note that duplicate flush() calls are OK
     header.flush();    
     structfile->flush();
+
+    // Write to disk QML related files
     defpropheader.flush();
 
     // We don't write the source to disk if we are not encoding or decoding anything
@@ -424,7 +427,8 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
         }
         defpropheader.writeIncludeDirective("qmlhelpers.h");
         defpropheader.writeIncludeDirective(structfile->fileName());
-        defpropheader.writeIncludeDirective("QQmlEngine", QString(), true);
+        defpropheader.writeIncludeDirective("QQmlEngine", QString(), true, false);
+
     }
 
     // The verify, comparison, print, and map files needs access to the struct file
@@ -469,8 +473,9 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
 
         // Create classes that expose properties in QML
         defpropheader.makeLineSeparator();
-        defpropheader.write(getQtClassDeclaration());
+        defpropheader.write(getQtPropertyClassDeclaration());
         defpropheader.makeLineSeparator();
+
     }
 
     // White space is good

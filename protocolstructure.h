@@ -170,7 +170,10 @@ public:
     virtual QString getStructureDeclaration(bool alwaysCreate) const Q_DECL_OVERRIDE;
 
     //! Get the declaration that goes in the header which declares this as a class and all its children in order to expose them in QML
-    virtual QString getQtClassDeclaration() const Q_DECL_OVERRIDE;
+    virtual QString getQtPropertyClassDeclaration() const Q_DECL_OVERRIDE;
+
+    //! Get the class name used to expose properties in QML
+    QString getQtPropertyClassName() const;
 
     //! Return the string that gives the prototype of the function used to encode this encodable, may be empty
     virtual QString getPrototypeEncodeString(bool isBigEndian, bool includeChildren = true) const Q_DECL_OVERRIDE;

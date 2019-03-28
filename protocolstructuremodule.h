@@ -36,9 +36,6 @@ public:
     //! Get the name of the header file that encompasses this structure definition
     QString getDefinitionFileName(void) const {return structfile->fileName();}
 
-    //! Get the name of the header file that encompasses the class definition of properties for QML
-    QString getPropertiesDefinitionFileName(void) const {return defpropheader.fileName();}
-
     //! Get the name of the header file that encompasses this structure interface functions
     QString getHeaderFileName(void) const {return header.fileName();}
 
@@ -47,9 +44,6 @@ public:
 
     //! Get the path of the header file that encompasses this structure definition
     QString getDefinitionFilePath(void) const {return structfile->filePath();}
-
-    //! Get the path of the header file that encompasses the class definition of properties for QML
-    QString getPropertiesDefinitionFilePath(void) const {return defpropheader.filePath();}
 
     //! Get the path of the header file that encompasses this structure interface functions
     QString getHeaderFilePath(void) const {return header.filePath();}
@@ -105,6 +99,12 @@ public:
     //! Get the path of the source file that encompasses this structure map functions
     QString getMapSourceFilePath(void) const {return mapSource.filePath();}
 
+    //! Get the name of the header file that encompasses the class definition of properties for QML
+    QString getQtPropertiesDefinitionFileName(void) const {return defpropheader.fileName();}
+
+    //! Get the path of the header file that encompasses the class definition of properties for QML
+    QString getQtPropertiesDefinitionFilePath(void) const {return defpropheader.filePath();}
+
 protected:
 
     //! Setup the files, which accounts for all the ways the files can be organized for this structure.
@@ -134,7 +134,6 @@ protected:
     ProtocolSourceFile source;      //!< The source file (*.c)
     ProtocolHeaderFile header;      //!< The header file (*.h)
     ProtocolHeaderFile defheader;   //!< The header file name for the structure definition
-    ProtocolHeaderFile defpropheader;//!< The header file name for the class definition exposed to QML
     ProtocolSourceFile verifySource;//!< The source file for verify code (*.c)
     ProtocolHeaderFile verifyHeader;//!< The header file for verify code (*.h)
     ProtocolSourceFile compareSource;       //!< The source file for comparison code (*.cpp)
@@ -146,6 +145,9 @@ protected:
     ProtocolHeaderFile* structfile;         //!< Reference to the file that holds the structure definition
     ProtocolHeaderFile* verifyheaderfile;   //!< Reference to the file that holds the verify prototypes
     ProtocolSourceFile* verifysourcefile;   //!< Reference to the file that holds the verify source code
+
+    ProtocolHeaderFile defpropheader;//!< The header file name for the class definitions exposed to QML
+
     QString api;                    //!< The protocol API enumeration
     QString version;                //!< The version string
     bool encode;                    //!< True if the encode function is output

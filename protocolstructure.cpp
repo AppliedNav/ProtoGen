@@ -711,13 +711,12 @@ QString ProtocolStructure::getStructureDeclaration(bool alwaysCreate) const
 
 /*!
  * Get the declaration that goes in the header which declares this structure
- * and all its children in order to expose them in QML.
+ * and all its children as classes in order to expose them in QML.
  * \return the string that represents the structure declaration
  */
-QString ProtocolStructure::getQtClassDeclaration() const
+QString ProtocolStructure::getQtPropertyClassDeclaration() const
 {
     QString output;
-    QString structure;
 
     if(getNumberInMemory() > 0)
     {
@@ -726,7 +725,7 @@ QString ProtocolStructure::getQtClassDeclaration() const
         {
             if(!encodables[i]->isPrimitive())
             {
-                output += encodables[i]->getQtClassDeclaration();
+                output += encodables[i]->getQtPropertyClassDeclaration();
                 ProtocolFile::makeLineSeparator(output);
             }
 
@@ -741,9 +740,7 @@ QString ProtocolStructure::getQtClassDeclaration() const
         }
 
         // The opening to the class
-        QString className = structName;
-        className.remove("_t");
-        className += "Prop";//make the class name unique
+        const QString className = getQtPropertyClassName();
         output += "class " + className + " : public QObject\n";
         output += "{\n";
         output += TAB_IN + "Q_OBJECT\n";
@@ -751,7 +748,7 @@ QString ProtocolStructure::getQtClassDeclaration() const
             output += encodables[i]->getQtPropertyDeclaration();
 
         // Class ctor to expose the class to QML
-        output += TAB_IN + className + "() {\n";
+        output += TAB_IN + className + "(QObject *parent = nullptr) : QObject(parent) {\n";
         output += TAB_IN + TAB_IN + "qmlRegisterInterface<" + className + ">(\"" +
                 className + "\");\n";
         output += TAB_IN + "}\n";
@@ -779,6 +776,20 @@ QString ProtocolStructure::getQtClassDeclaration() const
 
     return output;
 }
+
+
+/*!
+ * Get the class name used to expose properties in QML.
+ * \return the string that represents the class name
+ */
+QString ProtocolStructure::getQtPropertyClassName() const
+{
+    QString className = structName;
+    className.remove("_t");
+    className += "Prop";//make the class name unique
+    return className;
+}
+
 
 /*!
  * Make a structure output be prettily aligned

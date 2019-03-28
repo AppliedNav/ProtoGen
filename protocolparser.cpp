@@ -33,6 +33,8 @@ ProtocolParser::ProtocolParser() :
     nocss(false),
     tableOfContents(false)
 {
+    controllerSource.setCpp(true);
+    controllerHeader.setCpp(true);
 }
 
 
@@ -56,6 +58,9 @@ ProtocolParser::~ProtocolParser()
 
     qDeleteAll(lines.begin(), lines.end());
     lines.clear();
+
+    controllerSource.clear();
+    controllerHeader.clear();
 }
 
 
@@ -244,8 +249,6 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
         // Keep a list of all the file names
         fileNameList.append(module->getDefinitionFileName());
         filePathList.append(module->getDefinitionFilePath());
-        fileNameList.append(module->getPropertiesDefinitionFileName());
-        filePathList.append(module->getPropertiesDefinitionFilePath());
         fileNameList.append(module->getHeaderFileName());
         filePathList.append(module->getHeaderFilePath());
         fileNameList.append(module->getSourceFileName());
@@ -267,7 +270,20 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
         fileNameList.append(module->getMapHeaderFileName());
         filePathList.append(module->getMapHeaderFilePath());
 
+        fileNameList.append(module->getQtPropertiesDefinitionFileName());
+        filePathList.append(module->getQtPropertiesDefinitionFilePath());
+
     }// for all top level structures
+
+    // Create header and source files that allow to access global structures in QML
+    createControllerSource();
+    createControllerHeader();
+
+    // And record their file name
+    fileNameList.append(controllerSource.fileName());
+    filePathList.append(controllerSource.filePath());
+    fileNameList.append(controllerHeader.fileName());
+    filePathList.append(controllerHeader.filePath());
 
     // And the global packets. We want to sort the packets into two batches:
     // those packets which can be used by other packets; and those which cannot.
@@ -1679,4 +1695,117 @@ void ProtocolParser::outputDoxygen(void)
     // Delete our temporary files
     ProtocolFile::deleteFile("Doxyfile");
     ProtocolFile::deleteFile(fileName);
+}
+
+
+/*!
+ * Create the source file for the controller class that allows to access global
+ * structures in QML
+ */
+void ProtocolParser::createControllerSource(void)
+{
+    if (structures.isEmpty()) {
+        return;// nothing to do
+    }
+
+    controllerSource.setLicenseText(support.licenseText);
+    controllerSource.setModuleNameAndPath(name.toLower() + "_parameters_controller", support.outputpath);
+    if(controllerSource.isAppending()) {
+        controllerSource.makeLineSeparator();
+    }
+    controllerSource.writeIncludeDirective(controllerHeader.fileName());
+    controllerSource.writeIncludeDirective("QDebug", QString(), true, false);
+    controllerSource.writeIncludeDirective("QUrl", QString(), true, false);
+
+    //TODO
+
+    controllerSource.flush();
+}
+
+
+/*!
+ * Create the header file for the controller class that allows to access global
+ * structures in QML
+ */
+void ProtocolParser::createControllerHeader(void)
+{
+    if (structures.isEmpty()) {
+        return;// nothing to do
+    }
+
+    controllerHeader.setLicenseText(support.licenseText);
+    controllerHeader.setModuleNameAndPath(name.toLower() + "_parameters_controller", support.outputpath);
+    if(controllerHeader.isAppending()) {
+        controllerHeader.makeLineSeparator();
+    }
+    ProtocolStructureModule* module = structures[0];
+    controllerHeader.writeIncludeDirective(module->getQtPropertiesDefinitionFileName());
+    controllerHeader.writeIncludeDirective("QObject", QString(), true, false);
+
+    controllerHeader.makeLineSeparator();
+    controllerHeader.write(getQtControllerClassDeclaration());
+    controllerHeader.makeLineSeparator();
+
+    controllerHeader.flush();
+}
+
+
+/*!
+ * Get the declaration that goes in the header which declares the controller
+ * class in order to access its properties in QML.
+ * \return the string that represents the class declaration
+ */
+QString ProtocolParser::getQtControllerClassDeclaration() const
+{
+    QString output;
+
+    if(structures.size() > 0)
+    {
+        // The top level comment for the class definition
+        if(!comment.isEmpty())
+        {
+            output += "/*!\n";
+            output += ProtocolParser::outputLongComment(" *", comment) + "\n";
+            output += " */\n";
+        }
+
+        // The opening to the class
+        const QString className = name + "ParametersController";
+        output += "class " + className + " : public QObject\n";
+        output += "{\n";
+        output += ProtocolDocumentation::TAB_IN + "Q_OBJECT\n";
+
+        // Create an instance of the class that represents each global structure as property in QML
+        for (int i = 0; i < structures.size(); ++i) {
+            const QString propClassName = structures.at(i)->getQtPropertyClassName();
+            output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
+                    ", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
+        }
+
+        // Class ctor to set its name visible in QML
+        output += "public:\n";
+        output += ProtocolDocumentation::TAB_IN + "explicit " + className + "(QObject *parent = nullptr);\n";
+
+        // Open method to be called from QML
+        output += ProtocolDocumentation::TAB_IN + "// This gets called when the user clicks Open button in the qml view\n";
+        output += ProtocolDocumentation::TAB_IN + "Q_INVOKABLE void openFile(const QString &fileName);\n";
+
+        // Save method to be called from QML
+        output += ProtocolDocumentation::TAB_IN + "// This gets called when the user clicks Save button in the qml view\n";
+        output += ProtocolDocumentation::TAB_IN + "Q_INVOKABLE void saveFile(const QString &fileName);\n";
+
+        // Request method to be called from QML
+        output += ProtocolDocumentation::TAB_IN + "// This gets called when the user clicks Request button in the qml view\n";
+        output += ProtocolDocumentation::TAB_IN + "Q_INVOKABLE void requestData(int index);\n";
+
+        // Send method to be called from QML
+        output += ProtocolDocumentation::TAB_IN + "// This gets called when the user clicks Send button in the qml view\n";
+        output += ProtocolDocumentation::TAB_IN + "Q_INVOKABLE void sendData(int index);\n";
+
+        // Close out the class
+        output += "};\n";
+
+    }// if we have some data to encode
+
+    return output;
 }
