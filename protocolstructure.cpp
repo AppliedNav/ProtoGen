@@ -755,18 +755,22 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
 
         // Setter and geter for all data members
         output += TAB_IN + "void setData(const " + structName + "* pData) {\n";
+        output += TAB_IN + TAB_IN + "if (nullptr != pData) {\n";
         for(int i = 0; i < encodables.length(); i++) {
             const QString &variableName = encodables[i]->name;
-            output += TAB_IN + TAB_IN + "set" + variableName.at(0).toUpper() +
+            output += TAB_IN + TAB_IN + TAB_IN + "set" + variableName.at(0).toUpper() +
                     variableName.mid(1) + "(pData->" + variableName + ");\n";
         }
+        output += TAB_IN + TAB_IN + "}\n";
         output += TAB_IN + "}\n";
         output += TAB_IN + "void getData(" + structName + "* pData) {\n";
+        output += TAB_IN + TAB_IN + "if (nullptr != pData) {\n";
         for(int i = 0; i < encodables.length(); i++) {
             const QString &variableName = encodables[i]->name;
-            output += TAB_IN + TAB_IN + "pData->" + variableName + " = " +
+            output += TAB_IN + TAB_IN + TAB_IN + "pData->" + variableName + " = " +
                     variableName + "();\n";
         }
+        output += TAB_IN + TAB_IN + "}\n";
         output += TAB_IN + "}\n";
 
         // Close out the class
