@@ -23,7 +23,8 @@ ProtocolFile::ProtocolFile(const QString& moduleName, bool temp) :
     dirty(false),
     appending(false),
     temporary(temp),
-    iscpp(false)
+    iscpp(false),
+    isqml(false)
 {
 }
 
@@ -36,7 +37,8 @@ ProtocolFile::ProtocolFile() :
     dirty(false),
     appending(false),
     temporary(true),
-    iscpp(false)
+    iscpp(false),
+    isqml(false)
 {
 }
 
@@ -663,7 +665,9 @@ void ProtocolSourceFile::extractExtension(QString& name)
 {
     ProtocolFile::extractExtension(name);
 
-    if(iscpp)
+    if(isqml)
+        extension = ".qml";
+    else if(iscpp)
         extension = ".cpp";
     else
     {
@@ -779,7 +783,9 @@ void ProtocolSourceFile::prepareToAppend(void)
         }
 
         // The source file includes the header
-        write(qPrintable("#include \"" + module + ".h\"\n"));
+        if (!isqml) {
+            write(qPrintable("#include \"" + module + ".h\"\n"));
+        }
     }
 
 }// ProtocolSourceFile::prepareToAppend

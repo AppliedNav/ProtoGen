@@ -46,6 +46,9 @@ public:
     //! Return true if this file is part of a c++ module
     bool isCpp(void) const {return iscpp;}
 
+    //! Return true if this file is part of a QML module
+    bool isQml(void) const {return isqml;}
+
     //! Return the path
     virtual QString filePath(void) const {return path;}
 
@@ -113,6 +116,7 @@ protected:
     bool appending;     //!< Flag set if an append operation is in progress
     bool temporary;     //!< Flag to indicate this is a temporary file with "temporarydeleteme_" preceding the name
     bool iscpp;         //!< Flag to indicate this file belongs to a c++ module
+    bool isqml;         //!< Flag to indicate this file belongs to a QML module
 };
 
 

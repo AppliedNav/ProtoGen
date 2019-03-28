@@ -1713,7 +1713,6 @@ void ProtocolParser::createControllerSource(void)
     if(controllerSource.isAppending()) {
         controllerSource.makeLineSeparator();
     }
-    controllerSource.writeIncludeDirective(controllerHeader.fileName());
     controllerSource.writeIncludeDirective("QDebug", QString(), true, false);
     controllerSource.writeIncludeDirective("QUrl", QString(), true, false);
 
