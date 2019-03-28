@@ -646,6 +646,34 @@ QString ProtocolStructure::getQtPropertyDeclaration(void) const
 
 }
 
+
+/*!
+ * Return the string used to declare this encodable as property in a Qt class.
+ * This includes the spacing, typename, name, semicolon, comment, and linefeed
+ * \return the declaration string for this encodable
+ */
+QString ProtocolStructure::getQmlPropertyComponent(const QString &accessor) const
+{
+    QString output;
+
+    if(array.isEmpty()) {
+        output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: " + name + "; units: \"\" }";
+    } else if(array2d.isEmpty()) {
+        emitWarning("1D arrays are not supported to expose them to QML");
+    } else {
+        emitWarning("2D arrays are not supported to expose them to QML");
+    }
+
+    if(!comment.isEmpty())
+        output += " //!< " + comment;
+
+    output += "\n";
+
+    return output;
+
+}
+
+
 /*!
  * Get the declaration that goes in the header which declares this structure
  * and all its children.
@@ -792,6 +820,54 @@ QString ProtocolStructure::getQtPropertyClassName() const
     className.remove("_t");
     className += "Prop";//make the class name unique
     return className;
+}
+
+
+/*!
+ * Return the string that represents the QML component declaration for
+ * the current encodable.
+ * \return the string that represents the QML component
+ */
+QString ProtocolStructure::getQmlStructureComponent() const
+{
+    QString output;
+
+    if(getNumberInMemory() > 0)
+    {
+        // Declare our childrens structures first
+        for(int i = 0; i < encodables.length(); i++)
+        {
+            if(!encodables[i]->isPrimitive())
+            {
+                output += encodables[i]->getQmlStructureComponent();
+                ProtocolFile::makeLineSeparator(output);
+            }
+
+        }// for all children
+
+        // The top level comment for the class definition
+        if(!comment.isEmpty())
+        {
+            output += "/*!\n";
+            output += ProtocolParser::outputLongComment(" *", comment) + "\n";
+            output += " */\n";
+        }
+
+        const QString className = getQtPropertyClassName();
+        output += TAB_IN + TAB_IN + "ProtoGenCategory {\n";
+        output += TAB_IN + TAB_IN + TAB_IN + "id: " + className.toLower() + "\n";
+        output += TAB_IN + TAB_IN + TAB_IN + "objectName: \"" + className + "\"\n";
+        for(int i = 0; i < encodables.length(); i++) {
+            output += TAB_IN + TAB_IN + TAB_IN +
+                    encodables[i]->getQmlPropertyComponent(QString("controller.") +
+                                                           className.at(0).toLower() +
+                                                           className.mid(1));
+        }
+        output += TAB_IN + TAB_IN + "}\n\n";
+
+    }// if we have some data to encode
+
+     return output;
 }
 
 

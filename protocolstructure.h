@@ -166,6 +166,9 @@ public:
     //! Get the declaration for this structure as property in a Qt class
     virtual QString getQtPropertyDeclaration(void) const Q_DECL_OVERRIDE;
 
+    //! Get the declaration for this structure as component in QML
+    virtual QString getQmlPropertyComponent(const QString& /*accessor*/) const Q_DECL_OVERRIDE;
+
     //! Get the declaration that goes in the header which declares this structure and all its children
     virtual QString getStructureDeclaration(bool alwaysCreate) const Q_DECL_OVERRIDE;
 
@@ -174,6 +177,9 @@ public:
 
     //! Get the class name used to expose properties in QML
     QString getQtPropertyClassName() const;
+
+    //! Return the string that represents the QML component declaration for the current structure
+    virtual QString getQmlStructureComponent() const Q_DECL_OVERRIDE;
 
     //! Return the string that gives the prototype of the function used to encode this encodable, may be empty
     virtual QString getPrototypeEncodeString(bool isBigEndian, bool includeChildren = true) const Q_DECL_OVERRIDE;

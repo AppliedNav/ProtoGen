@@ -46,6 +46,9 @@ public:
     //! Return true if this file is part of a c++ module
     bool isCpp(void) const {return iscpp;}
 
+    //! Set this files QML status
+    void setQml(bool qml) {isqml = qml;}
+
     //! Return true if this file is part of a QML module
     bool isQml(void) const {return isqml;}
 

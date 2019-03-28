@@ -33,6 +33,7 @@ ProtocolStructureModule::ProtocolStructureModule(ProtocolParser* parse, Protocol
     mapHeader.setCpp(true);
 
     defpropheader.setCpp(true);
+    propviewsource.setQml(true);
 
 }
 
@@ -65,6 +66,7 @@ void ProtocolStructureModule::clear(void)
     verifysourcefile = &source;
 
     defpropheader.clear();
+    propviewsource.clear();
     // Note that data set during constructor are not changed
 
 }
@@ -429,6 +431,14 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
         defpropheader.writeIncludeDirective(structfile->fileName());
         defpropheader.writeIncludeDirective("QQmlEngine", QString(), true, false);
 
+        // Create QML source file for modifying classes properties in QML
+        propviewsource.setLicenseText(support.licenseText);
+        propviewsource.setModuleNameAndPath(moduleName + "View", support.outputpath);
+        if(propviewsource.isAppending()) {
+            propviewsource.makeLineSeparator();
+        }
+        propviewsource.write(getQmlFileBegin());
+
     }
 
     // The verify, comparison, print, and map files needs access to the struct file
@@ -476,6 +486,10 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
         defpropheader.write(getQtPropertyClassDeclaration());
         defpropheader.makeLineSeparator();
 
+        // Create QML file that allows to access properties in QML
+        propviewsource.makeLineSeparator();
+        propviewsource.write(getQmlStructureComponent());
+        propviewsource.makeLineSeparator();
     }
 
     // White space is good
@@ -814,3 +828,61 @@ QString extractText(const QString& key, const QString& source, int* fieldcount)\
 }// extractText\n\n");
 
 }// ProtocolStructureModule::getExtractTextFunction
+
+
+//! Get the text at the beginning of the QML file that allows to view properties
+QString ProtocolStructureModule::getQmlFileBegin(void)
+{
+    QString contents;
+
+    contents += "import QtQuick 2.11\n";
+    contents += "import QtQuick.Controls 2.5\n\n";
+    contents += "ApplicationWindow {\n";
+    contents += TAB_IN + "visible: true\n";
+    contents += TAB_IN + "width: 360\n";
+    contents += TAB_IN + "height: 480\n\n";
+    contents += TAB_IN + "header: ProtoGenControls {\n";
+    contents += TAB_IN + TAB_IN + "id: header\n";
+    contents += TAB_IN + TAB_IN + "inSync: true\n";
+    contents += TAB_IN + TAB_IN + "width: parent.width\n";
+    contents += TAB_IN + "}\n";
+    contents += TAB_IN + "Component.onCompleted: {\n";
+    contents += TAB_IN + TAB_IN + "//data is in sync when the app starts\n";
+    contents += TAB_IN + TAB_IN + "header.inSync = true\n";
+    contents += TAB_IN + TAB_IN + "for(var i = 0; i < categoryView.count; ++i) {\n";
+    contents += TAB_IN + TAB_IN + TAB_IN + "categoryView.itemAt(i).synchro = true\n";
+    contents += TAB_IN + TAB_IN + "}\n";
+    contents += TAB_IN + "}\n\n";
+    contents += TAB_IN + "footer: TabBar {\n";
+    contents += TAB_IN + TAB_IN + "id: categoryTab\n";
+    contents += TAB_IN + TAB_IN + "width: parent.width\n";
+    contents += TAB_IN + TAB_IN + "font.pointSize: 10\n";
+    contents += TAB_IN + TAB_IN + "currentIndex: 0\n";
+    contents += TAB_IN + TAB_IN + "Repeater {\n";
+    contents += TAB_IN + TAB_IN + TAB_IN + "model: categoryView.count\n";
+    contents += TAB_IN + TAB_IN + TAB_IN + "TabButton {\n";
+    contents += TAB_IN + TAB_IN + TAB_IN + TAB_IN + "text: categoryView.itemAt(index).objectName\n";
+    contents += TAB_IN + TAB_IN + TAB_IN + "}\n";
+    contents += TAB_IN + TAB_IN + "}\n";
+    contents += TAB_IN + "}\n\n";
+    contents += TAB_IN + "SwipeView {\n";
+    contents += TAB_IN + TAB_IN + "id: categoryView\n";
+    contents += TAB_IN + TAB_IN + "width: parent.width\n";
+    contents += TAB_IN + TAB_IN + "height: 400\n";
+    contents += TAB_IN + TAB_IN + "currentIndex: categoryTab.currentIndex\n";
+    contents += TAB_IN + TAB_IN + "onCurrentIndexChanged: header.inSync = itemAt(currentIndex).synchro\n\n";
+
+    return contents;
+}
+
+
+//! Get the text at the end of the QML file that allows to view properties
+QString ProtocolStructureModule::getQmlFileEnd(void)
+{
+    QString contents;
+
+    contents += TAB_IN + "} // SwipeView\n";
+    contents += "} // ApplicationWindow\n";
+
+    return contents;
+}

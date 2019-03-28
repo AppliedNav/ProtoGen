@@ -55,6 +55,9 @@ public:
     //! Return the string that is used to declare this encodable as property in a Qt class
     virtual QString getQtPropertyDeclaration(void) const = 0;
 
+    //! Return the string that is used to declare this encodable as QML component
+    virtual QString getQmlPropertyComponent(const QString& /*accessor*/) const = 0;
+
     //! Return the include directives needed for this encodable
     virtual void getIncludeDirectives(QStringList& list) const {Q_UNUSED(list);}
 
@@ -65,7 +68,10 @@ public:
     virtual QString getStructureDeclaration(bool alwaysCreate) const {Q_UNUSED(alwaysCreate); return QString();}
 
     //! Return the string that declares the whole structure wrapper to be exposed in QML
-    virtual QString getQtPropertyClassDeclaration() const {return QString();}
+    virtual QString getQtPropertyClassDeclaration(void) const {return QString();}
+
+    //! Return the string that represents the QML component declaration for the current encodable
+    virtual QString getQmlStructureComponent(void) const {return QString();}
 
     //! Return the signature of this field in an encode function signature
     virtual QString getEncodeSignature(void) const;

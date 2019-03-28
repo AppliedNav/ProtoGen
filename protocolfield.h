@@ -148,6 +148,9 @@ public:
     //! Return the string that is used to declare this encodable as property in a Qt class
     virtual QString getQtPropertyDeclaration(void) const Q_DECL_OVERRIDE;
 
+    //! Return the string that is used to declare this encodable as component in QML
+    virtual QString getQmlPropertyComponent(const QString &accessor) const Q_DECL_OVERRIDE;
+
     //! Return the include directives needed for this encodable
     virtual void getIncludeDirectives(QStringList& list) const Q_DECL_OVERRIDE;
 

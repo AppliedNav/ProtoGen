@@ -37,6 +37,9 @@ class ProtocolCode : public Encodable
     //! Return the string that is used to declare this encodable as property in a Qt class
     virtual QString getQtPropertyDeclaration(void) const Q_DECL_OVERRIDE {return QString();}
 
+    //! Return the string that is used to declare this encodable as QML property
+    virtual QString getQmlPropertyComponent(const QString& /*accessor*/) const Q_DECL_OVERRIDE {return QString();}
+
     //! Return the signature of this field in an encode function signature
     virtual QString getEncodeSignature(void) const Q_DECL_OVERRIDE {return QString();}
 

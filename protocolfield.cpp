@@ -1631,6 +1631,7 @@ QString ProtocolField::getDeclaration(void) const
 
 }// ProtocolField::getDeclaration
 
+
 /*!
  * Get the declaration for this field as a property of a class derived from QObject
  * \return the declaration string
@@ -1685,6 +1686,45 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
     return output;
 
 }// ProtocolField::getQtPropertyDeclaration
+
+
+/*!
+ * Get the declaration for this field as a property of a class derived from QObject
+ * \return the declaration string
+ */
+QString ProtocolField::getQmlPropertyComponent(const QString &accessor) const
+{
+    QString output;
+
+    if(isNotInMemory())
+        return output;
+
+    if(is2dArray()) {
+        emitWarning("2D arrays are not supported to define them as components QML");
+    } else if(isArray()) {
+        emitWarning("1D arrays are not supported to define them as components QML");
+    } else {
+        output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: " + name + "; units: \"\" }";
+    }
+
+    if(comment.isEmpty())
+    {
+        if(!constantString.isEmpty())
+            output += " //!< Field is encoded constant.";
+    }
+    else
+    {
+        output += " //!< " + comment;
+        if(!constantString.isEmpty())
+            output += ". Field is encoded constant.";
+    }
+
+    output += "\n";
+
+    return output;
+
+}// ProtocolField::getQmlPropertyComponent
+
 
 /*!
  * Append the include directives needed for this encodable. Mostly this is empty,

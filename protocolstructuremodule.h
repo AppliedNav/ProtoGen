@@ -131,6 +131,12 @@ protected:
     //! Get the text used to extract text for text read functions
     static QString getExtractTextFunction(void);
 
+    //! Get the text at the beginning of the QML file that allows to view properties
+    static QString getQmlFileBegin(void);
+
+    //! Get the text at the end of the QML file that allows to view properties
+    static QString getQmlFileEnd(void);
+
     ProtocolSourceFile source;      //!< The source file (*.c)
     ProtocolHeaderFile header;      //!< The header file (*.h)
     ProtocolHeaderFile defheader;   //!< The header file name for the structure definition
@@ -147,6 +153,7 @@ protected:
     ProtocolSourceFile* verifysourcefile;   //!< Reference to the file that holds the verify source code
 
     ProtocolHeaderFile defpropheader;//!< The header file name for the class definitions exposed to QML
+    ProtocolSourceFile propviewsource;//!< The QML source file for the properties view
 
     QString api;                    //!< The protocol API enumeration
     QString version;                //!< The version string
