@@ -207,8 +207,13 @@ protected:
 
 private:
 
-    //! Get the declaration that goes in the header which declares this as a controller class to access its properties in QML
-    QString getQtControllerClassDeclaration() const;
+    QString getQtControllerClassName(void) const;
+
+    //! Get the declaration that goes in the header which declares the controller class to access its properties in QML
+    QString getQtControllerClassDeclaration(void) const;
+
+    //! Get the definition that goes in the source file which defines the controller class to access its properties in QML
+    QString getQtControllerClassDefinition(void) const;
 
     //! Create the header file for the top level module of the protocol
     void createProtocolHeader(const QDomElement& docElem);

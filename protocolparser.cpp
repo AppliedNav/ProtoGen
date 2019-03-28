@@ -1717,7 +1717,9 @@ void ProtocolParser::createControllerSource(void)
     controllerSource.writeIncludeDirective("QDebug", QString(), true, false);
     controllerSource.writeIncludeDirective("QUrl", QString(), true, false);
 
-    //TODO
+    controllerSource.makeLineSeparator();
+    controllerSource.write(getQtControllerClassDefinition());
+    controllerSource.makeLineSeparator();
 
     controllerSource.flush();
 }
@@ -1751,26 +1753,33 @@ void ProtocolParser::createControllerHeader(void)
 
 
 /*!
+ * Get the controller class name.
+ * \return the string that represents the class name
+ */
+QString ProtocolParser::getQtControllerClassName(void) const
+{
+    return name + "ParametersController";
+}
+
+/*!
  * Get the declaration that goes in the header which declares the controller
  * class in order to access its properties in QML.
  * \return the string that represents the class declaration
  */
-QString ProtocolParser::getQtControllerClassDeclaration() const
+QString ProtocolParser::getQtControllerClassDeclaration(void) const
 {
     QString output;
 
-    if(structures.size() > 0)
-    {
+    if(!structures.empty()) {
         // The top level comment for the class definition
-        if(!comment.isEmpty())
-        {
+        if(!comment.isEmpty()) {
             output += "/*!\n";
             output += ProtocolParser::outputLongComment(" *", comment) + "\n";
             output += " */\n";
         }
 
         // The opening to the class
-        const QString className = name + "ParametersController";
+        const QString className = getQtControllerClassName();
         output += "class " + className + " : public QObject\n";
         output += "{\n";
         output += ProtocolDocumentation::TAB_IN + "Q_OBJECT\n";
@@ -1805,6 +1814,46 @@ QString ProtocolParser::getQtControllerClassDeclaration() const
         // Close out the class
         output += "};\n";
 
+    }// if we have some data to encode
+
+    return output;
+}
+
+
+/*!
+ * Get the definition that goes in the source file which declares the controller
+ * class to access its properties in QML.
+ * \return the string that represents the class definition
+ */
+QString ProtocolParser::getQtControllerClassDefinition(void) const
+{
+    QString output;
+
+    if(!structures.empty()) {
+        const QString className = getQtControllerClassName();
+
+        output += className + "::" + className + "(QObject *parent) : QObject(parent)\n";
+        output += "{\n";
+        output += ProtocolDocumentation::TAB_IN + "setObjectName(\"controller\");\n";
+        output += "}\n\n";
+        output += "void " + className + "::openFile(const QString &fileName)\n";
+        output += "{\n";
+        output += ProtocolDocumentation::TAB_IN + "const QString localFileName = QUrl(fileName).toLocalFile();\n";
+        output += ProtocolDocumentation::TAB_IN + "qDebug() << \"Loading parameters from\" << localFileName;\n";
+        output += "}\n\n";
+        output += "void " + className + "::saveFile(const QString &fileName)\n";
+        output += "{\n";
+        output += ProtocolDocumentation::TAB_IN + "const QString localFileName = QUrl(fileName).toLocalFile();\n";
+        output += ProtocolDocumentation::TAB_IN + "qDebug() << \"Saving parameters from\" << localFileName;\n";
+        output += "}\n\n";
+        output += "void " + className + "::requestData(int index)\n";
+        output += "{\n";
+        output += ProtocolDocumentation::TAB_IN + "qDebug() << \"Request data\" << index;\n";
+        output += "}\n\n";
+        output += "void " + className + "::sendData(int index)\n";
+        output += "{\n";
+        output += ProtocolDocumentation::TAB_IN + "qDebug() << \"Send data\" << index;\n";
+        output += "}\n";
     }// if we have some data to encode
 
     return output;
