@@ -1704,7 +1704,7 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor) const
     } else if(isArray()) {
         emitWarning("1D arrays are not supported to define them as components QML");
     } else {
-        output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: " + name + "; units: \"\" }";
+        output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: \"" + name + "\"; units: \"\"; }";
     }
 
     if(comment.isEmpty())

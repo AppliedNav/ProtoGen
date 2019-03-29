@@ -35,6 +35,7 @@ ProtocolParser::ProtocolParser() :
 {
     controllerSource.setCpp(true);
     controllerHeader.setCpp(true);
+    propviewsource.setQml(true);
 }
 
 
@@ -61,6 +62,7 @@ ProtocolParser::~ProtocolParser()
 
     controllerSource.clear();
     controllerHeader.clear();
+    propviewsource.clear();
 }
 
 
@@ -238,6 +240,16 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
         filePathList.append(enumfile.filePath());
     }
 
+    // Create the QML source file for the properties view
+    propviewsource.setLicenseText(support.licenseText);
+    propviewsource.setModuleNameAndPath(name + "View", support.outputpath);
+    fileNameList.append(propviewsource.fileName());
+    filePathList.append(propviewsource.filePath());
+    if(propviewsource.isAppending()) {
+        propviewsource.makeLineSeparator();
+    }
+    propviewsource.write(getQmlFileBegin());
+
     // Now parse the global structures
     for(int i = 0; i < structures.size(); i++)
     {
@@ -273,7 +285,16 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
         fileNameList.append(module->getQtPropertiesDefinitionFileName());
         filePathList.append(module->getQtPropertiesDefinitionFilePath());
 
+        // Insert into QML view file the properties of the current module
+        propviewsource.makeLineSeparator();
+        propviewsource.write(module->getQmlStructureComponent());
+        propviewsource.makeLineSeparator();
+
     }// for all top level structures
+
+    // Write the QML source file for the properties view
+    propviewsource.write(getQmlFileEnd());
+    propviewsource.flush();
 
     // Create header and source files that allow to access global structures in QML
     createControllerSource();
@@ -1856,4 +1877,62 @@ QString ProtocolParser::getQtControllerClassDefinition(void) const
     }// if we have some data to encode
 
     return output;
+}
+
+//! Get the text at the beginning of the QML file that allows to view properties
+QString ProtocolParser::getQmlFileBegin(void)
+{
+    QString contents;
+    static const QString &TAB_IN = ProtocolDocumentation::TAB_IN;
+
+    contents += "import QtQuick 2.11\n";
+    contents += "import QtQuick.Controls 2.5\n\n";
+    contents += "ApplicationWindow {\n";
+    contents += TAB_IN + "visible: true\n";
+    contents += TAB_IN + "width: 360\n";
+    contents += TAB_IN + "height: 480\n\n";
+    contents += TAB_IN + "header: ProtoGenControls {\n";
+    contents += TAB_IN + TAB_IN + "id: header\n";
+    contents += TAB_IN + TAB_IN + "inSync: true\n";
+    contents += TAB_IN + TAB_IN + "width: parent.width\n";
+    contents += TAB_IN + "}\n";
+    contents += TAB_IN + "Component.onCompleted: {\n";
+    contents += TAB_IN + TAB_IN + "//data is in sync when the app starts\n";
+    contents += TAB_IN + TAB_IN + "header.inSync = true\n";
+    contents += TAB_IN + TAB_IN + "for(var i = 0; i < categoryView.count; ++i) {\n";
+    contents += TAB_IN + TAB_IN + TAB_IN + "categoryView.itemAt(i).synchro = true\n";
+    contents += TAB_IN + TAB_IN + "}\n";
+    contents += TAB_IN + "}\n\n";
+    contents += TAB_IN + "footer: TabBar {\n";
+    contents += TAB_IN + TAB_IN + "id: categoryTab\n";
+    contents += TAB_IN + TAB_IN + "width: parent.width\n";
+    contents += TAB_IN + TAB_IN + "font.pointSize: 10\n";
+    contents += TAB_IN + TAB_IN + "currentIndex: 0\n";
+    contents += TAB_IN + TAB_IN + "Repeater {\n";
+    contents += TAB_IN + TAB_IN + TAB_IN + "model: categoryView.count\n";
+    contents += TAB_IN + TAB_IN + TAB_IN + "TabButton {\n";
+    contents += TAB_IN + TAB_IN + TAB_IN + TAB_IN + "text: categoryView.itemAt(index).objectName\n";
+    contents += TAB_IN + TAB_IN + TAB_IN + "}\n";
+    contents += TAB_IN + TAB_IN + "}\n";
+    contents += TAB_IN + "}\n\n";
+    contents += TAB_IN + "SwipeView {\n";
+    contents += TAB_IN + TAB_IN + "id: categoryView\n";
+    contents += TAB_IN + TAB_IN + "width: parent.width\n";
+    contents += TAB_IN + TAB_IN + "height: 400\n";
+    contents += TAB_IN + TAB_IN + "currentIndex: categoryTab.currentIndex\n";
+    contents += TAB_IN + TAB_IN + "onCurrentIndexChanged: header.inSync = itemAt(currentIndex).synchro\n\n";
+
+    return contents;
+}
+
+
+//! Get the text at the end of the QML file that allows to view properties
+QString ProtocolParser::getQmlFileEnd(void)
+{
+    QString contents;
+
+    contents += ProtocolDocumentation::TAB_IN + "} // SwipeView\n";
+    contents += "} // ApplicationWindow\n";
+
+    return contents;
 }

@@ -657,7 +657,7 @@ QString ProtocolStructure::getQmlPropertyComponent(const QString &accessor) cons
     QString output;
 
     if(array.isEmpty()) {
-        output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: " + name + "; units: \"\" }";
+        output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: \"" + name + "\"; units: \"\"; }";
     } else if(array2d.isEmpty()) {
         emitWarning("1D arrays are not supported to expose them to QML");
     } else {
@@ -776,6 +776,7 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
             output += encodables[i]->getQtPropertyDeclaration();
 
         // Class ctor to expose the class to QML
+        output += "public:\n";
         output += TAB_IN + className + "(QObject *parent = nullptr) : QObject(parent) {\n";
         output += TAB_IN + TAB_IN + "qmlRegisterInterface<" + className + ">(\"" +
                 className + "\");\n";

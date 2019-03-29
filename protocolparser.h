@@ -204,6 +204,7 @@ protected:
 
     ProtocolSourceFile controllerSource;//!< The source file for controller class that allow to access global structures in QML
     ProtocolHeaderFile controllerHeader;//!< The header file for controller class that allow to access global structures in QML
+    ProtocolSourceFile propviewsource;//!< The QML source file for the properties view
 
 private:
 
@@ -214,6 +215,12 @@ private:
 
     //! Get the definition that goes in the source file which defines the controller class to access its properties in QML
     QString getQtControllerClassDefinition(void) const;
+
+    //! Get the text at the beginning of the QML file that allows to view properties
+    static QString getQmlFileBegin(void);
+
+    //! Get the text at the end of the QML file that allows to view properties
+    static QString getQmlFileEnd(void);
 
     //! Create the header file for the top level module of the protocol
     void createProtocolHeader(const QDomElement& docElem);
