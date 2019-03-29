@@ -630,7 +630,8 @@ QString ProtocolStructure::getQtPropertyDeclaration(void) const
     QString output = TAB_IN;
 
     if(array.isEmpty()) {
-        output += "QML_CONSTANT_PROPERTY_PTR(" + typeName + ", " + name + ")";
+        const QString actualTypeName = typeName.contains("int")?"int":typeName;
+        output += "QML_CONSTANT_PROPERTY_PTR(" + actualTypeName + ", " + name + ")";
     } else if(array2d.isEmpty()) {
         emitWarning("1D arrays are not supported to expose them to QML");
     } else {

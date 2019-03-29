@@ -1652,19 +1652,20 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
         output += "QML_WRITABLE_PROPERTY(QList<" + typeName + ">, " + name + ", " +
                 setter + ", QList<" + typeName + ">())";
     } else {
+        const QString actualTypeName = typeName.contains("int")?"int":typeName;
         if (isDefault()) {
             output += "QML_WRITABLE_PROPERTY";
             if (inMemoryType.isFloat) {
                 output += "_FLOAT";
             }
-            output += "(" + typeName + ", " + name + ", " +
+            output += "(" + actualTypeName + ", " + name + ", " +
                     setter + ", " + defaultString + ")";
         } else {
             output += "QML_WRITABLE_PROPERTY";
             if (inMemoryType.isFloat) {
                 output += "_FLOAT";
             }
-            output += "_NO_INIT(" + typeName + ", " + name + ", " +
+            output += "_NO_INIT(" + actualTypeName + ", " + name + ", " +
                     setter + ")";
         }
     }
