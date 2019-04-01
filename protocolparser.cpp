@@ -244,7 +244,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
     // Create the QML source file for the properties view
     if (qmlEnabled) {
         propviewsource.setLicenseText(support.licenseText);
-        propviewsource.setModuleNameAndPath(name + "View", support.outputpath);
+        propviewsource.setModuleNameAndPath(name + "SwipeView", support.outputpath);
         fileNameList.append(propviewsource.fileName());
         filePathList.append(propviewsource.filePath());
         if(propviewsource.isAppending()) {
@@ -1916,40 +1916,12 @@ QString ProtocolParser::getQmlFileBegin(void)
 
     contents += "import QtQuick 2.11\n";
     contents += "import QtQuick.Controls 2.5\n\n";
-    contents += "ApplicationWindow {\n";
-    contents += TAB_IN + "visible: true\n";
-    contents += TAB_IN + "width: 360\n";
-    contents += TAB_IN + "height: 480\n\n";
-    contents += TAB_IN + "header: ProtoGenControls {\n";
-    contents += TAB_IN + TAB_IN + "id: header\n";
-    contents += TAB_IN + TAB_IN + "inSync: true\n";
-    contents += TAB_IN + TAB_IN + "width: parent.width\n";
-    contents += TAB_IN + "}\n";
-    contents += TAB_IN + "Component.onCompleted: {\n";
-    contents += TAB_IN + TAB_IN + "//data is in sync when the app starts\n";
-    contents += TAB_IN + TAB_IN + "header.inSync = true\n";
-    contents += TAB_IN + TAB_IN + "for(var i = 0; i < categoryView.count; ++i) {\n";
-    contents += TAB_IN + TAB_IN + TAB_IN + "categoryView.itemAt(i).synchro = true\n";
-    contents += TAB_IN + TAB_IN + "}\n";
-    contents += TAB_IN + "}\n\n";
-    contents += TAB_IN + "footer: TabBar {\n";
-    contents += TAB_IN + TAB_IN + "id: categoryTab\n";
-    contents += TAB_IN + TAB_IN + "width: parent.width\n";
-    contents += TAB_IN + TAB_IN + "font.pointSize: 10\n";
-    contents += TAB_IN + TAB_IN + "currentIndex: 0\n";
-    contents += TAB_IN + TAB_IN + "Repeater {\n";
-    contents += TAB_IN + TAB_IN + TAB_IN + "model: categoryView.count\n";
-    contents += TAB_IN + TAB_IN + TAB_IN + "TabButton {\n";
-    contents += TAB_IN + TAB_IN + TAB_IN + TAB_IN + "text: categoryView.itemAt(index).objectName\n";
-    contents += TAB_IN + TAB_IN + TAB_IN + "}\n";
-    contents += TAB_IN + TAB_IN + "}\n";
-    contents += TAB_IN + "}\n\n";
-    contents += TAB_IN + "SwipeView {\n";
-    contents += TAB_IN + TAB_IN + "id: categoryView\n";
-    contents += TAB_IN + TAB_IN + "width: parent.width\n";
-    contents += TAB_IN + TAB_IN + "height: 400\n";
-    contents += TAB_IN + TAB_IN + "currentIndex: categoryTab.currentIndex\n";
-    contents += TAB_IN + TAB_IN + "onCurrentIndexChanged: header.inSync = itemAt(currentIndex).synchro\n\n";
+    contents += "SwipeView {\n";
+    contents += TAB_IN + "id: categoryView\n";
+    contents += TAB_IN + "width: parent.width\n";
+    contents += TAB_IN + "height: 400\n";
+    contents += TAB_IN + "currentIndex: categoryTab.currentIndex\n";
+    contents += TAB_IN + "onCurrentIndexChanged: header.inSync = itemAt(currentIndex).synchro\n\n";
 
     return contents;
 }
@@ -1960,8 +1932,7 @@ QString ProtocolParser::getQmlFileEnd(void)
 {
     QString contents;
 
-    contents += ProtocolDocumentation::TAB_IN + "} // SwipeView\n";
-    contents += "} // ApplicationWindow\n";
+    contents += "} // SwipeView\n";
 
     return contents;
 }
