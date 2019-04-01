@@ -857,7 +857,6 @@ QString ProtocolStructure::getQmlStructureComponent() const
 
         const QString className = getQtPropertyClassName();
         output += TAB_IN + TAB_IN + "ProtoGenCategory {\n";
-        output += TAB_IN + TAB_IN + TAB_IN + "id: " + className.toLower() + "\n";
         output += TAB_IN + TAB_IN + TAB_IN + "objectName: \"" + className + "\"\n";
         for(int i = 0; i < encodables.length(); i++) {
             output += TAB_IN + TAB_IN + TAB_IN +
