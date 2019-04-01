@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
     argParser.addOption({"no-unrecognized-warnings", "Suppress warnings for unrecognized xml tags"});
     argParser.addOption({"table-of-contents", "Generate a table of contents"});
     argParser.addOption({{"t", "titlepage"}, "Path to title page file with text that will above at the beginning of the markdown", "titlefile"});
+    argParser.addOption({"qml", "Enable source generation required for QML UI"});
 
     argParser.process(a);
 
@@ -122,6 +123,7 @@ int main(int argc, char *argv[])
     parser.setLaTeXSupport(argParser.isSet("latex"));
     parser.disableCSS(argParser.isSet("no-css"));
     parser.enableTableOfContents(argParser.isSet("table-of-contents"));
+    parser.setQmlSupport(argParser.isSet("qml"));
 
     QString latexLevel = argParser.value("latex-header-level");
 

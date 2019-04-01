@@ -150,6 +150,12 @@ public:
 
     QString getLicenseText() const { return support.licenseText; }
 
+    //! Set QML support
+    void setQmlSupport(bool on) {qmlEnabled = on;}
+
+    //! Return status of QML support
+    bool hasQmlSupport() const { return qmlEnabled; }
+
 protected:
 
     //! Parses a single XML file handling any require tags to flatten a file
@@ -189,7 +195,8 @@ protected:
     QString inlinecss;  //!< CSS used for markdown output
     bool nocss;         //!< Disable all CSS output
     bool tableOfContents;//!< Enable table of contents
-    QString titlePage;     //!< Title page information
+    QString titlePage;  //!< Title page information
+    bool qmlEnabled;    //!< Generate QML related files automagically
 
     QStringList filesparsed;
     QList<XMLLineLocator*>lines;

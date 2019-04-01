@@ -31,7 +31,8 @@ ProtocolParser::ProtocolParser() :
     noAboutSection(false),
     showAllItems(false),
     nocss(false),
-    tableOfContents(false)
+    tableOfContents(false),
+    qmlEnabled(false)
 {
     controllerSource.setCpp(true);
     controllerHeader.setCpp(true);
@@ -241,14 +242,16 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
     }
 
     // Create the QML source file for the properties view
-    propviewsource.setLicenseText(support.licenseText);
-    propviewsource.setModuleNameAndPath(name + "View", support.outputpath);
-    fileNameList.append(propviewsource.fileName());
-    filePathList.append(propviewsource.filePath());
-    if(propviewsource.isAppending()) {
-        propviewsource.makeLineSeparator();
+    if (qmlEnabled) {
+        propviewsource.setLicenseText(support.licenseText);
+        propviewsource.setModuleNameAndPath(name + "View", support.outputpath);
+        fileNameList.append(propviewsource.fileName());
+        filePathList.append(propviewsource.filePath());
+        if(propviewsource.isAppending()) {
+            propviewsource.makeLineSeparator();
+        }
+        propviewsource.write(getQmlFileBegin());
     }
-    propviewsource.write(getQmlFileBegin());
 
     // Now parse the global structures
     for(int i = 0; i < structures.size(); i++)
@@ -282,29 +285,33 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
         fileNameList.append(module->getMapHeaderFileName());
         filePathList.append(module->getMapHeaderFilePath());
 
-        fileNameList.append(module->getQtPropertiesDefinitionFileName());
-        filePathList.append(module->getQtPropertiesDefinitionFilePath());
+        if (qmlEnabled) {
+            fileNameList.append(module->getQtPropertiesDefinitionFileName());
+            filePathList.append(module->getQtPropertiesDefinitionFilePath());
 
-        // Insert into QML view file the properties of the current module
-        propviewsource.makeLineSeparator();
-        propviewsource.write(module->getQmlStructureComponent());
-        propviewsource.makeLineSeparator();
+            // Insert into QML view file the properties of the current module
+            propviewsource.makeLineSeparator();
+            propviewsource.write(module->getQmlStructureComponent());
+            propviewsource.makeLineSeparator();
+        }
 
     }// for all top level structures
 
-    // Write the QML source file for the properties view
-    propviewsource.write(getQmlFileEnd());
-    propviewsource.flush();
+    if (qmlEnabled) {
+        // Write the QML source file for the properties view
+        propviewsource.write(getQmlFileEnd());
+        propviewsource.flush();
 
-    // Create header and source files that allow to access global structures in QML
-    createControllerSource();
-    createControllerHeader();
+        // Create header and source files that allow to access global structures in QML
+        createControllerSource();
+        createControllerHeader();
 
-    // And record their file name
-    fileNameList.append(controllerSource.fileName());
-    filePathList.append(controllerSource.filePath());
-    fileNameList.append(controllerHeader.fileName());
-    filePathList.append(controllerHeader.filePath());
+        // And record their file name
+        fileNameList.append(controllerSource.fileName());
+        filePathList.append(controllerSource.filePath());
+        fileNameList.append(controllerHeader.fileName());
+        filePathList.append(controllerHeader.filePath());
+    }
 
     // And the global packets. We want to sort the packets into two batches:
     // those packets which can be used by other packets; and those which cannot.
@@ -431,29 +438,32 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
             QFile::copy(sourcePath + "floatspecial.c", support.outputpath + ProtocolFile::tempprefix + "floatspecial.c");
             QFile::copy(sourcePath + "floatspecial.h", support.outputpath + ProtocolFile::tempprefix + "floatspecial.h");
         }
-        fileNameList.append("qmlhelpers.h");
-        filePathList.append(support.outputpath);
-        QFile::copy(sourcePath + "qmlhelpers.h", support.outputpath + ProtocolFile::tempprefix + "qmlhelpers.h");
 
-        fileNameList.append("ProtoGenComboBox.qml");
-        filePathList.append(support.outputpath);
-        QFile::copy(sourcePath + "ProtoGenComboBox.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenComboBox.qml");
+        if (qmlEnabled) {
+            fileNameList.append("qmlhelpers.h");
+            filePathList.append(support.outputpath);
+            QFile::copy(sourcePath + "qmlhelpers.h", support.outputpath + ProtocolFile::tempprefix + "qmlhelpers.h");
 
-        fileNameList.append("ProtoGenNumber.qml");
-        filePathList.append(support.outputpath);
-        QFile::copy(sourcePath + "ProtoGenNumber.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenNumber.qml");
+            fileNameList.append("ProtoGenComboBox.qml");
+            filePathList.append(support.outputpath);
+            QFile::copy(sourcePath + "ProtoGenComboBox.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenComboBox.qml");
 
-        fileNameList.append("ProtoGenSlider.qml");
-        filePathList.append(support.outputpath);
-        QFile::copy(sourcePath + "ProtoGenSlider.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenSlider.qml");
+            fileNameList.append("ProtoGenNumber.qml");
+            filePathList.append(support.outputpath);
+            QFile::copy(sourcePath + "ProtoGenNumber.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenNumber.qml");
 
-        fileNameList.append("ProtoGenSpinBox.qml");
-        filePathList.append(support.outputpath);
-        QFile::copy(sourcePath + "ProtoGenSpinBox.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenSpinBox.qml");
+            fileNameList.append("ProtoGenSlider.qml");
+            filePathList.append(support.outputpath);
+            QFile::copy(sourcePath + "ProtoGenSlider.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenSlider.qml");
 
-        fileNameList.append("ProtoGenSwitch.qml");
-        filePathList.append(support.outputpath);
-        QFile::copy(sourcePath + "ProtoGenSwitch.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenSwitch.qml");
+            fileNameList.append("ProtoGenSpinBox.qml");
+            filePathList.append(support.outputpath);
+            QFile::copy(sourcePath + "ProtoGenSpinBox.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenSpinBox.qml");
+
+            fileNameList.append("ProtoGenSwitch.qml");
+            filePathList.append(support.outputpath);
+            QFile::copy(sourcePath + "ProtoGenSwitch.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenSwitch.qml");
+        }
     }
 
     // Code for testing bitfields

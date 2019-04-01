@@ -160,7 +160,9 @@ void ProtocolStructureModule::parse(void)
     structfile->flush();
 
     // Write to disk QML related files
-    defpropheader.flush();
+    if (parser->hasQmlSupport()) {
+        defpropheader.flush();
+    }
 
     // We don't write the source to disk if we are not encoding or decoding anything
     if(encode || decode)
@@ -420,14 +422,16 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
         header.writeIncludeDirective(structfile->fileName());
 
         // Create header file for exposing classes with properties in QML
-        defpropheader.setLicenseText(support.licenseText);
-        defpropheader.setModuleNameAndPath(defheadermodulename + "_props", support.outputpath);
-        if(defpropheader.isAppending()) {
-            defpropheader.makeLineSeparator();
+        if (parser->hasQmlSupport()) {
+            defpropheader.setLicenseText(support.licenseText);
+            defpropheader.setModuleNameAndPath(defheadermodulename + "_props", support.outputpath);
+            if(defpropheader.isAppending()) {
+                defpropheader.makeLineSeparator();
+            }
+            defpropheader.writeIncludeDirective("qmlhelpers.h");
+            defpropheader.writeIncludeDirective(structfile->fileName());
+            defpropheader.writeIncludeDirective("QQmlEngine", QString(), true, false);
         }
-        defpropheader.writeIncludeDirective("qmlhelpers.h");
-        defpropheader.writeIncludeDirective(structfile->fileName());
-        defpropheader.writeIncludeDirective("QQmlEngine", QString(), true, false);        
     }
 
     // The verify, comparison, print, and map files needs access to the struct file
@@ -471,9 +475,11 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
         structfile->makeLineSeparator();
 
         // Create classes that expose properties in QML
-        defpropheader.makeLineSeparator();
-        defpropheader.write(getQtPropertyClassDeclaration());
-        defpropheader.makeLineSeparator();
+        if (parser->hasQmlSupport()) {
+            defpropheader.makeLineSeparator();
+            defpropheader.write(getQtPropertyClassDeclaration());
+            defpropheader.makeLineSeparator();
+        }
     }
 
     // White space is good
