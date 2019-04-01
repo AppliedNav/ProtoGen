@@ -7,5 +7,10 @@
         <file>prebuiltSources/bitfieldtest.xml</file>
         <file>defaultcss.txt</file>
         <file>prebuiltSources/qmlhelpers.h</file>
+        <file>prebuiltSources/ProtoGenComboBox.qml</file>
+        <file>prebuiltSources/ProtoGenNumber.qml</file>
+        <file>prebuiltSources/ProtoGenSlider.qml</file>
+        <file>prebuiltSources/ProtoGenSpinBox.qml</file>
+        <file>prebuiltSources/ProtoGenSwitch.qml</file>
     </qresource>
 </RCC>

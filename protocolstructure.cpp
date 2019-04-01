@@ -658,7 +658,11 @@ QString ProtocolStructure::getQmlPropertyComponent(const QString &accessor) cons
     QString output;
 
     if(array.isEmpty()) {
-        output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: \"" + name + "\"; units: \"\"; }";
+        output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: \"" + name + "\";";
+        if (!comment.isEmpty()) {
+            output += " comment: \"" + comment + "\";";
+        }
+        output += " }";
     } else if(array2d.isEmpty()) {
         emitWarning("1D arrays are not supported to expose them to QML");
     } else {
