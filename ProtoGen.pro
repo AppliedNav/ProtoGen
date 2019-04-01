@@ -14,6 +14,7 @@ TEMPLATE = app
 
 QT       += core
 QT       += xml
+QT       += qml
 QT       -= gui
 
 CONFIG   += console
