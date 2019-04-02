@@ -160,7 +160,7 @@ void ProtocolStructureModule::parse(void)
     structfile->flush();
 
     // Write to disk QML related files
-    if (parser->hasQmlSupport()) {
+    if (parser->hasUiSupport()) {
         defpropheader.flush();
     }
 
@@ -422,7 +422,7 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
         header.writeIncludeDirective(structfile->fileName());
 
         // Create header file for exposing classes with properties in QML
-        if (parser->hasQmlSupport()) {
+        if (parser->hasUiSupport()) {
             defpropheader.setLicenseText(support.licenseText);
             defpropheader.setModuleNameAndPath(defheadermodulename + "_props", support.outputpath);
             if(defpropheader.isAppending()) {
@@ -475,7 +475,7 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
         structfile->makeLineSeparator();
 
         // Create classes that expose properties in QML
-        if (parser->hasQmlSupport()) {
+        if (parser->hasUiSupport()) {
             defpropheader.makeLineSeparator();
             defpropheader.write(getQtPropertyClassDeclaration());
             defpropheader.makeLineSeparator();

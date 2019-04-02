@@ -151,10 +151,10 @@ public:
     QString getLicenseText() const { return support.licenseText; }
 
     //! Set QML support
-    void setQmlSupport(bool on) {qmlEnabled = on;}
+    void setUiSupport(bool on) {uiEnabled = on;}
 
     //! Return status of QML support
-    bool hasQmlSupport() const { return qmlEnabled; }
+    bool hasUiSupport() const { return uiEnabled; }
 
 protected:
 
@@ -196,7 +196,7 @@ protected:
     bool nocss;         //!< Disable all CSS output
     bool tableOfContents;//!< Enable table of contents
     QString titlePage;  //!< Title page information
-    bool qmlEnabled;    //!< Generate QML related files automagically
+    bool uiEnabled;    //!< Generate QML related files automagically
 
     QStringList filesparsed;
     QList<XMLLineLocator*>lines;

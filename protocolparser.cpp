@@ -32,7 +32,7 @@ ProtocolParser::ProtocolParser() :
     showAllItems(false),
     nocss(false),
     tableOfContents(false),
-    qmlEnabled(false)
+    uiEnabled(false)
 {
     controllerSource.setCpp(true);
     controllerHeader.setCpp(true);
@@ -242,7 +242,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
     }
 
     // Create the QML source file for the properties view
-    if (qmlEnabled) {
+    if (uiEnabled) {
         propviewsource.setLicenseText(support.licenseText);
         propviewsource.setModuleNameAndPath(name + "SwipeView", support.outputpath);
         fileNameList.append(propviewsource.fileName());
@@ -285,7 +285,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
         fileNameList.append(module->getMapHeaderFileName());
         filePathList.append(module->getMapHeaderFilePath());
 
-        if (qmlEnabled) {
+        if (uiEnabled) {
             fileNameList.append(module->getQtPropertiesDefinitionFileName());
             filePathList.append(module->getQtPropertiesDefinitionFilePath());
 
@@ -297,7 +297,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
 
     }// for all top level structures
 
-    if (qmlEnabled) {
+    if (uiEnabled) {
         // Write the QML source file for the properties view
         propviewsource.write(getQmlFileEnd());
         propviewsource.flush();
@@ -439,7 +439,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
             QFile::copy(sourcePath + "floatspecial.h", support.outputpath + ProtocolFile::tempprefix + "floatspecial.h");
         }
 
-        if (qmlEnabled) {
+        if (uiEnabled) {
             fileNameList.append("qmlhelpers.h");
             filePathList.append(support.outputpath);
             QFile::copy(sourcePath + "qmlhelpers.h", support.outputpath + ProtocolFile::tempprefix + "qmlhelpers.h");
