@@ -420,19 +420,19 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
         // In this instance we know that the normal header file needs to include
         // the file with the structure definition
         header.writeIncludeDirective(structfile->fileName());
-
-        // Create header file for exposing classes with properties in QML
-        if (parser->hasUiSupport()) {
-            defpropheader.setLicenseText(support.licenseText);
-            defpropheader.setModuleNameAndPath(defheadermodulename + "_props", support.outputpath);
-            if(defpropheader.isAppending()) {
-                defpropheader.makeLineSeparator();
-            }
-            defpropheader.writeIncludeDirective("qmlhelpers.h");
-            defpropheader.writeIncludeDirective(structfile->fileName());
-            defpropheader.writeIncludeDirective("QQmlEngine", QString(), true, false);
-        }
     }
+
+	// Create header file for exposing classes with properties in QML
+	if (parser->hasUiSupport()) {
+		defpropheader.setLicenseText(support.licenseText);
+		defpropheader.setModuleNameAndPath(moduleName + "_props", support.outputpath);
+		if (defpropheader.isAppending()) {
+			defpropheader.makeLineSeparator();
+		}
+		defpropheader.writeIncludeDirective("qmlhelpers.h");
+		defpropheader.writeIncludeDirective(structfile->fileName());
+		defpropheader.writeIncludeDirective("QQmlEngine", QString(), true, false);
+	}
 
     // The verify, comparison, print, and map files needs access to the struct file
     verifyheaderfile->writeIncludeDirective(structfile->fileName());

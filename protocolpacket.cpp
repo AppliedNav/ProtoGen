@@ -299,6 +299,11 @@ void ProtocolPacket::parse(void)
     else
         source.clear();
 
+	// Write to disk QML related files
+	if (parser->hasUiSupport()) {
+		defpropheader.flush();
+	}
+
     // We don't write the verify files to disk if we are not initializing or verifying anything
     if(hasInit() || hasVerify())
     {

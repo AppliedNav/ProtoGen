@@ -391,6 +391,16 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
         fileNameList.append(packet->getMapHeaderFileName());
         filePathList.append(packet->getMapHeaderFilePath());
 
+		if (uiEnabled) {
+			fileNameList.append(packet->getQtPropertiesDefinitionFileName());
+			filePathList.append(packet->getQtPropertiesDefinitionFilePath());
+
+			// Insert into QML view file the properties of the current module
+			propviewsource.makeLineSeparator();
+			propviewsource.write(packet->getQmlStructureComponent());
+			propviewsource.makeLineSeparator();
+		}
+
     }
 
     // Parse all of the documentation

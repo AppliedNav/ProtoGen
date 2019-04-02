@@ -756,7 +756,7 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
         // Declare our childrens structures first
         for(int i = 0; i < encodables.length(); i++)
         {
-            if(!encodables[i]->isPrimitive())
+            if(!encodables[i]->isNotInMemory())
             {
                 output += encodables[i]->getQtPropertyClassDeclaration();
                 ProtocolFile::makeLineSeparator(output);
@@ -843,7 +843,7 @@ QString ProtocolStructure::getQmlStructureComponent() const
         // Declare our childrens structures first
         for(int i = 0; i < encodables.length(); i++)
         {
-            if(!encodables[i]->isPrimitive())
+            if(!encodables[i]->isNotInMemory())
             {
                 output += encodables[i]->getQmlStructureComponent();
                 ProtocolFile::makeLineSeparator(output);
