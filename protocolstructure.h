@@ -176,7 +176,7 @@ public:
     virtual QString getQtPropertyClassDeclaration() const Q_DECL_OVERRIDE;
 
     //! Get the class name used to expose properties in QML
-    QString getQtPropertyClassName() const;
+	virtual QString getQtPropertyClassName() const;
 
     //! Return the string that represents the QML component declaration for the current structure
     virtual QString getQmlStructureComponent() const Q_DECL_OVERRIDE;

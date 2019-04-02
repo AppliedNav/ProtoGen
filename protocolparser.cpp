@@ -297,22 +297,6 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
 
     }// for all top level structures
 
-    if (uiEnabled) {
-        // Write the QML source file for the properties view
-        propviewsource.write(getQmlFileEnd());
-        propviewsource.flush();
-
-        // Create header and source files that allow to access global structures in QML
-        createControllerSource();
-        createControllerHeader();
-
-        // And record their file name
-        fileNameList.append(controllerSource.fileName());
-        filePathList.append(controllerSource.filePath());
-        fileNameList.append(controllerHeader.fileName());
-        filePathList.append(controllerHeader.filePath());
-    }
-
     // And the global packets. We want to sort the packets into two batches:
     // those packets which can be used by other packets; and those which cannot.
     // This way we can parse the first batch ahead of the second
@@ -402,6 +386,22 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
 		}
 
     }
+
+	if (uiEnabled) {
+		// Write the QML source file for the properties view
+		propviewsource.write(getQmlFileEnd());
+		propviewsource.flush();
+
+		// Create header and source files that allow to access global structures in QML
+		createControllerSource();
+		createControllerHeader();
+
+		// And record their file name
+		fileNameList.append(controllerSource.fileName());
+		filePathList.append(controllerSource.filePath());
+		fileNameList.append(controllerHeader.fileName());
+		filePathList.append(controllerHeader.filePath());
+	}
 
     // Parse all of the documentation
     for(int i=0; i<documents.size(); i++)
@@ -1846,9 +1846,25 @@ QString ProtocolParser::getQtControllerClassDeclaration(void) const
         // Create an instance of the class that represents each global structure as property in QML
         for (int i = 0; i < structures.size(); ++i) {
             const QString propClassName = structures.at(i)->getQtPropertyClassName();
-            output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
-                    ", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
+			if (!propClassName.isEmpty()) {
+				output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
+					", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
+			}
         }
+
+		// Create an instance of the class that represents each packet as property in QML
+		for (int i = 0; i < packets.size(); i++) {
+			ProtocolPacket* packet = packets.at(i);
+
+			if (isFieldSet(packet->getElement(), "useInOtherPackets"))
+				continue;
+
+			const QString propClassName = packet->getQtPropertyClassName();
+			if (!propClassName.isEmpty()) {
+				output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
+					", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
+			}
+		}
 
         // Class ctor to set its name visible in QML
         output += "public:\n";

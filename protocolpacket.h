@@ -36,6 +36,9 @@ public:
     //! Return the extended packet name
     QString extendedName() const { return support.prefix + this->name + support.packetStructureSuffix; }
 
+	//! Get the class name used to expose properties in QML
+	virtual QString getQtPropertyClassName() const Q_DECL_OVERRIDE { return name; }
+
 protected:
 
     //! Create the structure definition code
