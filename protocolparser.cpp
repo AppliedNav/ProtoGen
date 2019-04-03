@@ -1805,6 +1805,7 @@ void ProtocolParser::createControllerHeader(void)
     }
     ProtocolStructureModule* module = structures[0];
     controllerHeader.writeIncludeDirective(module->getQtPropertiesDefinitionFileName());
+	controllerHeader.writeIncludeDirective("qmlhelpers");
     controllerHeader.writeIncludeDirective("QObject", QString(), true, false);
 
     controllerHeader.makeLineSeparator();
@@ -1850,7 +1851,7 @@ QString ProtocolParser::getQtControllerClassDeclaration(void) const
         // Create an instance of the class that represents each global structure as property in QML
         for (int i = 0; i < structures.size(); ++i) {
 			const QString propClassName = structures.at(i)->getQtPropertyClassName();
-			if (!propClassName.isEmpty() && uiEnabled) {
+			if (!propClassName.isEmpty() && structures.at(i)->uiEnabled) {
 				output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
 					", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
 			}
@@ -1864,7 +1865,7 @@ QString ProtocolParser::getQtControllerClassDeclaration(void) const
 				continue;
 
 			const QString propClassName = packet->getQtPropertyClassName();
-			if (!propClassName.isEmpty() && uiEnabled) {
+			if (!propClassName.isEmpty() && packet->uiEnabled) {
 				output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
 					", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
 			}

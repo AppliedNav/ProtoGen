@@ -828,7 +828,6 @@ QString ProtocolStructure::getQtPropertyClassName() const
 {
     QString className = structName;
     className.remove("_t");
-    className += "Prop";//make the class name unique
     return className;
 }
 
