@@ -1803,8 +1803,20 @@ void ProtocolParser::createControllerHeader(void)
     if(controllerHeader.isAppending()) {
         controllerHeader.makeLineSeparator();
     }
-    ProtocolStructureModule* module = structures[0];
-    controllerHeader.writeIncludeDirective(module->getQtPropertiesDefinitionFileName());
+	for (int i = 0; i < structures.size(); i++) {
+		ProtocolStructureModule* module = structures[i];
+		const QString header = module->getQtPropertiesDefinitionFileName();
+		if (!header.isEmpty()) {
+			controllerHeader.writeIncludeDirective(header);
+		}
+	}
+	for (int i = 0; i < packets.size(); i++) {
+		ProtocolPacket* packet = packets.at(i);
+		const QString header = packet->getQtPropertiesDefinitionFileName();
+		if (!header.isEmpty()) {
+			controllerHeader.writeIncludeDirective(header);
+		}
+	}
 	controllerHeader.writeIncludeDirective("qmlhelpers");
     controllerHeader.writeIncludeDirective("QObject", QString(), true, false);
 
@@ -1943,16 +1955,10 @@ QString ProtocolParser::getQtControllerClassDefinition(void) const
 QString ProtocolParser::getQmlFileBegin(void)
 {
     QString contents;
-    static const QString &TAB_IN = ProtocolDocumentation::TAB_IN;
 
     contents += "import QtQuick 2.11\n";
     contents += "import QtQuick.Controls 2.5\n\n";
     contents += "SwipeView {\n";
-    contents += TAB_IN + "id: categoryView\n";
-    contents += TAB_IN + "width: parent.width\n";
-    contents += TAB_IN + "height: 400\n";
-    contents += TAB_IN + "currentIndex: categoryTab.currentIndex\n";
-    contents += TAB_IN + "onCurrentIndexChanged: header.inSync = itemAt(currentIndex).synchro\n\n";
 
     return contents;
 }
