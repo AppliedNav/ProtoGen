@@ -290,9 +290,11 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
             filePathList.append(module->getQtPropertiesDefinitionFilePath());
 
             // Insert into QML view file the properties of the current module
-            propviewsource.makeLineSeparator();
-            propviewsource.write(module->getQmlStructureComponent());
-            propviewsource.makeLineSeparator();
+			if (module->uiEnabled) {
+				propviewsource.makeLineSeparator();
+				propviewsource.write(module->getQmlStructureComponent());
+				propviewsource.makeLineSeparator();
+			}
         }
 
     }// for all top level structures
@@ -380,9 +382,11 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
 			filePathList.append(packet->getQtPropertiesDefinitionFilePath());
 
 			// Insert into QML view file the properties of the current module
-			propviewsource.makeLineSeparator();
-			propviewsource.write(packet->getQmlStructureComponent());
-			propviewsource.makeLineSeparator();
+			if (packet->uiEnabled) {
+				propviewsource.makeLineSeparator();
+				propviewsource.write(packet->getQmlStructureComponent());
+				propviewsource.makeLineSeparator();
+			}
 		}
 
     }
@@ -1845,8 +1849,8 @@ QString ProtocolParser::getQtControllerClassDeclaration(void) const
 
         // Create an instance of the class that represents each global structure as property in QML
         for (int i = 0; i < structures.size(); ++i) {
-            const QString propClassName = structures.at(i)->getQtPropertyClassName();
-			if (!propClassName.isEmpty()) {
+			const QString propClassName = structures.at(i)->getQtPropertyClassName();
+			if (!propClassName.isEmpty() && uiEnabled) {
 				output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
 					", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
 			}
@@ -1860,7 +1864,7 @@ QString ProtocolParser::getQtControllerClassDeclaration(void) const
 				continue;
 
 			const QString propClassName = packet->getQtPropertyClassName();
-			if (!propClassName.isEmpty()) {
+			if (!propClassName.isEmpty() && uiEnabled) {
 				output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
 					", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
 			}

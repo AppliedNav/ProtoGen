@@ -34,7 +34,8 @@ ProtocolStructure::ProtocolStructure(ProtocolParser* parse, QString Parent, Prot
     attriblist()
 {
     // List of attributes understood by ProtocolStructure
-    attriblist << "name" << "title" << "array" << "variableArray" << "array2d" << "variable2dArray" << "dependsOn" << "comment" << "hidden";
+    attriblist << "name" << "title" << "array" << "variableArray" << "array2d" << "variable2dArray" <<
+		"dependsOn" << "comment" << "hidden" << "label" << "ui";
 
 }
 
@@ -114,6 +115,9 @@ void ProtocolStructure::parse(void)
 
     comment = ProtocolParser::reflowComment(ProtocolParser::getAttribute("comment", map));
     hidden = ProtocolParser::isFieldSet("hidden", map);
+
+	label = ProtocolParser::reflowComment(ProtocolParser::getAttribute("label", map));
+    uiEnabled = ProtocolParser::isFieldSet("ui", map);
 
     if(name.isEmpty())
         name = "_unknown";
@@ -859,9 +863,14 @@ QString ProtocolStructure::getQmlStructureComponent() const
             output += " */\n";
         }
 
-        const QString className = getQtPropertyClassName();
+		QString objName = label;
+		if (objName.isEmpty()) {
+			objName = getQtPropertyClassName();
+		}
+		const QString className = getQtPropertyClassName();
+
         output += TAB_IN + "ProtoGenCategory {\n";
-        output += TAB_IN + TAB_IN + "objectName: \"" + className + "\"\n";
+        output += TAB_IN + TAB_IN + "objectName: \"" + objName + "\"\n";
         for(int i = 0; i < encodables.length(); i++) {
             output += TAB_IN + TAB_IN +
                     encodables[i]->getQmlPropertyComponent(QString("controller.") +

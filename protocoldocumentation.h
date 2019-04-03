@@ -57,6 +57,9 @@ public:
     QString title;          //!< The title of this encodable (used for documentation)
     QString comment;        //!< The comment that goes with this encodable
 
+	QString label;			//!< The label of this encodable
+	bool uiEnabled = false;		//!< When set this encodable generates UI code (provided that UI support is enabled from command line)
+
 protected:
     ProtocolSupport support;//!< Information about what is supported
     ProtocolParser* parser; //!< The parser object
