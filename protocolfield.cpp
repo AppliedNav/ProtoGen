@@ -1650,7 +1650,7 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
         emitWarning("2D arrays are not supported to expose them to QML");
     } else if(isArray()) {
         output += "QML_WRITABLE_PROPERTY(QList<" + typeName + ">, " + name + ", " +
-                setter + ", QList<" + typeName + ">())";
+                setter + ")";
     } else {
         const QString actualTypeName = typeName.contains("int")?"int":typeName;
         if (isDefault()) {
@@ -1658,14 +1658,14 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
             if (inMemoryType.isFloat) {
                 output += "_FLOAT";
             }
-            output += "(" + actualTypeName + ", " + name + ", " +
+            output += "_INIT(" + actualTypeName + ", " + name + ", " +
                     setter + ", " + defaultString + ")";
         } else {
             output += "QML_WRITABLE_PROPERTY";
             if (inMemoryType.isFloat) {
                 output += "_FLOAT";
             }
-            output += "_NO_INIT(" + actualTypeName + ", " + name + ", " +
+            output += "(" + actualTypeName + ", " + name + ", " +
                     setter + ")";
         }
     }

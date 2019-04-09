@@ -3,23 +3,7 @@
 
 #include <QObject>
 
-#define QML_WRITABLE_PROPERTY(type, name, setter, defaultValue) \
-    protected: \
-        Q_PROPERTY(type name MEMBER m_##name WRITE setter NOTIFY name##Changed) \
-    public: \
-        void setter(const type &value) { \
-            if (value != m_##name) { \
-                m_##name = value; \
-                emit name##Changed(); \
-            } \
-        } \
-        const type& name() const { return m_##name; } \
-    Q_SIGNALS: \
-        void name##Changed(); \
-    private: \
-        type m_##name = defaultValue;
-
-#define QML_WRITABLE_PROPERTY_NO_INIT(type, name, setter) \
+#define QML_WRITABLE_PROPERTY(type, name, setter) \
     protected: \
         Q_PROPERTY(type name MEMBER m_##name WRITE setter NOTIFY name##Changed) \
     public: \
@@ -35,12 +19,12 @@
     private: \
         type m_##name;
 
-#define QML_WRITABLE_PROPERTY_FLOAT(type, name, setter, defaultValue) \
+#define QML_WRITABLE_PROPERTY_INIT(type, name, setter, defaultValue) \
     protected: \
         Q_PROPERTY(type name MEMBER m_##name WRITE setter NOTIFY name##Changed) \
     public: \
-        void setter(type value) { \
-            if (!qFuzzyCompare(value, m_##name)) { \
+        void setter(const type &value) { \
+            if (value != m_##name) { \
                 m_##name = value; \
                 emit name##Changed(); \
             } \
@@ -51,7 +35,7 @@
     private: \
         type m_##name = defaultValue;
 
-#define QML_WRITABLE_PROPERTY_FLOAT_NO_INIT(type, name, setter) \
+#define QML_WRITABLE_PROPERTY_FLOAT(type, name, setter) \
     protected: \
         Q_PROPERTY(type name MEMBER m_##name WRITE setter NOTIFY name##Changed) \
     public: \
@@ -66,6 +50,22 @@
         void name##Changed(); \
     private: \
         type m_##name;
+
+#define QML_WRITABLE_PROPERTY_FLOAT_INIT(type, name, setter, defaultValue) \
+    protected: \
+        Q_PROPERTY(type name MEMBER m_##name WRITE setter NOTIFY name##Changed) \
+    public: \
+        void setter(type value) { \
+            if (!qFuzzyCompare(value, m_##name)) { \
+                m_##name = value; \
+                emit name##Changed(); \
+            } \
+        } \
+        const type& name() const { return m_##name; } \
+    Q_SIGNALS: \
+        void name##Changed(); \
+    private: \
+        type m_##name = defaultValue;
 
 #define QML_READABLE_PROPERTY(type, name, setter, defaultValue) \
     protected: \

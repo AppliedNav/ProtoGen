@@ -1799,7 +1799,7 @@ void ProtocolParser::createControllerHeader(void)
     }
 
     controllerHeader.setLicenseText(support.licenseText);
-    controllerHeader.setModuleNameAndPath(name.toLower() + "_parameters_controller", support.outputpath);
+    controllerHeader.setModuleNameAndPath(name.toLower() + "_controller", support.outputpath);
     if(controllerHeader.isAppending()) {
         controllerHeader.makeLineSeparator();
     }
