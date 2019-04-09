@@ -1773,7 +1773,7 @@ void ProtocolParser::createControllerSource(void)
     }
 
     controllerSource.setLicenseText(support.licenseText);
-    controllerSource.setModuleNameAndPath(name.toLower() + "_parameters_controller", support.outputpath);
+    controllerSource.setModuleNameAndPath(name.toLower() + "_controller", support.outputpath);
     if(controllerSource.isAppending()) {
         controllerSource.makeLineSeparator();
     }
