@@ -22,6 +22,7 @@ Row {
 
     Label {
         id: protoGenSliderLabel
+        clip: true
         font.pointSize: control.fontSize
         width: parent.width/3-4
         height: parent.height
@@ -58,6 +59,7 @@ Row {
 
     Label {
         id: protoGenSliderUnits
+        clip: true
         font.pointSize: control.fontSize
         width: parent.width/6-4
         height: parent.height

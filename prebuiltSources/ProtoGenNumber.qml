@@ -19,6 +19,7 @@ Row {
 
     Label {
         id: protoGenNumberLabel
+        clip: true
         font.pointSize: control.fontSize
         width: control.width/3-control.spacing
         height: control.height
@@ -58,6 +59,7 @@ Row {
 
     Label {
         id: protoGenNumberUnits
+        clip: true
         font.pointSize: control.fontSize
         width: parent.width/6-parent.spacing
         height: parent.height

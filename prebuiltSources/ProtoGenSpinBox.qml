@@ -21,6 +21,7 @@ Row {
 
     Label {
         id: protoGenSpinLabel
+        clip: true
         font.pointSize: control.fontSize
         width: parent.width/3-4
         height: parent.height
@@ -49,6 +50,7 @@ Row {
 
     Label {
         id: protoGenSpinUnits
+        clip: true
         font.pointSize: control.fontSize
         width: parent.width/6-4
         height: parent.height

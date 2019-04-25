@@ -19,6 +19,7 @@ Row {
 
     Label {
         id: protoGenComboLabel
+        clip: true
         text: label
         font.pointSize: fontSize
         width: parent.width/3-10

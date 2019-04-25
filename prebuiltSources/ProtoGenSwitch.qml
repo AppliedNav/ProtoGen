@@ -17,6 +17,7 @@ Row {
 
     Label {
         id: protoGenSwitchLabel
+        clip: true
         font.pointSize: control.fontSize
         width: parent.width/3-4
         height: parent.height
