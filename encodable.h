@@ -154,6 +154,9 @@ public:
     //! True if this encodable has a default value
     virtual bool isDefault(void) const {return false;}
 
+    //! True if this encodable is a struct
+    virtual bool isStruct(void) const {return false;}
+
     //! Get the maximum number of temporary bytes needed for a bitfield group
     virtual void getBitfieldGroupNumBytes(int* num) const {Q_UNUSED(num);}
 

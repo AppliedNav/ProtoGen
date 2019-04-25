@@ -139,6 +139,9 @@ public:
     //! True if this encodable has a default value
     virtual bool isDefault(void) const Q_DECL_OVERRIDE {return !defaultString.isEmpty();}
 
+    //! True if this encodable is a struct
+    virtual bool isStruct(void) const Q_DECL_OVERRIDE {return encodedType.isStruct;}
+
     //! Get the maximum number of temporary bytes needed for a bitfield group
     virtual void getBitfieldGroupNumBytes(int* num) const Q_DECL_OVERRIDE;
 

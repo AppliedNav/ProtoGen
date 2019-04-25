@@ -795,6 +795,9 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
         output += TAB_IN + "void setData(const " + structName + "* pData) {\n";
         output += TAB_IN + TAB_IN + "if (nullptr != pData) {\n";
         for(int i = 0; i < encodables.length(); i++) {
+            if (encodables[i]->isStruct()) {
+                continue;
+            }
             const QString &variableName = encodables[i]->name;
             output += TAB_IN + TAB_IN + TAB_IN + "set" + variableName.at(0).toUpper() +
                     variableName.mid(1) + "(pData->" + variableName + ");\n";
@@ -804,6 +807,9 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
         output += TAB_IN + "void getData(" + structName + "* pData) {\n";
         output += TAB_IN + TAB_IN + "if (nullptr != pData) {\n";
         for(int i = 0; i < encodables.length(); i++) {
+            if (encodables[i]->isStruct()) {
+                continue;
+            }
             const QString &variableName = encodables[i]->name;
             output += TAB_IN + TAB_IN + TAB_IN + "pData->" + variableName + " = " +
                     variableName + "();\n";

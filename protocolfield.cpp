@@ -1651,7 +1651,7 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
     } else if(isArray()) {
         output += "QML_WRITABLE_PROPERTY(QList<" + typeName + ">, " + name + ", " +
                 setter + ")";
-    } else {
+    } else if (!isStruct()) {
         const QString actualTypeName = typeName.contains("int")?"int":typeName;
         if (isDefault()) {
             output += "QML_WRITABLE_PROPERTY";
@@ -1668,7 +1668,9 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
             output += "(" + actualTypeName + ", " + name + ", " +
                     setter + ")";
         }
-    }
+	} else {
+		emitWarning("Structs are not supported to define them as QML properties");
+	}
 
     if(comment.isEmpty())
     {
@@ -1697,7 +1699,7 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor) const
 {
     QString output;
 
-    if(isNotInMemory())
+    if(isNotInMemory() || isStruct())
         return output;
 
     if(is2dArray()) {
