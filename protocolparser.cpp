@@ -1834,7 +1834,7 @@ void ProtocolParser::createControllerHeader(void)
  */
 QString ProtocolParser::getQtControllerClassName(void) const
 {
-    return name + "ParametersController";
+    return name + "Controller";
 }
 
 /*!
@@ -1958,7 +1958,20 @@ QString ProtocolParser::getQmlFileBegin(void)
 
     contents += "import QtQuick 2.11\n";
     contents += "import QtQuick.Controls 2.5\n\n";
-    contents += "SwipeView {\n";
+
+    contents += "Flickable {\n";
+    contents += ProtocolDocumentation::TAB_IN + "property alias currentIndex: categorySwipeView.currentIndex\n";
+    contents += ProtocolDocumentation::TAB_IN + "property alias count: categorySwipeView.count\n";
+    contents += ProtocolDocumentation::TAB_IN + "function itemAt(i) { return categorySwipeView.itemAt(i) }\n\n";
+    contents += ProtocolDocumentation::TAB_IN + "ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }\n";
+    contents += ProtocolDocumentation::TAB_IN + "clip: true\n";
+    contents += ProtocolDocumentation::TAB_IN + "contentHeight: itemAt(currentIndex).childrenRect.height\n";
+    contents += ProtocolDocumentation::TAB_IN + "onCurrentIndexChanged: contentHeight = itemAt(currentIndex).childrenRect.height\n\n";
+
+    contents += ProtocolDocumentation::TAB_IN + "SwipeView {\n";
+    contents += ProtocolDocumentation::TAB_IN + ProtocolDocumentation::TAB_IN + "id: categorySwipeView\n";
+    contents += ProtocolDocumentation::TAB_IN + ProtocolDocumentation::TAB_IN + "anchors.fill: parent\n";
+    contents += ProtocolDocumentation::TAB_IN + ProtocolDocumentation::TAB_IN + "interactive: false\n";
 
     return contents;
 }
@@ -1969,7 +1982,8 @@ QString ProtocolParser::getQmlFileEnd(void)
 {
     QString contents;
 
-    contents += "} // SwipeView\n";
+    contents += ProtocolDocumentation::TAB_IN + "} // SwipeView\n";
+    contents += "} // Flickable\n";
 
     return contents;
 }

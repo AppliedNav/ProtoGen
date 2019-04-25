@@ -868,15 +868,15 @@ QString ProtocolStructure::getQmlStructureComponent() const
 		}
 		const QString className = getQtPropertyClassName();
 
-        output += TAB_IN + "ProtoGenCategory {\n";
-        output += TAB_IN + TAB_IN + "objectName: \"" + objName + "\"\n";
+        output += TAB_IN + TAB_IN + "ProtoGenCategory {\n";
+        output += TAB_IN + TAB_IN + TAB_IN + "objectName: \"" + objName + "\"\n";
         for(int i = 0; i < encodables.length(); i++) {
-            output += TAB_IN + TAB_IN +
+            output += TAB_IN + TAB_IN + TAB_IN +
                     encodables[i]->getQmlPropertyComponent(QString("controller.") +
                                                            className.at(0).toLower() +
                                                            className.mid(1));
         }
-        output += TAB_IN + "}\n\n";
+        output += TAB_IN + TAB_IN + "}\n\n";
 
     }// if we have some data to encode
 

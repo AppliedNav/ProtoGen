@@ -1701,9 +1701,9 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor) const
         return output;
 
     if(is2dArray()) {
-        emitWarning("2D arrays are not supported to define them as components QML");
+        emitWarning("2D arrays are not supported to define them as QML components");
     } else if(isArray()) {
-        emitWarning("1D arrays are not supported to define them as components QML");
+        emitWarning("1D arrays are not supported to define them as QML components");
     } else {
         output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: \"" + name + "\";";
         const int index = extraInfoNames.indexOf("Units");
