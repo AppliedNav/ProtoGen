@@ -6,7 +6,7 @@ Row {
     id: control
 
     property alias val: protoGenComboValue.currentIndex
-    property var options: ["First", "Second"]
+    property alias options: protoGenComboValue.model
 
     property alias label: protoGenComboLabel.text
     property string comment: ""
@@ -14,20 +14,21 @@ Row {
     readonly property int fontSize: 10
 
     width: parent.width
-    height: 24
+    height: 48
     spacing: 10
 
     Label {
         id: protoGenComboLabel
-        clip: true
         text: label
         font.pointSize: fontSize
         width: parent.width/3-10
         height: parent.height
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignRight
-        ToolTip.text: control.comment
-        ToolTip.visible: ("" !== control.comment) ? mouseArea.containsMouse : false
+        ToolTip {
+            text: control.comment
+            visible: ("" !== control.comment) ? mouseArea.containsMouse : false
+        }
         MouseArea {
             id: mouseArea
             anchors.fill: parent

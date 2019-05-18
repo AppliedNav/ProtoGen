@@ -25,8 +25,10 @@ Row {
         height: control.height
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignRight
-        ToolTip.text: control.comment
-        ToolTip.visible: ("" !== control.comment) ? mouseArea.containsMouse : false
+        ToolTip {
+            text: control.comment
+            visible: ("" !== control.comment) ? mouseArea.containsMouse : false
+        }
         MouseArea {
             id: mouseArea
             anchors.fill: parent
@@ -65,5 +67,15 @@ Row {
         height: parent.height
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
+        elide: Text.ElideRight
+        MouseArea {
+            id: unitsMouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+        }
+        ToolTip {
+            text: protoGenNumberUnits.text
+            visible: protoGenNumberUnits.truncated && unitsMouseArea.containsMouse
+        }
     }
 }

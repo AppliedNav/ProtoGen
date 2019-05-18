@@ -12,5 +12,6 @@
         <file>prebuiltSources/ProtoGenSlider.qml</file>
         <file>prebuiltSources/ProtoGenSpinBox.qml</file>
         <file>prebuiltSources/ProtoGenSwitch.qml</file>
+        <file>prebuiltSources/ProtoGenSeparator.qml</file>
     </qresource>
 </RCC>

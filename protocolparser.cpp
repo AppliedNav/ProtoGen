@@ -454,29 +454,25 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
         }
 
         if (uiEnabled) {
-            fileNameList.append("qmlhelpers.h");
-            filePathList.append(support.outputpath);
-            QFile::copy(sourcePath + "qmlhelpers.h", support.outputpath + ProtocolFile::tempprefix + "qmlhelpers.h");
-
-            fileNameList.append("ProtoGenComboBox.qml");
-            filePathList.append(support.outputpath);
-            QFile::copy(sourcePath + "ProtoGenComboBox.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenComboBox.qml");
-
-            fileNameList.append("ProtoGenNumber.qml");
-            filePathList.append(support.outputpath);
-            QFile::copy(sourcePath + "ProtoGenNumber.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenNumber.qml");
-
-            fileNameList.append("ProtoGenSlider.qml");
-            filePathList.append(support.outputpath);
-            QFile::copy(sourcePath + "ProtoGenSlider.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenSlider.qml");
-
-            fileNameList.append("ProtoGenSpinBox.qml");
-            filePathList.append(support.outputpath);
-            QFile::copy(sourcePath + "ProtoGenSpinBox.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenSpinBox.qml");
-
-            fileNameList.append("ProtoGenSwitch.qml");
-            filePathList.append(support.outputpath);
-            QFile::copy(sourcePath + "ProtoGenSwitch.qml", support.outputpath + ProtocolFile::tempprefix + "ProtoGenSwitch.qml");
+            static const char *fileNames[] = {
+                "qmlhelpers.h",
+                "ProtoGenCategory.qml",
+                "ProtoGenComboBox.qml",
+                "ProtoGenControls.qml",
+                "ProtoGenNumber.qml",
+                "ProtoGenNumberArray.qml",
+                "ProtoGenSeparator.qml",
+                "ProtoGenSlider.qml",
+                "ProtoGenSpinBox.qml",
+                "ProtoGenSwitch.qml"
+            };
+            for (size_t i = 0; i < sizeof(fileNames)/sizeof(fileNames[0]); ++i) {
+                fileNameList.append(fileNames[i]);
+                filePathList.append(support.outputpath);
+                QFile::copy(sourcePath + fileNames[i],
+                            support.outputpath + ProtocolFile::tempprefix +
+                            fileNames[i]);
+            }
         }
     }
 

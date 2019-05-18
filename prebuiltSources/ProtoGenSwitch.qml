@@ -17,14 +17,15 @@ Row {
 
     Label {
         id: protoGenSwitchLabel
-        clip: true
         font.pointSize: control.fontSize
         width: parent.width/3-4
         height: parent.height
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignRight
-        ToolTip.text: control.comment
-        ToolTip.visible: ("" !== control.comment) ? mouseArea.containsMouse : false
+        ToolTip {
+            text: control.comment
+            visible: ("" !== control.comment) ? mouseArea.containsMouse : false
+        }
         MouseArea {
             id: mouseArea
             anchors.fill: parent
