@@ -868,7 +868,7 @@ QString ProtocolStructure::getQmlStructureComponent() const
             output += " */\n";
         }
 
-		QString objName = label;
+        QString objName = title;
 		if (objName.isEmpty()) {
 			objName = getQtPropertyClassName();
 		}
