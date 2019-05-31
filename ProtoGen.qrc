@@ -7,11 +7,16 @@
         <file>prebuiltSources/bitfieldtest.xml</file>
         <file>defaultcss.txt</file>
         <file>prebuiltSources/qmlhelpers.h</file>
+        <file>prebuiltSources/ProtoGenCategory.qml</file>
+        <file>prebuiltSources/ProtoGenCategoryRow.qml</file>
         <file>prebuiltSources/ProtoGenComboBox.qml</file>
+        <file>prebuiltSources/ProtoGenControls.qml</file>
         <file>prebuiltSources/ProtoGenNumber.qml</file>
+        <file>prebuiltSources/ProtoGenNumberArray.qml</file>
+        <file>prebuiltSources/ProtoGenNumberCol.qml</file>
+        <file>prebuiltSources/ProtoGenSeparator.qml</file>
         <file>prebuiltSources/ProtoGenSlider.qml</file>
         <file>prebuiltSources/ProtoGenSpinBox.qml</file>
         <file>prebuiltSources/ProtoGenSwitch.qml</file>
-        <file>prebuiltSources/ProtoGenSeparator.qml</file>
     </qresource>
 </RCC>
