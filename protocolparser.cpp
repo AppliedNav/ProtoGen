@@ -457,10 +457,12 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
             static const char *fileNames[] = {
                 "qmlhelpers.h",
                 "ProtoGenCategory.qml",
+				"ProtoGenCategoryRow.qml",
                 "ProtoGenComboBox.qml",
                 "ProtoGenControls.qml",
                 "ProtoGenNumber.qml",
                 "ProtoGenNumberArray.qml",
+				"ProtoGenNumberCol.qml",
                 "ProtoGenSeparator.qml",
                 "ProtoGenSlider.qml",
                 "ProtoGenSpinBox.qml",
