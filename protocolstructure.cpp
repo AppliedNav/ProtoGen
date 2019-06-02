@@ -117,7 +117,9 @@ void ProtocolStructure::parse(void)
     hidden = ProtocolParser::isFieldSet("hidden", map);
 
 	label = ProtocolParser::reflowComment(ProtocolParser::getAttribute("label", map));
-    uiEnabled = ProtocolParser::isFieldSet("ui", map);
+	if (!uiEnabled) {
+		uiEnabled = ProtocolParser::isFieldSet("ui", map);
+	}
 
     if(name.isEmpty())
         name = "_unknown";

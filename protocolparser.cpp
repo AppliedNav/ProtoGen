@@ -14,6 +14,7 @@
 #include <QDateTime>
 #include <QStringList>
 #include <QProcess>
+#include <QSet>
 #include <iostream>
 
 // The version of the protocol generator is set here
@@ -199,6 +200,11 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
 
     // Finally the main file
     parseFile(filename);
+
+	// Preprocess packets in order to output code for UI generation
+	if (uiEnabled) {
+		preprocessPackets();
+	}
 
     // This is a resource file for bitfield testing
     if(support.bitfieldtest && support.bitfield)
@@ -506,6 +512,70 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
     return true;
 
 }// ProtocolParser::parse
+
+
+/*!
+ * Search and set uiEnabled flag for struct with name in argument.
+ * \param curStructName struct name to search for
+ * \return pointer to found struct or nullptr
+ */
+ProtocolStructureModule* ProtocolParser::setUiEnabledForStruct(const QString &curStructName)
+{
+	if (!curStructName.isEmpty()) {
+		for (int i = 0; i < structures.size(); i++) {
+			ProtocolStructureModule* module = structures.at(i);
+			const QDomElement& elem = module->getElement();
+			const QString structName = elem.attribute("name");
+			if (structName == curStructName) {
+				module->uiEnabled = true;
+				return module;
+			}
+		}
+	}
+	return nullptr;
+}
+
+
+/*!
+ * Search structs contained in current struct and apply setUiEnabledForStruct
+ * \param curStruct struct object to search in for sub structures
+ */
+void ProtocolParser::searchStruct(ProtocolStructureModule* curStruct)
+{
+	if (nullptr != curStruct) {
+		const QDomElement& elem = curStruct->getElement();
+		for (QDomNode n = elem.firstChild(); !n.isNull(); n = n.nextSibling()) {
+			const QDomElement& subElem = n.toElement();
+			const QString typeName = subElem.nodeName();
+			if (0 == typeName.compare("Data", Qt::CaseInsensitive)) {
+				QString structName = subElem.attribute("struct");
+				if (structName.isEmpty()) {
+					structName = subElem.attribute("structure");
+				}
+				curStruct = setUiEnabledForStruct(structName);
+				searchStruct(curStruct);
+			}
+		}
+	}
+}
+
+/*!
+ * Parses packets in order to learn what structures
+ * need to be exposed in QML.
+ */
+void ProtocolParser::preprocessPackets()
+{
+    QSet<QString> structNameList;
+	for (int i = 0; i < packets.size(); i++) {
+		ProtocolPacket* packet = packets.at(i);
+		//at this point the packet is not yet parsed, so we rely on our own parser
+		const QDomElement& elem = packet->getElement();
+		const QString uiEnabled = elem.attribute("ui");
+		if (0 == uiEnabled.compare("true", Qt::CaseInsensitive)) {
+			searchStruct(packet);
+		}
+	}
+}
 
 
 /*!
