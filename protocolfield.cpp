@@ -1669,7 +1669,8 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
                     setter + ")";
         }
 	} else {
-		emitWarning("Structs are not supported to define them as QML properties");
+        output += "QML_WRITABLE_PROPERTY_PTR(" + typeName.split("_t").at(0) +
+                ", " + name + ", " + typeName + ", " + setter + ")";
 	}
 
     if(comment.isEmpty())
