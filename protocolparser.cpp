@@ -1295,7 +1295,6 @@ QString ProtocolParser::getEnumerationNameForEnumValue(const QString& text) cons
     }
 
     return QString();
-
 }
 
 
@@ -1326,7 +1325,31 @@ QString ProtocolParser::getEnumerationValueComment(const QString& name) const
     }
 
     return comment;
+}
 
+
+/*!
+ * Find the enumeration value with this name and return its actual value, or -1.
+ * This will search all the enumerations that the parser knows about to
+ * find the enumeration value.
+ * \param name is the name of the enumeration value to find
+ * \return the actual value of the name enumeration element, or -1
+ */
+int ProtocolParser::getEnumerationNumberForEnumValue(const QString& text) const
+{
+	for (int i = 0; i < globalEnums.size(); i++)
+	{
+		if (globalEnums.at(i)->isEnumerationValue(text))
+			return globalEnums.at(i)->getEnumerationValueNumber(text);
+	}
+
+	for (int i = 0; i < enums.size(); i++)
+	{
+		if (enums.at(i)->isEnumerationValue(text))
+			return enums.at(i)->getEnumerationValueNumber(text);
+	}
+
+	return -1;
 }
 
 

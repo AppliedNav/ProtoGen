@@ -774,6 +774,26 @@ QString EnumCreator::getEnumerationValueComment(const QString& name) const
 
 
 /*!
+ * Find the enumeration value with this name and return its actual value or -1
+ * \param name is the name of the enumeration value to find
+ * \return the actual value or -1 if name is not found
+ */
+int EnumCreator::getEnumerationValueNumber(const QString& name) const
+{
+	for (auto element : elements)
+	{
+		if (name.compare(element.getName()) == 0) {
+			bool ok = false;
+			const int val = element.number.toInt(&ok);
+			return ok ? val : -1;
+		}
+	}
+
+	return -1;
+}
+
+
+/*!
  * Determine if text is part of an enumeration. This will compare against all
  * elements in this enumeration and return true if any of them match.
  * \param text is the enumeration value string to compare.

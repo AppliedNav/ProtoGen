@@ -1655,11 +1655,22 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
         } else {
 			//length of the array
 			bool ok = false;
-			const int arrLen = array.toInt(&ok);
+			int arrLen = array.toInt(&ok);
+			if (!ok) {
+				arrLen = parser->getEnumerationNumberForEnumValue(array);
+				ok = (-1 < arrLen);
+			}
 			if (ok) {
+				const QString typeNameProp = typeName.split('_').at(0);
 				for (int i = 0; i < arrLen; ++i) {
-					output += "QML_WRITABLE_PROPERTY(QList<" + typeName + ">, " + name + ", " +
-						setter + ")";
+					if (0 < i) {
+						output += TAB_IN;
+					}
+					output += "QML_WRITABLE_PROPERTY_PTR(" + typeNameProp + ", " + name + QString::number(i) +
+						", " + typeName + ", " + setter + QString::number(i) + ")";
+					if (i < (arrLen - 1)) {
+						output += "\n";
+					}
 				}
 			} else {
                 emitWarning("Array length is not an int" + array);

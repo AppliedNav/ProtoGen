@@ -106,6 +106,9 @@ public:
     //! Find the enumeration value with this name and return its comment, or an empty string
     QString getEnumerationValueComment(const QString& name) const;
 
+	//! Find the enumeration value with this name and return its actual value or -1
+	int getEnumerationValueNumber(const QString& name) const;
+
     //! Determine if text is an enumeration name
     bool isEnumerationValue(const QString& text) const;
 

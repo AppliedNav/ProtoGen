@@ -115,6 +115,9 @@ public:
     //! Find the enumeration with this name and return its comment, or an empty string
     QString getEnumerationValueComment(const QString& name) const;
 
+	//! Find the enumeration with this name and return its actual value or -1
+	int getEnumerationNumberForEnumValue(const QString& text) const;
+
     //! Find the global structure point for a specific type
     const ProtocolStructureModule* lookUpStructure(const QString& typeName) const;
 
