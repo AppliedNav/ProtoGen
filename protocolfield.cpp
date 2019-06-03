@@ -1649,8 +1649,22 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
     if(is2dArray()) {
         emitWarning("2D arrays are not supported to expose them to QML");
     } else if(isArray()) {
-        output += "QML_WRITABLE_PROPERTY(QList<" + typeName + ">, " + name + ", " +
-                setter + ")";
+        if ("float" == typeName) {
+            output += "QML_WRITABLE_PROPERTY_ARRAY_FLOAT(" + name + ", " +
+                    setter + ", " + array + ")";
+        } else {
+			//length of the array
+			bool ok = false;
+			const int arrLen = array.toInt(&ok);
+			if (ok) {
+				for (int i = 0; i < arrLen; ++i) {
+					output += "QML_WRITABLE_PROPERTY(QList<" + typeName + ">, " + name + ", " +
+						setter + ")";
+				}
+			} else {
+                emitWarning("Array length is not an int" + array);
+			}
+        }
     } else if (!isStruct()) {
         const QString actualTypeName = typeName.contains("int")?"int":typeName;
         if (isDefault()) {
