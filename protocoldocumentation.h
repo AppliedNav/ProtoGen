@@ -59,6 +59,7 @@ public:
 
 	QString label;			//!< The label of this encodable
 	bool uiEnabled = false;		//!< When set this encodable generates UI code (provided that UI support is enabled from command line)
+    bool propsEnabled = false;  //!< Generate classes that expose C++ properties in QML without generating QML code
 
 protected:
     ProtocolSupport support;//!< Information about what is supported

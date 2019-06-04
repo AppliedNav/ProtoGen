@@ -117,9 +117,7 @@ void ProtocolStructure::parse(void)
     hidden = ProtocolParser::isFieldSet("hidden", map);
 
 	label = ProtocolParser::reflowComment(ProtocolParser::getAttribute("label", map));
-	if (!uiEnabled) {
-		uiEnabled = ProtocolParser::isFieldSet("ui", map);
-	}
+    uiEnabled = ProtocolParser::isFieldSet("ui", map);
 
     if(name.isEmpty())
         name = "_unknown";
@@ -799,25 +797,33 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
         for(int i = 0; i < encodables.length(); i++) {
             const QString &variableName = encodables[i]->name;
             if(encodables[i]->isArray()) {
-                //length of the array
-                const auto &array = encodables[i]->array;
-                bool ok = false;
-                int arrLen = array.toInt(&ok);
-                if (!ok) {
-                    arrLen = parser->getEnumerationNumberForEnumValue(array);
-                    ok = (-1 < arrLen);
-                }
-                if (ok) {
-                    for (int i = 0; i < arrLen; ++i) {
-                        const auto num = QString::number(i);
-                        output += TAB_IN + TAB_IN + TAB_IN + "set" +
-                                variableName.at(0).toUpper()
-                                + variableName.mid(1) + num +
-                                "(pData->" + variableName + " + " +
-                                num + ");\n";
-                    }
+                if ("float" == encodables[i]->typeName) {
+                    output += TAB_IN + TAB_IN + TAB_IN + "set" +
+                            variableName.at(0).toUpper()
+                            + variableName.mid(1) +
+                            "(pData->" + variableName +
+                            ", ARRAY_SIZE(pData->" + variableName + "));\n";
                 } else {
-                    emitWarning("Array length is not an int" + array);
+                    //length of the array
+                    const auto &array = encodables[i]->array;
+                    bool ok = false;
+                    int arrLen = array.toInt(&ok);
+                    if (!ok) {
+                        arrLen = parser->getEnumerationNumberForEnumValue(array);
+                        ok = (-1 < arrLen);
+                    }
+                    if (ok) {
+                        for (int i = 0; i < arrLen; ++i) {
+                            const auto num = QString::number(i);
+                            output += TAB_IN + TAB_IN + TAB_IN + "set" +
+                                    variableName.at(0).toUpper()
+                                    + variableName.mid(1) + num +
+                                    "(pData->" + variableName + " + " +
+                                    num + ");\n";
+                        }
+                    } else {
+                        emitWarning("Array length is not an int" + array);
+                    }
                 }
             } else {
                 output += TAB_IN + TAB_IN + TAB_IN + "set" +
@@ -836,24 +842,31 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
         for(int i = 0; i < encodables.length(); i++) {
             const QString &variableName = encodables[i]->name;
             if(encodables[i]->isArray()) {
-                //length of the array
-                const auto &array = encodables[i]->array;
-                bool ok = false;
-                int arrLen = array.toInt(&ok);
-                if (!ok) {
-                    arrLen = parser->getEnumerationNumberForEnumValue(array);
-                    ok = (-1 < arrLen);
-                }
-                if (ok) {
-                    for (int i = 0; i < arrLen; ++i) {
-                        const auto num = QString::number(i);
-                        output += TAB_IN + TAB_IN + TAB_IN +
-                                variableName + num +
-                                "(pData->" + variableName + " + " +
-                                num + ");\n";
-                    }
+                if ("float" == encodables[i]->typeName) {
+                    output += TAB_IN + TAB_IN + TAB_IN +
+                            variableName +
+                            "(pData->" + variableName +
+                            ", ARRAY_SIZE(pData->" + variableName + "));\n";
                 } else {
-                    emitWarning("Array length is not an int" + array);
+                    //length of the array
+                    const auto &array = encodables[i]->array;
+                    bool ok = false;
+                    int arrLen = array.toInt(&ok);
+                    if (!ok) {
+                        arrLen = parser->getEnumerationNumberForEnumValue(array);
+                        ok = (-1 < arrLen);
+                    }
+                    if (ok) {
+                        for (int i = 0; i < arrLen; ++i) {
+                            const auto num = QString::number(i);
+                            output += TAB_IN + TAB_IN + TAB_IN +
+                                    variableName + num +
+                                    "(pData->" + variableName + " + " +
+                                    num + ");\n";
+                        }
+                    } else {
+                        emitWarning("Array length is not an int" + array);
+                    }
                 }
             } else {
                 output += TAB_IN + TAB_IN + TAB_IN;
