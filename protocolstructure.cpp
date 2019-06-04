@@ -793,18 +793,41 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
                 className + "\");\n";
         output += TAB_IN + "}\n";
 
-        // Setter and geter for all data members
+        // Setter and getter for all data members
         output += TAB_IN + "void setData(const " + structName + "* pData) {\n";
         output += TAB_IN + TAB_IN + "if (nullptr != pData) {\n";
         for(int i = 0; i < encodables.length(); i++) {
             const QString &variableName = encodables[i]->name;
-            output += TAB_IN + TAB_IN + TAB_IN + "set" +
-                    variableName.at(0).toUpper()
-                    + variableName.mid(1) + "(";
-            if (encodables[i]->isStruct()) {
-                output += "&";
+            if(encodables[i]->isArray()) {
+                //length of the array
+                const auto &array = encodables[i]->array;
+                bool ok = false;
+                int arrLen = array.toInt(&ok);
+                if (!ok) {
+                    arrLen = parser->getEnumerationNumberForEnumValue(array);
+                    ok = (-1 < arrLen);
+                }
+                if (ok) {
+                    for (int i = 0; i < arrLen; ++i) {
+                        const auto num = QString::number(i);
+                        output += TAB_IN + TAB_IN + TAB_IN + "set" +
+                                variableName.at(0).toUpper()
+                                + variableName.mid(1) + num +
+                                "(pData->" + variableName + " + " +
+                                num + ");\n";
+                    }
+                } else {
+                    emitWarning("Array length is not an int" + array);
+                }
+            } else {
+                output += TAB_IN + TAB_IN + TAB_IN + "set" +
+                        variableName.at(0).toUpper()
+                        + variableName.mid(1) + "(";
+                if (encodables[i]->isStruct()) {
+                    output += "&";
+                }
+                output += "pData->" + variableName + ");\n";
             }
-            output += "pData->" + variableName + ");\n";
         }
         output += TAB_IN + TAB_IN + "}\n";
         output += TAB_IN + "}\n";
@@ -812,12 +835,34 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
         output += TAB_IN + TAB_IN + "if (nullptr != pData) {\n";
         for(int i = 0; i < encodables.length(); i++) {
             const QString &variableName = encodables[i]->name;
-            output += TAB_IN + TAB_IN + TAB_IN;
-            if (encodables[i]->isStruct()) {
-                output += variableName + "(&pData->" + variableName + ");\n";
+            if(encodables[i]->isArray()) {
+                //length of the array
+                const auto &array = encodables[i]->array;
+                bool ok = false;
+                int arrLen = array.toInt(&ok);
+                if (!ok) {
+                    arrLen = parser->getEnumerationNumberForEnumValue(array);
+                    ok = (-1 < arrLen);
+                }
+                if (ok) {
+                    for (int i = 0; i < arrLen; ++i) {
+                        const auto num = QString::number(i);
+                        output += TAB_IN + TAB_IN + TAB_IN +
+                                variableName + num +
+                                "(pData->" + variableName + " + " +
+                                num + ");\n";
+                    }
+                } else {
+                    emitWarning("Array length is not an int" + array);
+                }
             } else {
-                output += "pData->" + variableName + " = " +
-                        variableName + "();\n";
+                output += TAB_IN + TAB_IN + TAB_IN;
+                if (encodables[i]->isStruct()) {
+                    output += variableName + "(&pData->" + variableName + ");\n";
+                } else {
+                    output += "pData->" + variableName + " = " +
+                            variableName + "();\n";
+                }
             }
         }
         output += TAB_IN + TAB_IN + "}\n";
