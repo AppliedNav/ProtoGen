@@ -927,26 +927,36 @@ QString ProtocolStructure::getQmlStructureComponent() const
         // The top level comment for the class definition
         if(!comment.isEmpty())
         {
-            output += "/*!\n";
-            output += ProtocolParser::outputLongComment(" *", comment) + "\n";
-            output += " */\n";
+            output += TAB_IN + TAB_IN + "/*!\n";
+            output += TAB_IN + TAB_IN + ProtocolParser::outputLongComment(" *", comment) + "\n";
+            output += TAB_IN + TAB_IN + " */\n";
         }
 
         QString objName = title;
 		if (objName.isEmpty()) {
 			objName = getQtPropertyClassName();
 		}
-		const QString className = getQtPropertyClassName();
 
-        output += TAB_IN + TAB_IN + "ProtoGenCategory {\n";
-        output += TAB_IN + TAB_IN + TAB_IN + "objectName: \"" + objName + "\"\n";
-        for(int i = 0; i < encodables.length(); i++) {
-            output += TAB_IN + TAB_IN + TAB_IN +
-                    encodables[i]->getQmlPropertyComponent(QString("controller.") +
-                                                           className.at(0).toLower() +
-                                                           className.mid(1));
-        }
-        output += TAB_IN + TAB_IN + "}\n\n";
+		if ((1 == encodables.length()) && encodables.at(0)->isStruct()) {
+			//encodables containing a single struct are reduced to that struct
+            output += TAB_IN + TAB_IN + objName + " {\n";
+			output += TAB_IN + TAB_IN + TAB_IN + "readonly property string comment : \"" + comment + "\"\n";
+            output += TAB_IN + TAB_IN + TAB_IN + "objectName: \"" + objName + "\"\n";
+            output += TAB_IN + TAB_IN + TAB_IN + "model: controller." + objName.at(0).toLower() + objName.mid(1) + "\n";
+			output += TAB_IN + TAB_IN + "}\n\n";
+		} else {
+			output += TAB_IN + TAB_IN + "ProtoGenCategory {\n";
+            output += TAB_IN + TAB_IN + TAB_IN + "readonly property string comment : \"" + comment + "\"\n";
+			output += TAB_IN + TAB_IN + TAB_IN + "objectName: \"" + objName + "\"\n";
+            const QString className = getQtPropertyClassName();
+			for (int i = 0; i < encodables.length(); i++) {
+				output += TAB_IN + TAB_IN + TAB_IN +
+					encodables[i]->getQmlPropertyComponent(QString("controller.") +
+						className.at(0).toLower() +
+						className.mid(1));
+			}
+			output += TAB_IN + TAB_IN + "}\n\n";
+		}
 
     }// if we have some data to encode
 
