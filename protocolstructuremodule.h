@@ -105,6 +105,9 @@ public:
     //! Get the path of the header file that encompasses the class definition of properties for QML
     QString getQtPropertiesDefinitionFilePath(void) const {return defpropheader.filePath();}
 
+	//! Get the QML definition of the component that represents this structure
+	QString getQmlComponentDefinition(void) const;
+
 protected:
 
     //! Setup the files, which accounts for all the ways the files can be organized for this structure.

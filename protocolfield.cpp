@@ -1731,7 +1731,15 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor) const
     if(is2dArray()) {
         emitWarning("2D arrays are not supported to define them as QML components");
 	} else if (isArray()) {
-		emitWarning("1D arrays are not supported to define them as QML components");
+		output += "ProtoGenNumberArray { val: " + accessor + "." + name + "; label: \"" + name + "\";";
+		const int index = extraInfoNames.indexOf("Units");
+		if (0 <= index) {
+			output += " units: \"" + extraInfoValues.at(index) + "\";";
+		}
+		if (!comment.isEmpty()) {
+			output += " comment: \"" + comment + "\";";
+		}
+		output += " }";
 	} else if (isStruct()) {
 		output += "ProtoGenSeparator { label: \"" + name + "\"; comment: \"" + comment + "\" }\n";
 		output += getQtPropertyClassName() + " { model: " + accessor + "." + name + " }";

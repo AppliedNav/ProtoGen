@@ -301,8 +301,20 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
 				propviewsource.write(module->getQmlStructureComponent());
 				propviewsource.makeLineSeparator();
 			}
-        }
 
+            // Create separate component for structs exposed in QML
+            if (module->propsEnabled) {
+				ProtocolSourceFile compsource;//source file for the current component
+				compsource.setQml(true);
+				compsource.setModuleNameAndPath(module->getQtPropertyClassName(), support.outputpath);
+				fileNameList.append(compsource.fileName());
+				filePathList.append(compsource.filePath());
+				compsource.setLicenseText(support.licenseText);
+				compsource.makeLineSeparator();
+				compsource.write(module->getQmlComponentDefinition());
+				compsource.flush();
+            }
+        }
     }// for all top level structures
 
     // And the global packets. We want to sort the packets into two batches:

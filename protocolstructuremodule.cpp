@@ -818,3 +818,26 @@ QString extractText(const QString& key, const QString& source, int* fieldcount)\
 }// extractText\n\n");
 
 }// ProtocolStructureModule::getExtractTextFunction
+
+QString ProtocolStructureModule::getQmlComponentDefinition(void) const
+{
+	QString output;
+	output = "ProtoGenCategory {\n";
+	const QString compName = getQtPropertyClassName().toLower();
+	output += TAB_IN + "id: " + compName + "\n";
+	output += TAB_IN + "property var model: undefined\n";
+	output += TAB_IN + "width: win.width\n";
+	output += TAB_IN + "onSynchroChanged: if (undefined !== parent.synchro) parent.synchro = synchro\n";
+	for (int i = 0; i < encodables.length(); i++) {
+		const QString decl = encodables[i]->getQmlPropertyComponent(compName + QString(".model"));
+		const QStringList tok = decl.split('\n');
+		for (const auto &line : tok) {
+			if (!line.isEmpty()) {
+				output += TAB_IN + line + '\n';
+			}
+		}
+	}
+	output += "}\n";
+	return output;
+}
+
