@@ -1661,7 +1661,7 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
 				ok = (-1 < arrLen);
 			}
 			if (ok) {
-				const QString typeNameProp = typeName.split('_').at(0);
+				const QString typeNameProp = getQtPropertyClassName();
 				for (int i = 0; i < arrLen; ++i) {
 					if (0 < i) {
 						output += TAB_IN;
@@ -1694,7 +1694,7 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
                     setter + ")";
         }
 	} else {
-        output += "QML_WRITABLE_PROPERTY_PTR(" + typeName.split("_t").at(0) +
+        output += "QML_WRITABLE_PROPERTY_PTR(" + getQtPropertyClassName() +
                 ", " + name + ", " + typeName + ", " + setter + ")";
 	}
 
@@ -1725,13 +1725,16 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor) const
 {
     QString output;
 
-    if(isNotInMemory() || isStruct())
+    if(isNotInMemory())
         return output;
 
     if(is2dArray()) {
         emitWarning("2D arrays are not supported to define them as QML components");
-    } else if(isArray()) {
-        emitWarning("1D arrays are not supported to define them as QML components");
+	} else if (isArray()) {
+		emitWarning("1D arrays are not supported to define them as QML components");
+	} else if (isStruct()) {
+		output += "ProtoGenSeparator { label: \"" + name + "\"; comment: \"" + comment + "\" }\n";
+		output += getQtPropertyClassName() + " { model: " + accessor + "." + name + " }";
     } else {
         output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: \"" + name + "\";";
         const int index = extraInfoNames.indexOf("Units");

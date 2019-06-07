@@ -217,6 +217,9 @@ public:
     //! Add successive length strings
     static void addToLengthString(QString* totalLength, const QString & length);
 
+	//! Get the class name used to expose properties in QML
+	virtual QString getQtPropertyClassName() const;
+
 public:
 
     //! String frequently reused for the beginning of encode functions

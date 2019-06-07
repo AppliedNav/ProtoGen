@@ -175,9 +175,6 @@ public:
     //! Get the declaration that goes in the header which declares this as a class and all its children in order to expose them in QML
     virtual QString getQtPropertyClassDeclaration() const Q_DECL_OVERRIDE;
 
-    //! Get the class name used to expose properties in QML
-	virtual QString getQtPropertyClassName() const;
-
     //! Return the string that represents the QML component declaration for the current structure
     virtual QString getQmlStructureComponent() const Q_DECL_OVERRIDE;
 

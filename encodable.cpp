@@ -297,3 +297,14 @@ Encodable* Encodable::generateEncodable(ProtocolParser* parse, QString Parent, P
     return enc;
 }
 
+
+/*!
+ * Get the class name used to expose properties in QML.
+ * \return the string that represents the class name
+ */
+QString Encodable::getQtPropertyClassName() const
+{
+	QString className = typeName;
+	className.remove("_t");
+	return className;
+}

@@ -891,18 +891,6 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
 
 
 /*!
- * Get the class name used to expose properties in QML.
- * \return the string that represents the class name
- */
-QString ProtocolStructure::getQtPropertyClassName() const
-{
-    QString className = structName;
-    className.remove("_t");
-    return className;
-}
-
-
-/*!
  * Return the string that represents the QML component declaration for
  * the current encodable.
  * \return the string that represents the QML component
@@ -950,10 +938,15 @@ QString ProtocolStructure::getQmlStructureComponent() const
 			output += TAB_IN + TAB_IN + TAB_IN + "objectName: \"" + objName + "\"\n";
             const QString className = getQtPropertyClassName();
 			for (int i = 0; i < encodables.length(); i++) {
-				output += TAB_IN + TAB_IN + TAB_IN +
-					encodables[i]->getQmlPropertyComponent(QString("controller.") +
-						className.at(0).toLower() +
-						className.mid(1));
+				const QString decl = encodables[i]->getQmlPropertyComponent(QString("controller.") +
+					className.at(0).toLower() +
+					className.mid(1));
+				const QStringList tok = decl.split('\n');
+				for (const auto &line : tok) {
+					if (!line.isEmpty()) {
+						output += TAB_IN + TAB_IN + TAB_IN + line + '\n';
+					}
+				}
 			}
 			output += TAB_IN + TAB_IN + "}\n\n";
 		}
@@ -2870,8 +2863,7 @@ QString ProtocolStructure::getEquivalentQtPropertyClassName(void) const
 {
 	QString name;
 	if ((1 == encodables.length()) && encodables.at(0)->isStruct()) {
-		name = encodables.at(0)->typeName;
-		name.remove("_t");
+		name = encodables.at(0)->getQtPropertyClassName();
 	}
 	return name;
 }
