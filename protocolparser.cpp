@@ -1937,7 +1937,7 @@ QString ProtocolParser::getQtControllerClassDeclaration(void) const
 {
     QString output;
 
-    if(!structures.empty()) {
+    if(!structures.isEmpty() || !packets.isEmpty()) {
         // The top level comment for the class definition
         if(!comment.isEmpty()) {
             output += "/*!\n";
@@ -1953,10 +1953,13 @@ QString ProtocolParser::getQtControllerClassDeclaration(void) const
 
         // Create an instance of the class that represents each global structure as property in QML
         for (int i = 0; i < structures.size(); ++i) {
-			const QString propClassName = structures.at(i)->getQtPropertyClassName();
-			if (!propClassName.isEmpty() && structures.at(i)->uiEnabled) {
-				output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
-					", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
+			ProtocolStructureModule *structure = structures.at(i);
+			if (structure->uiEnabled) {
+				const QString propClassName = structure->getQtPropertyClassName();
+				if (!propClassName.isEmpty()) {
+					output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
+						", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
+				}
 			}
         }
 
@@ -1967,10 +1970,15 @@ QString ProtocolParser::getQtControllerClassDeclaration(void) const
 			if (isFieldSet(packet->getElement(), "useInOtherPackets"))
 				continue;
 
-			const QString propClassName = packet->getQtPropertyClassName();
-			if (!propClassName.isEmpty() && packet->uiEnabled) {
-				output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
-					", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
+			if (packet->uiEnabled) {
+				QString propClassName = packet->getEquivalentQtPropertyClassName();
+				if (propClassName.isEmpty()) {
+					propClassName = packet->getQtPropertyClassName();
+				}
+				if (!propClassName.isEmpty()) {
+					output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
+						", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
+				}
 			}
 		}
 

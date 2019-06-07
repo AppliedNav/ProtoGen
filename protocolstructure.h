@@ -220,6 +220,9 @@ public:
     //! True if this encodable has initialization data
     virtual bool hasInit(void) const Q_DECL_OVERRIDE {return hasinit;}
 
+	//! Get included structure name if only one structure is included
+	QString getEquivalentQtPropertyClassName(void) const;
+
 protected:
 
     //! Make a structure output be prettily aligned

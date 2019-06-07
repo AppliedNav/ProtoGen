@@ -2861,3 +2861,18 @@ void ProtocolStructure::getSubDocumentationDetails(QList<int>& outline, QString&
 
 }// ProtocolStructure::getSubDocumentationDetails
 
+/*!
+ * Get the only structure name contained by this encodable. If the encodable
+ * contains more than one encodable an empty string is returned
+ * \return the structure name if only one structure is contained, empty string otherwise
+ */
+QString ProtocolStructure::getEquivalentQtPropertyClassName(void) const
+{
+	QString name;
+	if ((1 == encodables.length()) && encodables.at(0)->isStruct()) {
+		name = encodables.at(0)->typeName;
+		name.remove("_t");
+	}
+	return name;
+}
+
