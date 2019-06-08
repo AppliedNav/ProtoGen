@@ -823,7 +823,12 @@ QString ProtocolStructureModule::getQmlComponentDefinition(void) const
 {
 	QString output;
 	output = "ProtoGenCategory {\n";
-	const QString compName = getQtPropertyClassName().toLower();
+    QString compName = getQtPropertyClassName();
+    if (compName.isEmpty()) {
+        emitWarning("Component name is empty");
+        return "";
+    }
+    compName = compName.at(0).toLower() + compName.mid(1);
 	output += TAB_IN + "id: " + compName + "\n";
 	output += TAB_IN + "property var model: undefined\n";
 	output += TAB_IN + "width: win.width\n";
