@@ -127,6 +127,9 @@ public:
     //! Get the path of the header file (if any) holding this enumeration
     QString getHeaderFilePath(void) const {return filepath;}
 
+    //! Get elements of the enumeration
+    const QList<EnumElement>& getElements() const { return elements; }
+
 protected:
 
     //! Parse the enumeration values to build the number list

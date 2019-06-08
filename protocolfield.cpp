@@ -1738,21 +1738,36 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor) const
 		}
 		if (!comment.isEmpty()) {
 			output += " comment: \"" + comment + "\";";
-		}
+        }
 		output += " }";
 	} else if (isStruct()) {
 		output += "ProtoGenSeparator { label: \"" + name + "\"; comment: \"" + comment + "\" }\n";
 		output += getQtPropertyClassName() + " { model: " + accessor + "." + name + " }";
     } else {
-        output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: \"" + name + "\";";
-        const int index = extraInfoNames.indexOf("Units");
-        if (0 <= index) {
-            output += " units: \"" + extraInfoValues.at(index) + "\";";
+        if (inMemoryType.isEnum) {
+            const EnumCreator *enumCreator = parser->lookUpEnumeration(enumName);
+            if (nullptr != enumCreator) {
+                const QList<EnumElement> &elems = enumCreator->getElements();
+                output += "ProtoGenComboBox { val: " + accessor + "." + name + "; label: \"" + name + "\"; comment: \"" + comment + "\"; options: [";
+                for (int i = 0; i < elems.size(); ++i) {
+                    output += "\"" + elems.at(i).getName() + "\"";
+                    if (i < (elems.size() - 1)) {
+                        output += ", ";
+                    }
+                }
+                output += "] }";
+            }
+        } else {
+            output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: \"" + name + "\";";
+            const int index = extraInfoNames.indexOf("Units");
+            if (0 <= index) {
+                output += " units: \"" + extraInfoValues.at(index) + "\";";
+            }
+            if (!comment.isEmpty()) {
+                output += " comment: \"" + comment + "\";";
+            }
+            output += " }";
         }
-        if (!comment.isEmpty()) {
-            output += " comment: \"" + comment + "\";";
-        }
-        output += " }";
     }
 
     if(comment.isEmpty())

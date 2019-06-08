@@ -19,16 +19,17 @@ public:
     virtual ~ProtocolPacket(void);
 
     //! Parse a packet from the DOM
-    virtual void parse(void);
+    virtual void parse(void) Q_DECL_OVERRIDE;
 
     //! Clear out any data
-    virtual void clear(void);
+    virtual void clear(void) Q_DECL_OVERRIDE;
 
     //! The hierarchical name of this object
-    virtual QString getHierarchicalName(void) const {return parent + ":" + name;}
+    virtual QString getHierarchicalName(void) const Q_DECL_OVERRIDE {return parent + ":" + name;}
 
     //! Return top level markdown documentation for this packet
-    virtual QString getTopLevelMarkdown(bool global = false, const QStringList& ids = QStringList()) const;
+    virtual QString getTopLevelMarkdown(bool global = false,
+                                        const QStringList& ids = QStringList()) const Q_DECL_OVERRIDE;
 
     //! Get all the ID strings of this packet
     void appendIds(QStringList& list) const {list.append(ids);}
