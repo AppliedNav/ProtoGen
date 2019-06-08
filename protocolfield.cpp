@@ -1731,15 +1731,36 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor) const
     if(is2dArray()) {
         emitWarning("2D arrays are not supported to define them as QML components");
 	} else if (isArray()) {
-		output += "ProtoGenNumberArray { val: " + accessor + "." + name + "; label: \"" + name + "\";";
-		const int index = extraInfoNames.indexOf("Units");
-		if (0 <= index) {
-			output += " units: \"" + extraInfoValues.at(index) + "\";";
-		}
-		if (!comment.isEmpty()) {
-			output += " comment: \"" + comment + "\";";
+        if ("float" == typeName) {
+            output += "ProtoGenNumberArray { val: " + accessor + "." + name + "; label: \"" + name + "\";";
+            const int index = extraInfoNames.indexOf("Units");
+            if (0 <= index) {
+                output += " units: \"" + extraInfoValues.at(index) + "\";";
+            }
+            if (!comment.isEmpty()) {
+                output += " comment: \"" + comment + "\";";
+            }
+            output += " }";
+        } else {
+            //length of the array
+            bool ok = false;
+            int arrLen = array.toInt(&ok);
+            if (!ok) {
+                arrLen = parser->getEnumerationNumberForEnumValue(array);
+                ok = (-1 < arrLen);
+            }
+            if (ok) {
+                const QString typeNameProp = getQtPropertyClassName();
+                for (int i = 0; i < arrLen; ++i) {
+                    const auto itemName = name + QString::number(i);
+                    output += "ProtoGenSeparator { label: \"" + itemName + "\"; subsection: true }\n";
+                    const QString hasLabel = (0 == i) ? "true" : "false";
+                    output += typeNameProp + " { model: " + accessor + "." + itemName + "; hasLabel: " + hasLabel + " }\n";
+                }
+            } else {
+                emitWarning("Array length is not an int" + array);
+            }
         }
-		output += " }";
 	} else if (isStruct()) {
 		output += "ProtoGenSeparator { label: \"" + name + "\"; comment: \"" + comment + "\" }\n";
 		output += getQtPropertyClassName() + " { model: " + accessor + "." + name + " }";
