@@ -938,13 +938,13 @@ QString ProtocolStructure::getQmlStructureComponent() const
 		if ((1 == encodables.length()) && encodables.at(0)->isStruct()) {
 			//encodables containing a single struct are reduced to that struct
             output += TAB_IN + TAB_IN + objName + " {\n";
-			output += TAB_IN + TAB_IN + TAB_IN + "readonly property string comment : \"" + comment + "\"\n";
+			output += TAB_IN + TAB_IN + TAB_IN + "readonly property string comment: \"" + comment + "\"\n";
             output += TAB_IN + TAB_IN + TAB_IN + "objectName: \"" + objName + "\"\n";
             output += TAB_IN + TAB_IN + TAB_IN + "model: controller." + objName.at(0).toLower() + objName.mid(1) + "\n";
 			output += TAB_IN + TAB_IN + "}\n\n";
 		} else {
 			output += TAB_IN + TAB_IN + "ProtoGenCategory {\n";
-            output += TAB_IN + TAB_IN + TAB_IN + "readonly property string comment : \"" + comment + "\"\n";
+            output += TAB_IN + TAB_IN + TAB_IN + "readonly property string comment: \"" + comment + "\"\n";
 			output += TAB_IN + TAB_IN + TAB_IN + "objectName: \"" + objName + "\"\n";
             const QString className = getQtPropertyClassName();
 			for (int i = 0; i < encodables.length(); i++) {

@@ -1765,19 +1765,25 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
 		output += "ProtoGenSeparator { label: \"" + name + "\"; comment: \"" + comment + "\" }\n";
 		output += getQtPropertyClassName() + " { model: " + accessor + "." + name + " }";
     } else {
-        if (inMemoryType.isEnum) {
-            const EnumCreator *enumCreator = parser->lookUpEnumeration(enumName);
-            if (nullptr != enumCreator) {
-                const QList<EnumElement> &elems = enumCreator->getElements();
-                output += "ProtoGenComboBox { val: " + accessor + "." + name + "; label: \"" + name + "\"; comment: \"" + comment + "\"; options: [";
-                for (int i = 0; i < elems.size(); ++i) {
-                    output += "\"" + elems.at(i).getName() + "\"";
-                    if (i < (elems.size() - 1)) {
-                        output += ", ";
-                    }
-                }
-                output += "] }";
-            }
+		if (inMemoryType.isEnum) {
+			const EnumCreator *enumCreator = parser->lookUpEnumeration(enumName);
+			if (nullptr != enumCreator) {
+				const QList<EnumElement> &elems = enumCreator->getElements();
+				output += "ProtoGenComboBox { val: " + accessor + "." + name + "; label: \"" + name + "\"; comment: \"" + comment + "\"; options: [";
+				for (int i = 0; i < elems.size(); ++i) {
+					output += "\"" + elems.at(i).getName() + "\"";
+					if (i < (elems.size() - 1)) {
+						output += ", ";
+					}
+				}
+				output += "] }";
+			}
+		} else if (inMemoryType.isBitfield) {
+			output += "ProtoGenSwitch { val: " + accessor + "." + name + "; label: \"" + name + "\";";
+			if (!comment.isEmpty()) {
+				output += " comment: \"" + comment + "\";";
+			}
+			output += " }";
         } else {
 			if (isArrItem) {
 				const QString compName = accessor.split('.').first();
