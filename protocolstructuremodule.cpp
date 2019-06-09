@@ -822,7 +822,10 @@ QString extractText(const QString& key, const QString& source, int* fieldcount)\
 QString ProtocolStructureModule::getQmlComponentDefinition(void) const
 {
 	QString output;
-	QString compName = getQtPropertyClassName();
+    QString compName = title;
+    if (compName.isEmpty()) {
+        compName = getQtPropertyClassName();
+    }
 	if (compName.isEmpty()) {
 		emitWarning("Component name is empty");
 		return "";
