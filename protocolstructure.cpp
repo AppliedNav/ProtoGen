@@ -662,7 +662,14 @@ QString ProtocolStructure::getQmlPropertyComponent(const QString &accessor) cons
     QString output;
 
     if(array.isEmpty()) {
-        output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: \"" + name + "\";";
+		if (isArrayItem) {
+			const QString compName = accessor.split('.').first();
+			output += "ProtoGenNumberCol { hasLabel: " + compName + ".hasLabel; width: " + compName + ".itemWidth; ";
+		}
+		else {
+			output += "ProtoGenNumber { ";
+		}
+		output += "val: " + accessor + "." + name + "; label: \"" + name + "\";";
         if (!comment.isEmpty()) {
             output += " comment: \"" + comment + "\";";
         }

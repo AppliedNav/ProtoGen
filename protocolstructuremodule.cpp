@@ -822,14 +822,22 @@ QString extractText(const QString& key, const QString& source, int* fieldcount)\
 QString ProtocolStructureModule::getQmlComponentDefinition(void) const
 {
 	QString output;
-	output = "ProtoGenCategory {\n";
-    QString compName = getQtPropertyClassName();
-    if (compName.isEmpty()) {
-        emitWarning("Component name is empty");
-        return "";
-    }
-    compName = compName.at(0).toLower() + compName.mid(1);
+	QString compName = getQtPropertyClassName();
+	if (compName.isEmpty()) {
+		emitWarning("Component name is empty");
+		return "";
+	}
+	compName = compName.at(0).toLower() + compName.mid(1);
+	if (isArrayItem) {
+		output = "ProtoGenCategoryRow {\n";
+	} else {
+		output = "ProtoGenCategory {\n";
+	}
 	output += TAB_IN + "id: " + compName + "\n";
+	if (isArrayItem) {
+		output += TAB_IN + "property real itemWidth: (width - spacing)/2\n";
+		output += TAB_IN + "property bool hasLabel: true\n";
+	}
 	output += TAB_IN + "property var model: undefined\n";
 	output += TAB_IN + "width: win.width\n";
 	output += TAB_IN + "onSynchroChanged: if (undefined !== parent.synchro) parent.synchro = synchro\n";
@@ -842,6 +850,7 @@ QString ProtocolStructureModule::getQmlComponentDefinition(void) const
 			}
 		}
 	}
+
 	output += "}\n";
 	return output;
 }

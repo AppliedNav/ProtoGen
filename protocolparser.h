@@ -248,7 +248,7 @@ private:
 	void preprocessPackets();
 
 	//! Search and set uiEnabled flag for struct with name in argument
-    ProtocolStructureModule* setPropsEnabledForStruct(const QString &curStructName);
+    ProtocolStructureModule* setPropsEnabledForStruct(const QString &curStructName, bool isArrayItem);
 
 	//! Search structs contained in current struct and apply setUiEnabledForStruct
 	void searchStruct(ProtocolStructureModule* curStruct);

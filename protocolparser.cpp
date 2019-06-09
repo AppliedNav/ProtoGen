@@ -531,7 +531,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
  * \param curStructName struct name to search for
  * \return pointer to found struct or nullptr
  */
-ProtocolStructureModule* ProtocolParser::setPropsEnabledForStruct(const QString &curStructName)
+ProtocolStructureModule* ProtocolParser::setPropsEnabledForStruct(const QString &curStructName, bool isArrayItem)
 {
 	if (!curStructName.isEmpty()) {
 		for (int i = 0; i < structures.size(); i++) {
@@ -540,6 +540,7 @@ ProtocolStructureModule* ProtocolParser::setPropsEnabledForStruct(const QString 
 			const QString structName = elem.attribute("name");
 			if (structName == curStructName) {
                 module->propsEnabled = true;
+				module->isArrayItem = isArrayItem;
 				return module;
 			}
 		}
@@ -564,7 +565,7 @@ void ProtocolParser::searchStruct(ProtocolStructureModule* curStruct)
 				if (structName.isEmpty()) {
 					structName = subElem.attribute("structure");
 				}
-                curStruct = setPropsEnabledForStruct(structName);
+                curStruct = setPropsEnabledForStruct(structName, subElem.hasAttribute("array"));
 				searchStruct(curStruct);
 			}
 		}

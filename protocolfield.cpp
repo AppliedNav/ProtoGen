@@ -1779,7 +1779,13 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor) const
                 output += "] }";
             }
         } else {
-            output += "ProtoGenNumber { val: " + accessor + "." + name + "; label: \"" + name + "\";";
+			if (isArrayItem) {
+				const QString compName = accessor.split('.').first();
+				output += "ProtoGenNumberCol { hasLabel: " + compName + ".hasLabel; width: " + compName + ".itemWidth; ";
+			} else {
+				output += "ProtoGenNumber { ";
+			}
+			output += "val: " + accessor + "." + name + "; label: \"" + name + "\";";
             const int index = extraInfoNames.indexOf("Units");
             if (0 <= index) {
                 output += " units: \"" + extraInfoValues.at(index) + "\";";
