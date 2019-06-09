@@ -167,7 +167,7 @@ public:
     virtual QString getQtPropertyDeclaration(void) const Q_DECL_OVERRIDE;
 
     //! Get the declaration for this structure as component in QML
-    virtual QString getQmlPropertyComponent(const QString& /*accessor*/) const Q_DECL_OVERRIDE;
+    virtual QString getQmlPropertyComponent(const QString& /*accessor*/, bool /*isArrItem*/) const Q_DECL_OVERRIDE;
 
     //! Get the declaration that goes in the header which declares this structure and all its children
     virtual QString getStructureDeclaration(bool alwaysCreate) const Q_DECL_OVERRIDE;

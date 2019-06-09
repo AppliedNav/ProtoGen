@@ -657,16 +657,15 @@ QString ProtocolStructure::getQtPropertyDeclaration(void) const
  * This includes the spacing, typename, name, semicolon, comment, and linefeed
  * \return the declaration string for this encodable
  */
-QString ProtocolStructure::getQmlPropertyComponent(const QString &accessor) const
+QString ProtocolStructure::getQmlPropertyComponent(const QString &accessor, bool isArrItem) const
 {
     QString output;
 
     if(array.isEmpty()) {
-		if (isArrayItem) {
+		if (isArrItem) {
 			const QString compName = accessor.split('.').first();
 			output += "ProtoGenNumberCol { hasLabel: " + compName + ".hasLabel; width: " + compName + ".itemWidth; ";
-		}
-		else {
+		} else {
 			output += "ProtoGenNumber { ";
 		}
 		output += "val: " + accessor + "." + name + "; label: \"" + name + "\";";
@@ -951,7 +950,7 @@ QString ProtocolStructure::getQmlStructureComponent() const
 			for (int i = 0; i < encodables.length(); i++) {
 				const QString decl = encodables[i]->getQmlPropertyComponent(QString("controller.") +
 					className.at(0).toLower() +
-					className.mid(1));
+					className.mid(1), isArrayItem);
 				const QStringList tok = decl.split('\n');
 				for (const auto &line : tok) {
 					if (!line.isEmpty()) {

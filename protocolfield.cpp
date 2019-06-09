@@ -1721,7 +1721,7 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
  * Get the declaration for this field as a property of a class derived from QObject
  * \return the declaration string
  */
-QString ProtocolField::getQmlPropertyComponent(const QString &accessor) const
+QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isArrItem) const
 {
     QString output;
 
@@ -1779,7 +1779,7 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor) const
                 output += "] }";
             }
         } else {
-			if (isArrayItem) {
+			if (isArrItem) {
 				const QString compName = accessor.split('.').first();
 				output += "ProtoGenNumberCol { hasLabel: " + compName + ".hasLabel; width: " + compName + ".itemWidth; ";
 			} else {

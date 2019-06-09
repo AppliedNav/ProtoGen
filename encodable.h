@@ -56,7 +56,7 @@ public:
     virtual QString getQtPropertyDeclaration(void) const = 0;
 
     //! Return the string that is used to declare this encodable as QML component
-    virtual QString getQmlPropertyComponent(const QString& /*accessor*/) const = 0;
+    virtual QString getQmlPropertyComponent(const QString& /*accessor*/, bool /*isArrItem*/) const = 0;
 
     //! Return the include directives needed for this encodable
     virtual void getIncludeDirectives(QStringList& list) const {Q_UNUSED(list);}
