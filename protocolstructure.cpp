@@ -930,19 +930,31 @@ QString ProtocolStructure::getQmlStructureComponent() const
             output += TAB_IN + TAB_IN + " */\n";
         }
 
-        QString objName = title;
-		if (objName.isEmpty()) {
-			objName = getQtPropertyClassName();
-		}
-
 		if ((1 == encodables.length()) && encodables.at(0)->isStruct()) {
+			QString objName = encodables.at(0)->title;
+			if (objName.isEmpty()) {
+				objName = encodables.at(0)->getQtPropertyClassName();
+			}
+			if (objName.isEmpty()) {
+				emitWarning("Object name is empty");
+				return "";
+			}
 			//encodables containing a single struct are reduced to that struct
             output += TAB_IN + TAB_IN + objName + " {\n";
 			output += TAB_IN + TAB_IN + TAB_IN + "readonly property string comment: \"" + comment + "\"\n";
             output += TAB_IN + TAB_IN + TAB_IN + "objectName: \"" + objName + "\"\n";
-            output += TAB_IN + TAB_IN + TAB_IN + "model: controller." + objName.at(0).toLower() + objName.mid(1) + "\n";
+			const QString className = encodables.at(0)->getQtPropertyClassName();
+            output += TAB_IN + TAB_IN + TAB_IN + "model: controller." + className.at(0).toLower() + className.mid(1) + "\n";
 			output += TAB_IN + TAB_IN + "}\n\n";
 		} else {
+			QString objName = title;
+			if (objName.isEmpty()) {
+				objName = getQtPropertyClassName();
+			}
+			if (objName.isEmpty()) {
+				emitWarning("Object name is empty");
+				return "";
+			}
 			output += TAB_IN + TAB_IN + "ProtoGenCategory {\n";
             output += TAB_IN + TAB_IN + TAB_IN + "readonly property string comment: \"" + comment + "\"\n";
 			output += TAB_IN + TAB_IN + TAB_IN + "objectName: \"" + objName + "\"\n";
