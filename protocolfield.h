@@ -271,6 +271,9 @@ public:
     //! True if this encodable has a direct child that uses defaults
     virtual bool usesDefaults(void) const Q_DECL_OVERRIDE {return (isDefault() && !isNotEncoded());}
 
+	//! Get in memory type
+	const TypeData& getInMemoryType() const { return inMemoryType; }
+
 protected:
 
     //! Name of the enumerated type for this field, empty if not enumerated type

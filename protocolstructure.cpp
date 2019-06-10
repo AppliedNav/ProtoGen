@@ -880,8 +880,13 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
                 }
             } else {
                 output += TAB_IN + TAB_IN + TAB_IN;
-                if (encodables[i]->isStruct()) {
-                    output += variableName + "(&pData->" + variableName + ");\n";
+				ProtocolField *protoField = dynamic_cast<ProtocolField*>(encodables[i]);
+				bool isEnum = (nullptr != protoField) ? protoField->getInMemoryType().isEnum : false;
+				if (encodables[i]->isStruct()) {
+					output += variableName + "(&pData->" + variableName + ");\n";
+				} else if (isEnum) {
+					output += "pData->" + variableName + " = static_cast<" + encodables[i]->typeName + ">(" +
+						variableName + "());\n";
                 } else {
                     output += "pData->" + variableName + " = " +
                             variableName + "();\n";
