@@ -1676,26 +1676,28 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
                 emitWarning("Array length is not an int" + array);
 			}
         }
-    } else if (!isStruct()) {
-        const QString actualTypeName = typeName.contains("int")?"int":typeName;
-        if (isDefault()) {
-            output += "QML_WRITABLE_PROPERTY";
-            if (inMemoryType.isFloat) {
-                output += "_FLOAT";
-            }
-            output += "_INIT(" + actualTypeName + ", " + name + ", " +
-                    setter + ", " + defaultString + ")";
-        } else {
-            output += "QML_WRITABLE_PROPERTY";
-            if (inMemoryType.isFloat) {
-                output += "_FLOAT";
-            }
-            output += "(" + actualTypeName + ", " + name + ", " +
-                    setter + ")";
-        }
+	}
+	else if (isStruct()) {
+		output += "QML_WRITABLE_PROPERTY_PTR(" + getQtPropertyClassName() +
+			", " + name + ", " + typeName + ", " + setter + ")";
 	} else {
-        output += "QML_WRITABLE_PROPERTY_PTR(" + getQtPropertyClassName() +
-                ", " + name + ", " + typeName + ", " + setter + ")";
+		QString actualTypeName = typeName;
+		output += "QML_WRITABLE_PROPERTY";
+		if (inMemoryType.isFloat) {
+			output += "_FLOAT";
+			actualTypeName = "qreal";
+		} else if (inMemoryType.isBitfield && (1 == inMemoryType.bits)) {
+			actualTypeName = "bool";
+		} else {
+			actualTypeName = "int";
+		}
+		if (isDefault()) {
+			output += "_INIT(" + actualTypeName + ", " + name + ", " +
+				setter + ", " + defaultString + ")";
+		} else {
+			output += "(" + actualTypeName + ", " + name + ", " +
+				setter + ")";
+		}
 	}
 
     if(comment.isEmpty())
@@ -1778,7 +1780,7 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
 				}
 				output += "] }";
 			}
-		} else if (inMemoryType.isBitfield) {
+		} else if (inMemoryType.isBitfield && (1 == inMemoryType.bits)) {
 			output += "ProtoGenSwitch { val: " + accessor + "." + name + "; label: \"" + name + "\";";
 			if (!comment.isEmpty()) {
 				output += " comment: \"" + comment + "\";";
