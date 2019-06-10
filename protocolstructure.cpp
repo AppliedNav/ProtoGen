@@ -847,7 +847,7 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
         }
         output += TAB_IN + TAB_IN + "}\n";
         output += TAB_IN + "}\n";
-        output += TAB_IN + "void getData(" + structName + "* pData) {\n";
+        output += TAB_IN + "void getData(" + structName + "* pData) const {\n";
         output += TAB_IN + TAB_IN + "if (nullptr != pData) {\n";
         for(int i = 0; i < encodables.length(); i++) {
             const QString &variableName = encodables[i]->name;
