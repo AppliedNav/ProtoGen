@@ -1786,7 +1786,7 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
 				output += " comment: \"" + comment + "\";";
 			}
 			output += " }";
-        } else if (!inMemoryType.isFloat) {
+        } else if (!inMemoryType.isFloat && !isArrItem) {
             output += "ProtoGenSpinBox { val: " + accessor + "." + name + "; label: \"" + name + "\";";
             if (inMemoryType.isSigned) {
                 output += " minval: -2147483648;";
