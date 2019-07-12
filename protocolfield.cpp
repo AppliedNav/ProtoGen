@@ -1791,6 +1791,10 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
             if (inMemoryType.isSigned) {
                 output += " minval: -2147483648;";
             }
+            const int index = extraInfoNames.indexOf("Units");
+            if (0 <= index) {
+                output += " units: \"" + extraInfoValues.at(index) + "\";";
+            }
             if (!comment.isEmpty()) {
                 output += " comment: \"" + comment + "\";";
             }
