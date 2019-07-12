@@ -109,11 +109,6 @@
     Q_SIGNALS: \
         void name##Changed(); \
     private: \
-        void init##name() { \
-            m_##name.clear(); \
-            for (int i = 0; i < size; ++i) m_##name.append(0); \
-            emit name##Changed(); \
-        } \
         QVariantList m_##name;
 
 // NOTE : to avoid "no suitable class found" MOC note
