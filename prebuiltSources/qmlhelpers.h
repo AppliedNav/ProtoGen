@@ -109,7 +109,7 @@
     Q_SIGNALS: \
         void name##Changed(); \
     private: \
-        QVariantList m_##name;
+        QVariantList m_##name = QVariantList::fromVector(QVector<QVariant>(size, 0.0));
 
 // NOTE : to avoid "no suitable class found" MOC note
 class QmlProperty : public QObject { Q_OBJECT };
