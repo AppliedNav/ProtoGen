@@ -501,7 +501,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
                 const QString destFileName = support.outputpath + ProtocolFile::tempprefix +
                         fileNames[i];
                 QFile::remove(destFileName);
-                if (!QFile::copy(sourcePath + fileNames[i], destFileName)) {
+                if (!QFile::copy(sourcePath + fileNames[i] + ".txt", destFileName)) {
                     qCritical() << "Cannot create prebuild file" << fileNames[i];
                 }
             }
