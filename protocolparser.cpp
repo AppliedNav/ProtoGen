@@ -15,6 +15,7 @@
 #include <QStringList>
 #include <QProcess>
 #include <QSet>
+#include <QDebug>
 #include <iostream>
 
 // The version of the protocol generator is set here
@@ -466,7 +467,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
 
         // Copy the resource files
         // This is where the files are stored in the resources
-        QString sourcePath = ":/files/prebuiltSources/";
+        const QString sourcePath = ":/files/prebuiltSources/";
 
         if(support.specialFloat)
         {
@@ -497,9 +498,12 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
             for (size_t i = 0; i < sizeof(fileNames)/sizeof(fileNames[0]); ++i) {
                 fileNameList.append(fileNames[i]);
                 filePathList.append(support.outputpath);
-                QFile::copy(sourcePath + fileNames[i],
-                            support.outputpath + ProtocolFile::tempprefix +
-                            fileNames[i]);
+                const QString destFileName = support.outputpath + ProtocolFile::tempprefix +
+                        fileNames[i];
+                QFile::remove(destFileName);
+                if (!QFile::copy(sourcePath + fileNames[i], destFileName)) {
+                    qCritical() << "Cannot create prebuild file" << fileNames[i];
+                }
             }
         }
     }
