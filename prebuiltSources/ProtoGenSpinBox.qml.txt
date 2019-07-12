@@ -6,7 +6,7 @@ Row {
 
     property double val: 0
     property int minval: 0
-    property int maxval: 100
+    property int maxval: 2147483647
     property int step: 1
 
     property alias label: protoGenSpinLabel.text
@@ -38,6 +38,8 @@ Row {
     }
 
     SpinBox {
+        editable: true
+        font.pointSize: control.fontSize
         from: control.minval
         to: control.maxval
         stepSize: control.step
@@ -46,6 +48,7 @@ Row {
         height: parent.height
         onValueChanged: {
             parent.parent.synchro = false
+            control.val = value
         }
     }
 

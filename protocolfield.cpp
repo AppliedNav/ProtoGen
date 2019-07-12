@@ -1786,6 +1786,15 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
 				output += " comment: \"" + comment + "\";";
 			}
 			output += " }";
+        } else if (!inMemoryType.isFloat) {
+            output += "ProtoGenSpinBox { val: " + accessor + "." + name + "; label: \"" + name + "\";";
+            if (inMemoryType.isSigned) {
+                output += " minval: -2147483648;";
+            }
+            if (!comment.isEmpty()) {
+                output += " comment: \"" + comment + "\";";
+            }
+            output += " }";
         } else {
 			if (isArrItem) {
 				const QString compName = accessor.split('.').first();
