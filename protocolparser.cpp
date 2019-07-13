@@ -498,10 +498,14 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
             for (size_t i = 0; i < sizeof(fileNames)/sizeof(fileNames[0]); ++i) {
                 fileNameList.append(fileNames[i]);
                 filePathList.append(support.outputpath);
+                QString srcFileName = sourcePath + fileNames[i];
+                if (srcFileName.contains(".qml")) {
+                    srcFileName += ".txt";
+                }
                 const QString destFileName = support.outputpath + ProtocolFile::tempprefix +
                         fileNames[i];
                 QFile::remove(destFileName);
-                if (!QFile::copy(sourcePath + fileNames[i] + ".txt", destFileName)) {
+                if (!QFile::copy(srcFileName, destFileName)) {
                     qCritical() << "Cannot create prebuild file" << fileNames[i];
                 }
             }
