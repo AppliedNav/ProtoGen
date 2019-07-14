@@ -16,7 +16,7 @@ Row {
     readonly property int fontSize: 10
 
     width: parent.width
-    height: 24
+    height: controlSpinBox.height
     spacing: 10
 
     Label {
@@ -38,6 +38,7 @@ Row {
     }
 
     SpinBox {
+        id: controlSpinBox
         editable: true
         font.pointSize: control.fontSize
         from: control.minval
@@ -45,7 +46,6 @@ Row {
         stepSize: control.step
         value: control.val
         width: parent.width/2-4
-        height: parent.height
         onValueChanged: {
             parent.parent.synchro = false
             control.val = value
