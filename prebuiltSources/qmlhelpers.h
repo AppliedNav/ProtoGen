@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QVector>
 
 #define QML_WRITABLE_PROPERTY(type, name, setter) \
     protected: \
