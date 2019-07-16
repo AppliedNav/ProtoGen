@@ -557,6 +557,10 @@ ProtocolStructureModule* ProtocolParser::setPropsEnabledForStruct(const QString 
 			if (structName == curStructName) {
                 module->propsEnabled = true;
 				module->isArrayItem = isArrayItem;
+				const QString headerFile = elem.attribute("file");
+				if (!headerFile.isEmpty() && !struct2propsHeader.contains(structName)) {
+					struct2propsHeader[structName] = headerFile + "_props.h";
+				}
 				return module;
 			}
 		}
@@ -1226,6 +1230,18 @@ QString ProtocolParser::lookUpIncludeName(const QString& typeName) const
     return "";
 }
 
+/*!
+ * Find the include name for a specific structure type used to expose properties in QML
+ * \param typeName is the type to lookup
+ * \return the file name to be included to reference this structure type
+ */
+QString ProtocolParser::lookUpQtPropertyIncludeName(const QString& typeName) const
+{
+	if (struct2propsHeader.contains(typeName)) {
+		return struct2propsHeader[typeName];
+	}
+	return "";
+}
 
 /*!
  * Find the global structure pointer for a specific type

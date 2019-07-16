@@ -48,6 +48,8 @@ public:
     //! Helper function to create a list of ProtocolDocumentation objects
     static void getChildDocuments(ProtocolParser* parse, QString Parent, ProtocolSupport support, const QDomElement& e, QList<ProtocolDocumentation*>& list);
 
+	//! Get header file containing the structure definition exposed to QML
+	QString lookUpQtPropertyIncludeName(const QString &structName) const;
 public:
 
     //! String used to tab code in (perhaps one day we'll make this user changeable)
@@ -64,7 +66,7 @@ public:
 
 protected:
     ProtocolSupport support;//!< Information about what is supported
-    ProtocolParser* parser; //!< The parser object
+    ProtocolParser* parser = nullptr; //!< The parser object
     QString parent;         //!< The parent name of this encodable
     QDomElement e;          //!< The DOM element which is the source of this object's data
 

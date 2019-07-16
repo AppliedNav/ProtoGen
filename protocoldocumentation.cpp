@@ -170,3 +170,13 @@ void ProtocolDocumentation::getChildDocuments(ProtocolParser* parse, QString Par
     }
 
 }// ProtocolDocumentation::getChildDocuments
+
+/*!
+ * Get the header file name containing the structure definition exposed to QML
+ * \param structName structure name
+ * \return header file name containing the structure definition exposed to QML
+ */
+QString ProtocolDocumentation::lookUpQtPropertyIncludeName(const QString &structName) const
+{
+	return parser->lookUpQtPropertyIncludeName(structName);
+}

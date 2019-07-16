@@ -220,6 +220,9 @@ public:
 	//! Get included structure name if only one structure is included
 	QString getEquivalentQtPropertyClassName(void) const;
 
+	//! Return the include directives needed for this encodable
+	virtual void getQtPropertyIncludeDirectives(QStringList& list) const;
+
 protected:
 
     //! Make a structure output be prettily aligned

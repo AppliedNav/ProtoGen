@@ -423,6 +423,7 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
     }
 
 	// Create header file for exposing classes with properties in QML
+	QStringList list;
     if (parser->hasUiSupport() && (uiEnabled || propsEnabled)) {
 		defpropheader.setLicenseText(support.licenseText);
 		defpropheader.setModuleNameAndPath(moduleName + "_props", support.outputpath);
@@ -431,6 +432,9 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
 		}
 		defpropheader.writeIncludeDirective("qmlhelpers.h");
 		defpropheader.writeIncludeDirective(structfile->fileName());
+		list.clear();
+		getQtPropertyIncludeDirectives(list);
+		defpropheader.writeIncludeDirectives(list);
 		defpropheader.writeIncludeDirective("QQmlEngine", QString(), true, false);
 	}
 
@@ -447,7 +451,7 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
     mapHeader.writeIncludeDirective("string", QString(), true, false);
 
     // The verification details may be spread across multiple files
-    QStringList list;
+	list.clear();
     for(int i = 0; i < encodables.length(); i++)
         encodables[i]->getInitAndVerifyIncludeDirectives(list);
     verifyheaderfile->writeIncludeDirectives(list);

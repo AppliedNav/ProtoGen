@@ -755,6 +755,25 @@ QString ProtocolStructure::getStructureDeclaration(bool alwaysCreate) const
 
 }// ProtocolStructure::getStructureDeclaration
 
+/*!
+ * Get the include directives for all entities contained by the current structure
+ * in order to expose them in QML.
+ * \param the output string list with all include directives
+ */
+void ProtocolStructure::getQtPropertyIncludeDirectives(QStringList& list) const
+{
+	const QString className = getQtPropertyClassName();
+	const QString classNameHdr = lookUpQtPropertyIncludeName(className);
+	list.clear();
+	for (int i = 0; i < encodables.length(); i++) {
+		const QString propClassName = encodables[i]->getQtPropertyClassName();
+		const QString propClassNameHdr = encodables[i]->lookUpQtPropertyIncludeName(propClassName);
+		if (classNameHdr != propClassNameHdr) {
+			list << propClassNameHdr;
+		}
+	}
+	list.removeDuplicates();
+}
 
 /*!
  * Get the declaration that goes in the header which declares this structure
@@ -791,8 +810,9 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
         output += "class " + className + " : public QObject\n";
         output += "{\n";
         output += TAB_IN + "Q_OBJECT\n";
-        for(int i = 0; i < encodables.length(); i++)
+        for(int i = 0; i < encodables.length(); i++) {
             output += encodables[i]->getQtPropertyDeclaration();
+        }
 
         // Class ctor to expose the class to QML
         output += "public:\n";

@@ -4,6 +4,7 @@
 #include <QDomDocument>
 #include <QFile>
 #include <QList>
+#include <QHash>
 #include <iostream>
 #include "protocolfile.h"
 #include "xmllinelocator.h"
@@ -102,6 +103,9 @@ public:
 
     //! Find the include name for a specific type
     QString lookUpIncludeName(const QString& typeName) const;
+
+	//! Find the include name for a specific type used to expose properties in QML
+	QString lookUpQtPropertyIncludeName(const QString& typeName) const;
 
     //! Find the enumeration creator for this enum
     const EnumCreator* lookUpEnumeration(const QString& enumName) const;
@@ -211,6 +215,7 @@ protected:
     QList<EnumCreator*> globalEnums;
     QString inputpath;
     QString inputfile;
+	QHash<QString, QString> struct2propsHeader;
 
     ProtocolSourceFile controllerSource;//!< The source file for controller class that allow to access global structures in QML
     ProtocolHeaderFile controllerHeader;//!< The header file for controller class that allow to access global structures in QML
