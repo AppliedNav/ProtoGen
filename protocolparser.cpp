@@ -415,7 +415,6 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
 				propviewsource.makeLineSeparator();
 			}
 		}
-
     }
 
 	if (uiEnabled) {
