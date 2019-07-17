@@ -955,7 +955,7 @@ QString ProtocolStructure::getQmlStructureComponent() const
             output += TAB_IN + TAB_IN + " */\n";
         }
 
-		if ((1 == encodables.length()) && encodables.at(0)->isStruct()) {
+		if (hasOneStruct()) {
 			QString objName = encodables.at(0)->title;
 			if (objName.isEmpty()) {
 				objName = encodables.at(0)->getQtPropertyClassName();

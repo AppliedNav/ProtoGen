@@ -223,6 +223,9 @@ public:
 	//! Return the include directives needed for this encodable
 	virtual void getQtPropertyIncludeDirectives(QStringList& list) const;
 
+	//! Returns true if the current packet contains only one structure
+	bool hasOneStruct() const { return (1 == encodables.length()) && encodables.at(0)->isStruct(); }
+
 protected:
 
     //! Make a structure output be prettily aligned
