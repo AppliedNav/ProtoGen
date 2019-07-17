@@ -424,7 +424,7 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
 
 	// Create header file for exposing classes with properties in QML
 	QStringList list;
-    if (parser->hasUiSupport() && (uiEnabled || propsEnabled)) {
+    if (parser->hasUiSupport() && (uiEnabled || propsEnabled) && !hasOneStruct()) {
 		defpropheader.setLicenseText(support.licenseText);
 		defpropheader.setModuleNameAndPath(moduleName + "_props", support.outputpath);
 		if (defpropheader.isAppending()) {
@@ -479,7 +479,7 @@ void ProtocolStructureModule::setupFiles(QString moduleName,
         structfile->makeLineSeparator();
 
         // Create classes that expose properties in QML
-        if (parser->hasUiSupport() && (uiEnabled || propsEnabled)) {
+        if (parser->hasUiSupport() && (uiEnabled || propsEnabled) && !hasOneStruct()) {
             defpropheader.makeLineSeparator();
             defpropheader.write(getQtPropertyClassDeclaration());
             defpropheader.makeLineSeparator();
