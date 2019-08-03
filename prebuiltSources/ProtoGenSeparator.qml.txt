@@ -7,7 +7,7 @@ Item {
     property alias label: sepLbl.text
     property alias comment: sepToolTip.text
     readonly property int horizontalMargin: 20
-    width: win.width
+    width: parent.width
     height: sepLblFrame.height
     Rectangle {
         id: sepLeft
