@@ -955,11 +955,9 @@ QString ProtocolStructure::getQmlStructureComponent() const
             output += TAB_IN + TAB_IN + " */\n";
         }
 
+        QString objName;
 		if (hasOneStruct()) {
-			QString objName = encodables.at(0)->title;
-			if (objName.isEmpty()) {
-				objName = encodables.at(0)->getQtPropertyClassName();
-			}
+            objName = encodables.at(0)->getQtPropertyClassName();
 			if (objName.isEmpty()) {
 				emitWarning("Object name is empty");
 				return "";
@@ -972,10 +970,7 @@ QString ProtocolStructure::getQmlStructureComponent() const
             output += TAB_IN + TAB_IN + TAB_IN + "model: controller." + className.at(0).toLower() + className.mid(1) + "\n";
 			output += TAB_IN + TAB_IN + "}\n\n";
 		} else {
-			QString objName = title;
-			if (objName.isEmpty()) {
-				objName = getQtPropertyClassName();
-			}
+            objName = getQtPropertyClassName();
 			if (objName.isEmpty()) {
 				emitWarning("Object name is empty");
 				return "";

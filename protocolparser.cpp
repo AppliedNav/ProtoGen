@@ -307,10 +307,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
             if (module->propsEnabled) {
 				ProtocolSourceFile compsource;//source file for the current component
 				compsource.setQml(true);
-                QString compFileName = module->title;
-                if (compFileName.isEmpty()) {
-                    compFileName = module->getQtPropertyClassName();
-                }
+                QString compFileName = module->getQtPropertyClassName();
                 if (compFileName.isEmpty()) {
                     emit emitWarning("Cannot get component name");//should not happen
                     continue;
