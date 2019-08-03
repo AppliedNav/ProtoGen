@@ -364,6 +364,19 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
         fileNameList.append(packet->getMapHeaderFileName());
         filePathList.append(packet->getMapHeaderFilePath());
 
+        if (uiEnabled) {
+            if (!packet->hasOneStruct()) {
+                fileNameList.append(packet->getQtPropertiesDefinitionFileName());
+                filePathList.append(packet->getQtPropertiesDefinitionFilePath());
+            }
+
+            // Insert into QML view file the properties of the current module
+            if (packet->uiEnabled) {
+                propviewsource.makeLineSeparator();
+                propviewsource.write(packet->getQmlStructureComponent());
+                propviewsource.makeLineSeparator();
+            }
+        }
     }
 
     // And the packets which are not available for other packets
