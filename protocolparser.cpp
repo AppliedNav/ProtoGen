@@ -503,8 +503,24 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
                 const QString destFileName = support.outputpath + ProtocolFile::tempprefix +
                         fileNames[i];
                 QFile::remove(destFileName);
-                if (!QFile::copy(srcFileName, destFileName)) {
-                    qCritical() << "Cannot create prebuild file" << fileNames[i];
+                if (QString("ProtoGenControls.qml") == fileNames[i]) {
+                    //make sure the controller object name matches the actual name
+                    QFile inFile(srcFileName);
+                    QFile outFile(destFileName);
+                    if (inFile.open(QIODevice::ReadOnly | QIODevice::Text) &&
+                            outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                       QTextStream inStream(&inFile);
+                       QTextStream outStream(&outFile);
+                       while (!inStream.atEnd()) {
+                          QString line = inStream.readLine();
+                          line.replace("controller", getQtControllerObjectName());
+                          outStream << line << endl;
+                       }
+                    }
+                } else {
+                    if (!QFile::copy(srcFileName, destFileName)) {
+                        qCritical() << "Cannot create prebuild file" << fileNames[i];
+                    }
                 }
             }
         }
@@ -1961,7 +1977,6 @@ void ProtocolParser::createControllerHeader(void)
     controllerHeader.flush();
 }
 
-
 /*!
  * Get the controller class name.
  * \return the string that represents the class name
@@ -1969,6 +1984,15 @@ void ProtocolParser::createControllerHeader(void)
 QString ProtocolParser::getQtControllerClassName(void) const
 {
     return name + "Controller";
+}
+
+/*!
+ * Get the controller object name used in QML files.
+ * \return the string that represents the object name
+ */
+QString ProtocolParser::getQtControllerObjectName(void) const
+{
+    return name.toLower() + "Controller";
 }
 
 /*!
@@ -2068,7 +2092,7 @@ QString ProtocolParser::getQtControllerClassDefinition(void) const
 
         output += className + "::" + className + "(QObject *parent) : QObject(parent)\n";
         output += "{\n";
-        output += ProtocolDocumentation::TAB_IN + "setObjectName(\"controller\");\n";
+        output += ProtocolDocumentation::TAB_IN + "setObjectName(\"" + getQtControllerObjectName() + "\");\n";
         output += "}\n\n";
         output += "void " + className + "::openFile(const QString &fileName)\n";
         output += "{\n";

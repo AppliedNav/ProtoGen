@@ -163,6 +163,9 @@ public:
     //! Return status of QML support
     bool hasUiSupport() const { return uiEnabled; }
 
+    //! Get Qt controller object name used in QML files
+    QString getQtControllerObjectName(void) const;
+
 protected:
 
     //! Parses a single XML file handling any require tags to flatten a file
@@ -223,6 +226,7 @@ protected:
 
 private:
 
+    //! Get Qt controller class name
     QString getQtControllerClassName(void) const;
 
     //! Get the declaration that goes in the header which declares the controller class to access its properties in QML
