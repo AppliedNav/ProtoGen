@@ -83,7 +83,6 @@ Column {
         bottomPadding: 5
         onTextChanged: {
             control.val = text
-            text = control.val.toFixed(control.precision)
             parent.parent.synchro = false
         }
         background: Rectangle {

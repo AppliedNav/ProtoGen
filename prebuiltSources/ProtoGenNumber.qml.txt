@@ -49,7 +49,6 @@ Row {
         width: parent.width/2-parent.spacing
         onTextChanged: {
             control.val = text
-            text = control.val.toFixed(control.precision)
             parent.parent.synchro = false
         }
         background: Rectangle {

@@ -51,8 +51,7 @@ Row {
                 horizontalAlignment: Text.AlignHCenter
                 onTextChanged: {
                     control.val[index] = text
-                    text = control.val[index].toFixed(control.precision)
-                    parent.parent.synchro = false
+                    control.parent.synchro = false
                 }
                 background: Rectangle {
                     height: 24 + 5
