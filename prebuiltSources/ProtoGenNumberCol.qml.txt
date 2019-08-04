@@ -25,7 +25,7 @@ Column {
         id: controlRow
         spacing: 5
         width: control.width
-        height: visible ? childrenRect.height : 0
+        height: visible ? protoGenNumberLabel.height : 0
         Label {
             id: protoGenNumberLabel
             clip: true
