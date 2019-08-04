@@ -49,7 +49,7 @@ Row {
                 font.pointSize: fontSize
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                onAccepted: {
+                onTextChanged: {
                     control.val[index] = text
                     text = control.val[index].toFixed(control.precision)
                     parent.parent.synchro = false

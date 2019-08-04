@@ -81,7 +81,7 @@ Column {
         rightPadding: 5
         topPadding: 5
         bottomPadding: 5
-        onAccepted: {
+        onTextChanged: {
             control.val = text
             text = control.val.toFixed(control.precision)
             parent.parent.synchro = false

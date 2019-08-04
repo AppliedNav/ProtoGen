@@ -47,7 +47,7 @@ Row {
         topPadding: 5
         bottomPadding: 5
         width: parent.width/2-parent.spacing
-        onAccepted: {
+        onTextChanged: {
             control.val = text
             text = control.val.toFixed(control.precision)
             parent.parent.synchro = false
