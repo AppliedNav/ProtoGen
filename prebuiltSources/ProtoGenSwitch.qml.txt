@@ -9,15 +9,13 @@ Row {
     property alias label: protoGenSwitchLabel.text
     property string comment: ""
 
-    readonly property int fontSize: 10
-
     width: parent.width
     height: 24
     spacing: 4
 
     Label {
         id: protoGenSwitchLabel
-        font.pointSize: control.fontSize
+        font.pointSize: globalProps.fontSize
         width: parent.width/3-4
         height: parent.height
         verticalAlignment: Text.AlignVCenter
@@ -35,7 +33,7 @@ Row {
 
     Label {
         text: "OFF"
-        font.pointSize: control.fontSize
+        font.pointSize: globalProps.fontSize
         width: parent.width/6-4
         height: parent.height
         verticalAlignment: Text.AlignVCenter
@@ -55,7 +53,7 @@ Row {
 
     Label {
         text: "ON"
-        font.pointSize: control.fontSize
+        font.pointSize: globalProps.fontSize
         width: parent.width/6-4
         height: parent.height
         verticalAlignment: Text.AlignVCenter

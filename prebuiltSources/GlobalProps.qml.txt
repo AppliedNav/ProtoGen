@@ -1,0 +1,6 @@
+import QtQuick 2.11
+
+QtObject {
+    readonly property int winWidth: (typeof(win) == "undefined") ? 300 : win.width
+    readonly property int fontSize: 10
+}

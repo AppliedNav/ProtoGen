@@ -18,5 +18,6 @@
         <file>prebuiltSources/ProtoGenSlider.qml.txt</file>
         <file>prebuiltSources/ProtoGenSpinBox.qml.txt</file>
         <file>prebuiltSources/ProtoGenSwitch.qml.txt</file>
+        <file>prebuiltSources/GlobalProps.qml.txt</file>
     </qresource>
 </RCC>

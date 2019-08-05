@@ -11,8 +11,6 @@ Row {
     property alias units: protoGenNumberUnits.text
     property string comment: ""
 
-    readonly property int fontSize: 10
-
     width: parent.width
     height: 24
     spacing: 10
@@ -20,7 +18,7 @@ Row {
     Label {
         id: protoGenNumberLabel
         clip: true
-        font.pointSize: control.fontSize
+        font.pointSize: globalProps.fontSize
         width: control.width/3-control.spacing
         height: control.height
         verticalAlignment: Text.AlignVCenter
@@ -40,7 +38,7 @@ Row {
         id: protoGenNumberValue
         text: control.val.toFixed(control.precision)
         validator: DoubleValidator {decimals: control.precision}
-        font.pointSize: fontSize
+        font.pointSize: globalProps.fontSize
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignRight
         rightPadding: 5
@@ -61,7 +59,7 @@ Row {
     Label {
         id: protoGenNumberUnits
         clip: true
-        font.pointSize: control.fontSize
+        font.pointSize: globalProps.fontSize
         width: parent.width/6-parent.spacing
         height: parent.height
         verticalAlignment: Text.AlignVCenter

@@ -11,8 +11,6 @@ Row {
     property alias label: protoGenComboLabel.text
     property string comment: ""
 
-    readonly property int fontSize: 10
-
     width: parent.width
     height: 48
     spacing: 10
@@ -20,7 +18,7 @@ Row {
     Label {
         id: protoGenComboLabel
         text: label
-        font.pointSize: fontSize
+        font.pointSize: globalProps.fontSize
         width: parent.width/3-10
         height: parent.height
         verticalAlignment: Text.AlignVCenter
@@ -41,7 +39,7 @@ Row {
         model: options
         width: parent.width/2
         height: parent.height
-        font.pointSize: fontSize
+        font.pointSize: globalProps.fontSize
         background.height: parent.height
         popup: Popup {
             y: protoGenComboValue.height - 1

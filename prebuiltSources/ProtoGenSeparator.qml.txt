@@ -42,7 +42,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             clip: true
             elide: Text.ElideRight
-            font.pointSize: control.subsection ? 8 : 10
+            font.pointSize: control.subsection ? (globalProps.fontSize - 2) : globalProps.fontSize
             ToolTip {
                 id: sepToolTip
             }

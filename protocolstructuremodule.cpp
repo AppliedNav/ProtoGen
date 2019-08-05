@@ -846,7 +846,7 @@ QString ProtocolStructureModule::getQmlComponentDefinition(void) const
 		output += TAB_IN + "property bool hasLabel: true\n";
 	}
 	output += TAB_IN + "property var model: undefined\n";
-	output += TAB_IN + "width: win.width\n";
+    output += TAB_IN + "width: globalProps.winWidth\n";
 	output += TAB_IN + "onSynchroChanged: if (undefined !== parent.synchro) parent.synchro = synchro\n";
 	for (int i = 0; i < encodables.length(); i++) {
 		const QString decl = encodables[i]->getQmlPropertyComponent(compName + QString(".model"), isArrayItem);

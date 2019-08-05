@@ -504,7 +504,8 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
                 "ProtoGenSeparator.qml",
                 "ProtoGenSlider.qml",
                 "ProtoGenSpinBox.qml",
-                "ProtoGenSwitch.qml"
+                "ProtoGenSwitch.qml",
+                "GlobalProps.qml"
             };
             for (size_t i = 0; i < sizeof(fileNames)/sizeof(fileNames[0]); ++i) {
                 fileNameList.append(fileNames[i]);
@@ -2146,6 +2147,10 @@ QString ProtocolParser::getQmlFileBegin(void)
     contents += ProtocolDocumentation::TAB_IN + "clip: true\n";
     contents += ProtocolDocumentation::TAB_IN + "contentHeight: itemAt(currentIndex).childrenRect.height\n";
     contents += ProtocolDocumentation::TAB_IN + "onCurrentIndexChanged: contentHeight = itemAt(currentIndex).childrenRect.height\n\n";
+
+    contents += ProtocolDocumentation::TAB_IN + "GlobalProps {\n";
+    contents += ProtocolDocumentation::TAB_IN + ProtocolDocumentation::TAB_IN + "id: globalProps\n";
+    contents += ProtocolDocumentation::TAB_IN + "}\n\n";
 
     contents += ProtocolDocumentation::TAB_IN + "SwipeView {\n";
     contents += ProtocolDocumentation::TAB_IN + ProtocolDocumentation::TAB_IN + "id: categorySwipeView\n";

@@ -13,15 +13,13 @@ Row {
     property alias units: protoGenSpinUnits.text
     property string comment: ""
 
-    readonly property int fontSize: 10
-
     width: parent.width
     height: controlSpinBox.height
     spacing: 10
 
     Label {
         id: protoGenSpinLabel
-        font.pointSize: control.fontSize
+        font.pointSize: globalProps.fontSize
         width: parent.width/3-4
         height: parent.height
         verticalAlignment: Text.AlignVCenter
@@ -40,7 +38,7 @@ Row {
     SpinBox {
         id: controlSpinBox
         editable: true
-        font.pointSize: control.fontSize
+        font.pointSize: globalProps.fontSize
         from: control.minval
         to: control.maxval
         stepSize: control.step
@@ -54,7 +52,7 @@ Row {
 
     Label {
         id: protoGenSpinUnits
-        font.pointSize: control.fontSize
+        font.pointSize: globalProps.fontSize
         width: parent.width/6-4
         height: parent.height
         verticalAlignment: Text.AlignVCenter
