@@ -308,3 +308,14 @@ QString Encodable::getQtPropertyClassName() const
 	className.remove("_t");
 	return className;
 }
+
+/*!
+ * Get the pointer name used to expose properties in QML.
+ * \return the string that represents the class name
+ */
+QString Encodable::getQtPropertyPtrName() const
+{
+    QString name = title.simplified();
+    name.replace(" ", "");
+    return name.at(0).toLower() + name.mid(1);
+}

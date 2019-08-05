@@ -966,8 +966,7 @@ QString ProtocolStructure::getQmlStructureComponent() const
             output += TAB_IN + TAB_IN + objName + " {\n";
 			output += TAB_IN + TAB_IN + TAB_IN + "readonly property string comment: \"" + comment + "\"\n";
             output += TAB_IN + TAB_IN + TAB_IN + "objectName: \"" + title + "\"\n";
-			const QString className = encodables.at(0)->getQtPropertyClassName();
-            output += TAB_IN + TAB_IN + TAB_IN + "model: " + parser->getQtControllerObjectName() + "." + className.at(0).toLower() + className.mid(1) + "\n";
+            output += TAB_IN + TAB_IN + TAB_IN + "model: " + parser->getQtControllerObjectName() + "." + getQtPropertyPtrName() + "\n";
 			output += TAB_IN + TAB_IN + "}\n\n";
 		} else {
             objName = getQtPropertyClassName();
@@ -981,8 +980,7 @@ QString ProtocolStructure::getQmlStructureComponent() const
             const QString className = getQtPropertyClassName();
 			for (int i = 0; i < encodables.length(); i++) {
                 const QString decl = encodables[i]->getQmlPropertyComponent(parser->getQtControllerObjectName() + QString(".") +
-					className.at(0).toLower() +
-					className.mid(1), isArrayItem);
+                    getQtPropertyPtrName(), isArrayItem);
 				const QStringList tok = decl.split('\n');
 				for (const auto &line : tok) {
 					if (!line.isEmpty()) {

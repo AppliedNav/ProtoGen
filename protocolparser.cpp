@@ -2038,7 +2038,7 @@ QString ProtocolParser::getQtControllerClassDeclaration(void) const
 				const QString propClassName = structure->getQtPropertyClassName();
 				if (!propClassName.isEmpty()) {
 					output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
-						", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
+                        ", " + structure->getQtPropertyPtrName() + ")\n";
 				}
 			}
         }
@@ -2057,7 +2057,7 @@ QString ProtocolParser::getQtControllerClassDeclaration(void) const
 				}
 				if (!propClassName.isEmpty()) {
 					output += ProtocolDocumentation::TAB_IN + "QML_CONSTANT_PROPERTY_PTR(" + propClassName +
-						", " + propClassName.at(0).toLower() + propClassName.mid(1) + ")\n";
+                        ", " + packet->getQtPropertyPtrName() + ")\n";
 				}
 			}
 		}

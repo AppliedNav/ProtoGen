@@ -220,6 +220,9 @@ public:
 	//! Get the class name used to expose properties in QML
 	virtual QString getQtPropertyClassName() const;
 
+    //! Get the pointer name used to expose properties in QML
+    virtual QString getQtPropertyPtrName() const;
+
 public:
 
     //! String frequently reused for the beginning of encode functions
