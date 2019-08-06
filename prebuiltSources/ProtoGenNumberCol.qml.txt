@@ -5,9 +5,7 @@ Column {
     id: control
 
     property alias hasLabel: controlRow.visible
-    property double val: 0
-    property int precision: 4
-
+    property alias val: protoGenNumberValue.text
     property alias label: protoGenNumberLabel.text
     property alias units: protoGenNumberUnits.text
     property string comment: ""
@@ -71,8 +69,7 @@ Column {
             right: parent.right
             rightMargin: 5
         }
-        text: control.val.toFixed(control.precision)
-        validator: DoubleValidator {decimals: control.precision}
+        validator: DoubleValidator { decimals: globalProps.precision }
         font.pointSize: globalProps.fontSize
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter

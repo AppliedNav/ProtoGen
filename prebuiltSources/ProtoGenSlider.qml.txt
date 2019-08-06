@@ -8,7 +8,6 @@ Row {
     property double minval: 0
     property double maxval: 1
     property double step: 0.1
-    property int precision: 2
 
     property alias label: protoGenSliderLabel.text
     property alias units: protoGenSliderUnits.text
@@ -48,10 +47,10 @@ Row {
         ToolTip {
             parent: protoGenSliderValue.handle
             visible: protoGenSliderValue.pressed
-            text: protoGenSliderValue.valueAt(protoGenSliderValue.position).toFixed(control.precision)
+            text: protoGenSliderValue.valueAt(protoGenSliderValue.position).toFixed(globalProps.precision/2)
         }
         onValueChanged: {
-            control.val = protoGenSliderValue.valueAt(protoGenSliderValue.position).toFixed(control.precision)
+            control.val = protoGenSliderValue.valueAt(protoGenSliderValue.position).toFixed(globalProps.precision/2)
             parent.parent.synchro = false
         }
     }

@@ -5,8 +5,6 @@ Row {
     id: control
 
     property alias val: protoGenNumberArrayList.model
-    property int precision: 4
-
     property alias label: protoGenNumberArrayLabel.text
     property alias units: protoGenNumberArrayUnits.text
     property string comment: ""
@@ -42,8 +40,8 @@ Row {
             TextField {
                 id: protoGenNumberArrayValue
                 width: 60
-                text: control.val[index].toFixed(control.precision)
-                validator: DoubleValidator {decimals: control.precision}
+                text: control.val[index].toFixed(globalProps.precision)
+                validator: DoubleValidator { decimals: globalProps.precision }
                 font.pointSize: globalProps.fontSize
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter

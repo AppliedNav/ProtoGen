@@ -4,9 +4,7 @@ import QtQuick.Controls 2.3
 Row {
     id: control
 
-    property double val: 0
-    property int precision: 4
-
+    property alias val: protoGenNumberValue.text
     property alias label: protoGenNumberLabel.text
     property alias units: protoGenNumberUnits.text
     property string comment: ""
@@ -36,8 +34,7 @@ Row {
 
     TextField {
         id: protoGenNumberValue
-        text: control.val.toFixed(control.precision)
-        validator: DoubleValidator {decimals: control.precision}
+        validator: DoubleValidator { decimals: globalProps.precision }
         font.pointSize: globalProps.fontSize
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignRight

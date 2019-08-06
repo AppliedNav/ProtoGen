@@ -117,7 +117,7 @@ Grid {
         implicitHeight: buttonHeight
 
         onClicked: {
-            control.inSync = false
+            control.inSync = true
             controller.sendData(categoryView.currentIndex)
         }
     }
