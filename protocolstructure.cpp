@@ -665,10 +665,12 @@ QString ProtocolStructure::getQmlPropertyComponent(const QString &accessor, bool
 		if (isArrItem) {
 			const QString compName = accessor.split('.').first();
 			output += "ProtoGenNumberCol { hasLabel: " + compName + ".hasLabel; width: " + compName + ".itemWidth; ";
-		} else {
+            output += "val: " + accessor + "." + name + "; ";
+        } else {
 			output += "ProtoGenNumber { ";
+            output += "val: " + accessor + "." + name + ".toFixed(globalProps.precision); onValChanged: " + accessor + "." + name + " = val; ";
 		}
-		output += "val: " + accessor + "." + name + "; label: \"" + name + "\";";
+        output += "label: \"" + name + "\";";
         if (!comment.isEmpty()) {
             output += " comment: \"" + comment + "\";";
         }

@@ -1803,10 +1803,12 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
 			if (isArrItem) {
 				const QString compName = accessor.split('.').first();
 				output += "ProtoGenNumberCol { hasLabel: " + compName + ".hasLabel; width: " + compName + ".itemWidth; ";
+                output += "val: " + accessor + "." + name + "; ";
 			} else {
 				output += "ProtoGenNumber { ";
+                output += "val: " + accessor + "." + name + ".toFixed(globalProps.precision); onValChanged: " + accessor + "." + name + " = val; ";
 			}
-			output += "val: " + accessor + "." + name + "; label: \"" + name + "\";";
+            output += "label: \"" + name + "\";";
             const int index = extraInfoNames.indexOf("Units");
             if (0 <= index) {
                 output += " units: \"" + extraInfoValues.at(index) + "\";";

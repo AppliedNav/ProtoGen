@@ -76,10 +76,7 @@ Column {
         rightPadding: 5
         topPadding: 5
         bottomPadding: 5
-        onTextChanged: {
-            control.val = text
-            parent.parent.synchro = false
-        }
+        onTextChanged: parent.parent.synchro = false
         background: Rectangle {
             anchors.fill: parent
             color: protoGenNumberValue.focus ? "gray" : "transparent"
