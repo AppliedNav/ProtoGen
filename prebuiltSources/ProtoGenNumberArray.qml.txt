@@ -56,7 +56,6 @@ Row {
                 }
                 inputMethodHints: Qt.ImhFormattedNumbersOnly
                 selectByMouse: true
-                text: control.val.toFixed(globalProps.precision)
                 onAccepted: focus = false
                 onEditingFinished: control.val = Number(text)
                 onActiveFocusChanged: {if (activeFocus) selectAll()}
