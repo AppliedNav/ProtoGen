@@ -1800,14 +1800,19 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
             }
             output += " }";
         } else {
+            const QString objId = name.at(0).toLower() + name.mid(1);
+            const QString accessorName = accessor + "." + name;
 			if (isArrItem) {
 				const QString compName = accessor.split('.').first();
-				output += "ProtoGenNumberCol { hasLabel: " + compName + ".hasLabel; width: " + compName + ".itemWidth; ";
-                output += "val: " + accessor + "." + name + "; ";
+                output += "ProtoGenNumberCol {";
+                output += "id: " + objId;
+                output += "; hasLabel: " + compName + ".hasLabel; width: " + compName + ".itemWidth; ";
 			} else {
-				output += "ProtoGenNumber { ";
-                output += "val: " + accessor + "." + name + ".toFixed(globalProps.precision); onValChanged: " + accessor + "." + name + " = val; ";
+                output += "ProtoGenNumber { ";
+                output += "id: " + objId;
 			}
+            output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " } ";
+            output += "onValChanged: " + accessorName + " = val; ";
             output += "label: \"" + name + "\";";
             const int index = extraInfoNames.indexOf("Units");
             if (0 <= index) {

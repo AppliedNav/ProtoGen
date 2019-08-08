@@ -4,7 +4,7 @@ import QtQuick.Controls 2.3
 Row {
     id: control
 
-    property alias val: protoGenNumberValue.text
+    property alias real: 0
     property alias label: protoGenNumberLabel.text
     property alias units: protoGenNumberUnits.text
     property string comment: ""
@@ -16,7 +16,7 @@ Row {
     Label {
         id: protoGenNumberLabel
         clip: true
-        font.pointSize: globalProps.fontSize
+        font: globalProps.fontRegular
         width: control.width/3-control.spacing
         height: control.height
         verticalAlignment: Text.AlignVCenter
@@ -34,8 +34,8 @@ Row {
 
     TextField {
         id: protoGenNumberValue
-        validator: DoubleValidator { decimals: globalProps.precision }
-        font.pointSize: globalProps.fontSize
+        validator: globalProps.doubleValidator
+        font: globalProps.fontRegular
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignRight
         rightPadding: 5
@@ -48,12 +48,18 @@ Row {
             color: protoGenNumberValue.focus ? "gray" : "transparent"
             border.color: protoGenNumberValue.focus ? "white" : "gray"
         }
+        inputMethodHints: Qt.ImhFormattedNumbersOnly
+        selectByMouse: true
+        text: control.val.toFixed(globalProps.precision)
+        onAccepted: focus = false
+        onEditingFinished: control.val = Number(text)
+        onActiveFocusChanged: {if (activeFocus) selectAll()}
     }
 
     Label {
         id: protoGenNumberUnits
         clip: true
-        font.pointSize: globalProps.fontSize
+        font: globalProps.fontRegular
         width: parent.width/6-parent.spacing
         height: parent.height
         verticalAlignment: Text.AlignVCenter

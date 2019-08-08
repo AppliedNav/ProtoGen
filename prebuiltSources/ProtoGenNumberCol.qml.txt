@@ -4,8 +4,8 @@ import QtQuick.Controls 2.3
 Column {
     id: control
 
+    property real val: 0
     property alias hasLabel: controlRow.visible
-    property alias val: protoGenNumberValue.text
     property alias label: protoGenNumberLabel.text
     property alias units: protoGenNumberUnits.text
     property string comment: ""
@@ -25,7 +25,7 @@ Column {
         Label {
             id: protoGenNumberLabel
             clip: true
-            font.pointSize: globalProps.fontSize
+            font: globalProps.fontRegular
             width: control.width - protoGenNumberUnits.width - controlRow.spacing
             height: controlRow.visible ? 24 : 0
             verticalAlignment: Text.AlignVCenter
@@ -43,7 +43,7 @@ Column {
         Label {
             id: protoGenNumberUnits
             clip: true
-            font.pointSize: globalProps.fontSize
+            font: globalProps.fontRegular
             width: ('' !== protoGenNumberUnits.text) ? 0.3 * control.width : 0
             height: protoGenNumberLabel.height
             verticalAlignment: Text.AlignVCenter
@@ -69,8 +69,8 @@ Column {
             right: parent.right
             rightMargin: 5
         }
-        validator: DoubleValidator { decimals: globalProps.precision }
-        font.pointSize: globalProps.fontSize
+        validator: globalProps.doubleValidator
+        font: globalProps.fontRegular
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         rightPadding: 5
@@ -82,5 +82,11 @@ Column {
             color: protoGenNumberValue.focus ? "gray" : "transparent"
             border.color: protoGenNumberValue.focus ? "white" : "gray"
         }
+        inputMethodHints: Qt.ImhFormattedNumbersOnly
+        selectByMouse: true
+        text: control.val.toFixed(globalProps.precision)
+        onAccepted: focus = false
+        onEditingFinished: control.val = Number(text)
+        onActiveFocusChanged: {if (activeFocus) selectAll()}
     }
 }

@@ -2,6 +2,9 @@ import QtQuick 2.11
 
 QtObject {
     readonly property int winWidth: (typeof(win) == "undefined") ? 300 : win.width
-    readonly property int fontSize: 10
     readonly property int precision: 4
+    readonly property int fontPointSize: 10
+    property font fontRegular: Qt.font({family: "Helvetica", pointSize: fontPointSize})
+    property font fontBold: Qt.font({family: "Helvetica", pointSize: fontPointSize, bold: true})
+    property var doubleValidator: DoubleValidator { decimals: precision; notation: DoubleValidator.StandardNotation }
 }

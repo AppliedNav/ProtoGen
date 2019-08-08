@@ -18,7 +18,7 @@ Row {
     Label {
         id: protoGenComboLabel
         text: label
-        font.pointSize: globalProps.fontSize
+        font: globalProps.fontRegular
         width: parent.width/3-10
         height: parent.height
         verticalAlignment: Text.AlignVCenter
@@ -39,7 +39,7 @@ Row {
         model: options
         width: parent.width/2
         height: parent.height
-        font.pointSize: globalProps.fontSize
+        font: globalProps.fontRegular
         background.height: parent.height
         popup: Popup {
             y: protoGenComboValue.height - 1

@@ -16,7 +16,7 @@ Row {
     Label {
         id: protoGenNumberArrayLabel
         clip: true
-        font.pointSize: globalProps.fontSize
+        font: globalProps.fontRegular
         width: control.width/3-control.spacing
         height: control.height
         verticalAlignment: Text.AlignVCenter
@@ -41,8 +41,8 @@ Row {
                 id: protoGenNumberArrayValue
                 width: 60
                 text: control.val[index].toFixed(globalProps.precision)
-                validator: DoubleValidator { decimals: globalProps.precision }
-                font.pointSize: globalProps.fontSize
+                validator: globalProps.doubleValidator
+                font: globalProps.fontRegular
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 onTextChanged: {
@@ -54,8 +54,15 @@ Row {
                     color: protoGenNumberArrayValue.focus ? "gray" : "transparent"
                     border.color: protoGenNumberArrayValue.focus ? "white" : "gray"
                 }
+                inputMethodHints: Qt.ImhFormattedNumbersOnly
+                selectByMouse: true
+                text: control.val.toFixed(globalProps.precision)
+                onAccepted: focus = false
+                onEditingFinished: control.val = Number(text)
+                onActiveFocusChanged: {if (activeFocus) selectAll()}
             }
             Label {
+                font: globalProps.fontRegular
                 anchors {
                     bottom: parent.bottom
                     bottomMargin: 0
@@ -83,7 +90,7 @@ Row {
     Label {
         id: protoGenNumberArrayUnits
         clip: true
-        font.pointSize: globalProps.fontSize
+        font: globalProps.fontRegular
         width: parent.width/6-parent.spacing
         height: parent.height
         verticalAlignment: Text.AlignVCenter
