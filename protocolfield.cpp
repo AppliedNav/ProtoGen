@@ -1734,7 +1734,13 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
         emitWarning("2D arrays are not supported to define them as QML components");
 	} else if (isArray()) {
         if ("float" == typeName) {
-            output += "ProtoGenNumberArray { val: " + accessor + "." + name + "; label: \"" + name + "\";";
+            const QString objId = name.at(0).toLower() + name.mid(1);
+            const QString accessorName = accessor + "." + name;
+            output += "ProtoGenNumberArray { ";
+            output += "id: " + objId;
+            output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " } ";
+            output += "onValChanged: " + accessorName + " = val; ";
+            output += "label: \"" + name + "\";";
             const int index = extraInfoNames.indexOf("Units");
             if (0 <= index) {
                 output += " units: \"" + extraInfoValues.at(index) + "\";";

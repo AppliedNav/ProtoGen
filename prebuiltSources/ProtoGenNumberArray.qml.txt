@@ -4,7 +4,7 @@ import QtQuick.Controls 2.3
 Row {
     id: control
 
-    property alias val: protoGenNumberArrayList.model
+    property var val: null
     property alias label: protoGenNumberArrayLabel.text
     property alias units: protoGenNumberArrayUnits.text
     property string comment: ""
@@ -45,10 +45,7 @@ Row {
                 font: globalProps.fontRegular
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                onTextChanged: {
-                    control.val[index] = text
-                    control.parent.synchro = false
-                }
+                onTextChanged: control.parent.synchro = false
                 background: Rectangle {
                     height: 24 + 5
                     color: protoGenNumberArrayValue.focus ? "gray" : "transparent"
@@ -57,7 +54,10 @@ Row {
                 inputMethodHints: Qt.ImhFormattedNumbersOnly
                 selectByMouse: true
                 onAccepted: focus = false
-                onEditingFinished: control.val = Number(text)
+                onEditingFinished: {
+                    control.val[index] = Number(text)
+                    control.valChanged()
+                }
                 onActiveFocusChanged: {if (activeFocus) selectAll()}
             }
             Label {
@@ -72,7 +72,7 @@ Row {
         }
     }
     ListView {
-        id: protoGenNumberArrayList
+        model: control.val
         width: control.width/2-control.spacing
         height: control.height
         orientation: ListView.Horizontal

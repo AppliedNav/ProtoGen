@@ -681,11 +681,38 @@ QString ProtocolStructure::getQmlPropertyComponent(const QString &accessor, bool
         }
         output += " }";
     } else if(array2d.isEmpty()) {
-		output += "ProtoGenNumberArray { val: " + accessor + "." + name + "; label: \"" + name + "\";";
-		if (!comment.isEmpty()) {
-			output += " comment: \"" + comment + "\";";
-		}
-		output += " }";
+        if ("float" == typeName) {
+            const QString objId = name.at(0).toLower() + name.mid(1);
+            const QString accessorName = accessor + "." + name;
+            output += "ProtoGenNumberArray { ";
+            output += "id: " + objId;
+            output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " } ";
+            output += "onValChanged: " + accessorName + " = val; ";
+            output += "label: \"" + name + "\";";
+            if (!comment.isEmpty()) {
+                output += " comment: \"" + comment + "\";";
+            }
+            output += " }";
+        } else {
+            //length of the array
+            bool ok = false;
+            int arrLen = array.toInt(&ok);
+            if (!ok) {
+                arrLen = parser->getEnumerationNumberForEnumValue(array);
+                ok = (-1 < arrLen);
+            }
+            if (ok) {
+                const QString typeNameProp = getQtPropertyClassName();
+                for (int i = 0; i < arrLen; ++i) {
+                    const auto itemName = name + QString::number(i);
+                    output += "ProtoGenSeparator { label: \"" + itemName + "\"; subsection: true }\n";
+                    const QString hasLabel = (0 == i) ? "true" : "false";
+                    output += typeNameProp + " { model: " + accessor + "." + itemName + "; hasLabel: " + hasLabel + " }\n";
+                }
+            } else {
+                emitWarning("Array length is not an int" + array);
+            }
+        }
     } else {
         emitWarning("2D arrays are not supported to expose them to QML");
     }
