@@ -1730,23 +1730,23 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
     if(isNotInMemory())
         return output;
 
+    const QString accessorName = accessor + "." + name;
     if(is2dArray()) {
         emitWarning("2D arrays are not supported to define them as QML components");
 	} else if (isArray()) {
         if ("float" == typeName) {
             const QString objId = name.at(0).toLower() + name.mid(1);
-            const QString accessorName = accessor + "." + name;
-            output += "ProtoGenNumberArray { ";
-            output += "id: " + objId;
-            output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " } ";
-            output += "onValChanged: " + accessorName + " = val; ";
-            output += "label: \"" + name + "\";";
+            output += "ProtoGenNumberArray {";
+            output += " id: " + objId;
+            output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " }";
+            output += " onValChanged: " + accessorName + " = val";
+            output += "; label: \"" + name + "\"";
             const int index = extraInfoNames.indexOf("Units");
             if (0 <= index) {
-                output += " units: \"" + extraInfoValues.at(index) + "\";";
+                output += "; units: \"" + extraInfoValues.at(index) + "\"";
             }
             if (!comment.isEmpty()) {
-                output += " comment: \"" + comment + "\";";
+                output += "; comment: \"" + comment + "\"";
             }
             output += " }";
         } else {
@@ -1771,13 +1771,13 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
         }
 	} else if (isStruct()) {
 		output += "ProtoGenSeparator { label: \"" + name + "\"; comment: \"" + comment + "\" }\n";
-		output += getQtPropertyClassName() + " { model: " + accessor + "." + name + " }";
+        output += getQtPropertyClassName() + " { model: " + accessorName + " }";
     } else {
 		if (inMemoryType.isEnum) {
 			const EnumCreator *enumCreator = parser->lookUpEnumeration(enumName);
 			if (nullptr != enumCreator) {
 				const QList<EnumElement> &elems = enumCreator->getElements();
-				output += "ProtoGenComboBox { val: " + accessor + "." + name + "; label: \"" + name + "\"; comment: \"" + comment + "\"; options: [";
+                output += "ProtoGenComboBox { val: " + accessorName + "; label: \"" + name + "\"; comment: \"" + comment + "\"; options: [";
 				for (int i = 0; i < elems.size(); ++i) {
 					output += "\"" + elems.at(i).getName() + "\"";
 					if (i < (elems.size() - 1)) {
@@ -1787,13 +1787,13 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
 				output += "] }";
 			}
 		} else if (inMemoryType.isBitfield && (1 == inMemoryType.bits)) {
-			output += "ProtoGenSwitch { val: " + accessor + "." + name + "; label: \"" + name + "\";";
+            output += "ProtoGenSwitch { val: " + accessorName + "; label: \"" + name + "\";";
 			if (!comment.isEmpty()) {
 				output += " comment: \"" + comment + "\";";
 			}
 			output += " }";
         } else if (!inMemoryType.isFloat && !isArrItem) {
-            output += "ProtoGenSpinBox { val: " + accessor + "." + name + "; label: \"" + name + "\";";
+            output += "ProtoGenSpinBox { val: " + accessorName + "; label: \"" + name + "\";";
             if (inMemoryType.isSigned) {
                 output += " minval: -2147483648;";
             }
@@ -1807,25 +1807,24 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
             output += " }";
         } else {
             const QString objId = name.at(0).toLower() + name.mid(1);
-            const QString accessorName = accessor + "." + name;
 			if (isArrItem) {
 				const QString compName = accessor.split('.').first();
-                output += "ProtoGenNumberCol { ";
-                output += "id: " + objId;
+                output += "ProtoGenNumberCol {";
+                output += " id: " + objId;
                 output += "; hasLabel: " + compName + ".hasLabel; width: " + compName + ".itemWidth";
 			} else {
-                output += "ProtoGenNumber { ";
-                output += "id: " + objId;
+                output += "ProtoGenNumber {";
+                output += " id: " + objId;
 			}
-            output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " } ";
-            output += "onValChanged: " + accessorName + " = val; ";
-            output += "label: \"" + name + "\";";
+            output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " }";
+            output += " onValChanged: " + accessorName + " = val";
+            output += "; label: \"" + name + "\"";
             const int index = extraInfoNames.indexOf("Units");
             if (0 <= index) {
-                output += " units: \"" + extraInfoValues.at(index) + "\";";
+                output += "; units: \"" + extraInfoValues.at(index) + "\"";
             }
             if (!comment.isEmpty()) {
-                output += " comment: \"" + comment + "\";";
+                output += "; comment: \"" + comment + "\"";
             }
             output += " }";
         }

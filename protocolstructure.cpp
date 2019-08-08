@@ -666,31 +666,31 @@ QString ProtocolStructure::getQmlPropertyComponent(const QString &accessor, bool
         const QString accessorName = accessor + "." + name;
 		if (isArrItem) {
 			const QString compName = accessor.split('.').first();
-            output += "ProtoGenNumberCol { ";
-            output += "id: " + objId;
+            output += "ProtoGenNumberCol {";
+            output += " id: " + objId;
             output += "; hasLabel: " + compName + ".hasLabel; width: " + compName + ".itemWidth";
         } else {
-            output += "ProtoGenNumber { ";
-            output += "id: " + objId;
+            output += "ProtoGenNumber {";
+            output += " id: " + objId;
 		}
-        output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " } ";
-        output += "onValChanged: " + accessorName + " = val; ";
-        output += "label: \"" + name + "\";";
+        output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " }";
+        output += " onValChanged: " + accessorName + " = val";
+        output += "; label: \"" + name + "\"";
         if (!comment.isEmpty()) {
-            output += " comment: \"" + comment + "\";";
+            output += "; comment: \"" + comment + "\"";
         }
         output += " }";
     } else if(array2d.isEmpty()) {
+        const QString accessorName = accessor + "." + name;
         if ("float" == typeName) {
             const QString objId = name.at(0).toLower() + name.mid(1);
-            const QString accessorName = accessor + "." + name;
-            output += "ProtoGenNumberArray { ";
-            output += "id: " + objId;
-            output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " } ";
-            output += "onValChanged: " + accessorName + " = val; ";
-            output += "label: \"" + name + "\";";
+            output += "ProtoGenNumberArray {";
+            output += " id: " + objId;
+            output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " }";
+            output += " onValChanged: " + accessorName + " = val";
+            output += "; label: \"" + name + "\"";
             if (!comment.isEmpty()) {
-                output += " comment: \"" + comment + "\";";
+                output += "; comment: \"" + comment + "\"";
             }
             output += " }";
         } else {
