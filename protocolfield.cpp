@@ -1804,9 +1804,9 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
             const QString accessorName = accessor + "." + name;
 			if (isArrItem) {
 				const QString compName = accessor.split('.').first();
-                output += "ProtoGenNumberCol {";
+                output += "ProtoGenNumberCol { ";
                 output += "id: " + objId;
-                output += "; hasLabel: " + compName + ".hasLabel; width: " + compName + ".itemWidth; ";
+                output += "; hasLabel: " + compName + ".hasLabel; width: " + compName + ".itemWidth";
 			} else {
                 output += "ProtoGenNumber { ";
                 output += "id: " + objId;
