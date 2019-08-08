@@ -316,6 +316,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
 				fileNameList.append(compsource.fileName());
 				filePathList.append(compsource.filePath());
 				compsource.setLicenseText(support.licenseText);
+                compsource.write("import QtQuick 2.9\n");
 				compsource.makeLineSeparator();
 				compsource.write(module->getQmlComponentDefinition());
 				compsource.flush();
