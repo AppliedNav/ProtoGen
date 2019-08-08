@@ -5,7 +5,7 @@ import QtQuick.Controls.Material 2.3
 Row {
     id: control
 
-    property alias val: protoGenComboValue.currentIndex
+    property int val: 0
     property alias options: protoGenComboValue.model
 
     property alias label: protoGenComboLabel.text
@@ -36,6 +36,7 @@ Row {
 
     ComboBox {
         id: protoGenComboValue
+        currentIndex: val
         model: options
         width: parent.width/2
         height: parent.height
@@ -62,6 +63,7 @@ Row {
             }
         }
         onCurrentIndexChanged: {
+            control.val = currentIndex
             parent.parent.synchro = false
         }
     }

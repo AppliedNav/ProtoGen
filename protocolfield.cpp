@@ -1777,7 +1777,13 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
 			const EnumCreator *enumCreator = parser->lookUpEnumeration(enumName);
 			if (nullptr != enumCreator) {
 				const QList<EnumElement> &elems = enumCreator->getElements();
-                output += "ProtoGenComboBox { val: " + accessorName + "; label: \"" + name + "\"; comment: \"" + comment + "\"; options: [";
+                const QString objId = name.at(0).toLower() + name.mid(1);
+                output += "ProtoGenComboBox {";
+                output += " id: " + objId;
+                output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " }";
+                output += " onValChanged: " + accessorName + " = val";
+                output += "; label: \"" + name + "\"";
+                output += "; comment: \"" + comment + "\"; options: [";
 				for (int i = 0; i < elems.size(); ++i) {
 					output += "\"" + elems.at(i).getName() + "\"";
 					if (i < (elems.size() - 1)) {
