@@ -4,7 +4,7 @@ import QtQuick.Controls 2.3
 Row {
     id: control
 
-    property alias real: 0
+    property real var: 0
     property alias label: protoGenNumberLabel.text
     property alias units: protoGenNumberUnits.text
     property string comment: ""
