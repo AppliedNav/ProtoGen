@@ -1731,11 +1731,11 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
         return output;
 
     const QString accessorName = accessor + "." + name;
+    const QString objId = name.at(0).toLower() + name.mid(1);
     if(is2dArray()) {
         emitWarning("2D arrays are not supported to define them as QML components");
 	} else if (isArray()) {
         if ("float" == typeName) {
-            const QString objId = name.at(0).toLower() + name.mid(1);
             output += "ProtoGenNumberArray {";
             output += " id: " + objId;
             output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " }";
@@ -1777,7 +1777,6 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
 			const EnumCreator *enumCreator = parser->lookUpEnumeration(enumName);
 			if (nullptr != enumCreator) {
 				const QList<EnumElement> &elems = enumCreator->getElements();
-                const QString objId = name.at(0).toLower() + name.mid(1);
                 output += "ProtoGenComboBox {";
                 output += " id: " + objId;
                 output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " }";
@@ -1793,13 +1792,21 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
 				output += "] }";
 			}
 		} else if (inMemoryType.isBitfield && (1 == inMemoryType.bits)) {
-            output += "ProtoGenSwitch { val: " + accessorName + "; label: \"" + name + "\";";
+            output += "ProtoGenSwitch {";
+            output += " id: " + objId;
+            output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " }";
+            output += " onValChanged: " + accessorName + " = val";
+            output += "; label: \"" + name + "\";";
 			if (!comment.isEmpty()) {
 				output += " comment: \"" + comment + "\";";
 			}
 			output += " }";
         } else if (!inMemoryType.isFloat && !isArrItem) {
-            output += "ProtoGenSpinBox { val: " + accessorName + "; label: \"" + name + "\";";
+            output += "ProtoGenSpinBox {";
+            output += " id: " + objId;
+            output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " }";
+            output += " onValChanged: " + accessorName + " = val";
+            output += "; label: \"" + name + "\";";
             if (inMemoryType.isSigned) {
                 output += " minval: -2147483648;";
             }
@@ -1812,7 +1819,6 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
             }
             output += " }";
         } else {
-            const QString objId = name.at(0).toLower() + name.mid(1);
 			if (isArrItem) {
 				const QString compName = accessor.split('.').first();
                 output += "ProtoGenNumberCol {";

@@ -45,9 +45,9 @@ Row {
         checked: control.val
         width: parent.width/6-4
         height: parent.height
-        onClicked: {
+        onCheckedChanged: { 
+            control.val = checked
             parent.parent.synchro = false
-            console.log("ProtoGenSwitch: value changed")
         }
     }
 
