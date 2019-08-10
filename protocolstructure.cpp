@@ -964,7 +964,7 @@ QString ProtocolStructure::getQtPropertyClassDeclaration() const
  * the current encodable.
  * \return the string that represents the QML component
  */
-QString ProtocolStructure::getQmlStructureComponent() const
+QString ProtocolStructure::getQmlStructureComponent(int index) const
 {
     QString output;
 
@@ -975,7 +975,7 @@ QString ProtocolStructure::getQmlStructureComponent() const
         {
             if(!encodables[i]->isNotInMemory())
             {
-                output += encodables[i]->getQmlStructureComponent();
+                output += encodables[i]->getQmlStructureComponent(index);
                 ProtocolFile::makeLineSeparator(output);
             }
 
@@ -1014,7 +1014,7 @@ QString ProtocolStructure::getQmlStructureComponent() const
             const QString className = getQtPropertyClassName();
 			for (int i = 0; i < encodables.length(); i++) {
                 const QString decl = encodables[i]->getQmlPropertyComponent(parser->getQtControllerObjectName() + QString(".") +
-                    getQtPropertyPtrName(), isArrayItem, i);
+                    getQtPropertyPtrName(), isArrayItem, index);
 				const QStringList tok = decl.split('\n');
 				for (const auto &line : tok) {
 					if (!line.isEmpty()) {

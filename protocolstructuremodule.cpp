@@ -823,7 +823,7 @@ QString extractText(const QString& key, const QString& source, int* fieldcount)\
 
 }// ProtocolStructureModule::getExtractTextFunction
 
-QString ProtocolStructureModule::getQmlComponentDefinition(void) const
+QString ProtocolStructureModule::getQmlComponentDefinition(int index) const
 {
 	QString output;
     QString compName = title;
@@ -849,7 +849,7 @@ QString ProtocolStructureModule::getQmlComponentDefinition(void) const
     output += TAB_IN + "width: globalProps.winWidth\n";
 	output += TAB_IN + "onSynchroChanged: if (undefined !== parent.synchro) parent.synchro = synchro\n";
 	for (int i = 0; i < encodables.length(); i++) {
-        const QString decl = encodables[i]->getQmlPropertyComponent(compName + QString(".model"), isArrayItem, i);
+        const QString decl = encodables[i]->getQmlPropertyComponent(compName + QString(".model"), isArrayItem, index);
 		const QStringList tok = decl.split('\n');
 		for (const auto &line : tok) {
 			if (!line.isEmpty()) {

@@ -71,7 +71,7 @@ public:
     virtual QString getQtPropertyClassDeclaration(void) const {return QString();}
 
     //! Return the string that represents the QML component declaration for the current encodable
-    virtual QString getQmlStructureComponent(void) const {return QString();}
+    virtual QString getQmlStructureComponent(int /*index*/) const {return QString();}
 
     //! Return the signature of this field in an encode function signature
     virtual QString getEncodeSignature(void) const;

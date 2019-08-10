@@ -299,7 +299,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
             // Insert into QML view file the properties of the current module
 			if (module->uiEnabled) {
 				propviewsource.makeLineSeparator();
-				propviewsource.write(module->getQmlStructureComponent());
+                propviewsource.write(module->getQmlStructureComponent(i));
 				propviewsource.makeLineSeparator();
 			}
 
@@ -318,7 +318,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
 				compsource.setLicenseText(support.licenseText);
                 compsource.write("import QtQuick 2.9\n");
 				compsource.makeLineSeparator();
-				compsource.write(module->getQmlComponentDefinition());
+                compsource.write(module->getQmlComponentDefinition(i));
 				compsource.flush();
             }
         }
@@ -374,7 +374,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
             // Insert into QML view file the properties of the current module
             if (packet->uiEnabled) {
                 propviewsource.makeLineSeparator();
-                propviewsource.write(packet->getQmlStructureComponent());
+                propviewsource.write(packet->getQmlStructureComponent(i));
                 propviewsource.makeLineSeparator();
             }
         }
@@ -424,7 +424,7 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
 			// Insert into QML view file the properties of the current module
 			if (packet->uiEnabled) {
 				propviewsource.makeLineSeparator();
-				propviewsource.write(packet->getQmlStructureComponent());
+                propviewsource.write(packet->getQmlStructureComponent(i));
 				propviewsource.makeLineSeparator();
 			}
 		}

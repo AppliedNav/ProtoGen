@@ -176,7 +176,7 @@ public:
     virtual QString getQtPropertyClassDeclaration() const Q_DECL_OVERRIDE;
 
     //! Return the string that represents the QML component declaration for the current structure
-    virtual QString getQmlStructureComponent() const Q_DECL_OVERRIDE;
+    virtual QString getQmlStructureComponent(int index) const Q_DECL_OVERRIDE;
 
     //! Return the string that gives the prototype of the function used to encode this encodable, may be empty
     virtual QString getPrototypeEncodeString(bool isBigEndian, bool includeChildren = true) const Q_DECL_OVERRIDE;

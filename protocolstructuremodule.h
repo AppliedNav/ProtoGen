@@ -106,7 +106,7 @@ public:
     QString getQtPropertiesDefinitionFilePath(void) const {return defpropheader.filePath();}
 
 	//! Get the QML definition of the component that represents this structure
-	QString getQmlComponentDefinition(void) const;
+    QString getQmlComponentDefinition(int index) const;
 
 protected:
 
