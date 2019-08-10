@@ -657,12 +657,12 @@ QString ProtocolStructure::getQtPropertyDeclaration(void) const
  * This includes the spacing, typename, name, semicolon, comment, and linefeed
  * \return the declaration string for this encodable
  */
-QString ProtocolStructure::getQmlPropertyComponent(const QString &accessor, bool isArrItem) const
+QString ProtocolStructure::getQmlPropertyComponent(const QString &accessor, bool isArrItem, int index) const
 {
     QString output;
 
     if(array.isEmpty()) {
-        const QString objId = name.at(0).toLower() + name.mid(1);
+        const QString objId = name.at(0).toLower() + name.mid(1) + QString::number(index);
         const QString accessorName = accessor + "." + name;
 		if (isArrItem) {
 			const QString compName = accessor.split('.').first();
@@ -683,7 +683,7 @@ QString ProtocolStructure::getQmlPropertyComponent(const QString &accessor, bool
     } else if(array2d.isEmpty()) {
         const QString accessorName = accessor + "." + name;
         if ("float" == typeName) {
-            const QString objId = name.at(0).toLower() + name.mid(1);
+            const QString objId = name.at(0).toLower() + name.mid(1) + QString::number(index);
             output += "ProtoGenNumberArray {";
             output += " id: " + objId;
             output += "; Binding { target: " + objId + "; property: \"val\"; value: " + accessorName + " }";
@@ -1014,7 +1014,7 @@ QString ProtocolStructure::getQmlStructureComponent() const
             const QString className = getQtPropertyClassName();
 			for (int i = 0; i < encodables.length(); i++) {
                 const QString decl = encodables[i]->getQmlPropertyComponent(parser->getQtControllerObjectName() + QString(".") +
-                    getQtPropertyPtrName(), isArrayItem);
+                    getQtPropertyPtrName(), isArrayItem, i);
 				const QStringList tok = decl.split('\n');
 				for (const auto &line : tok) {
 					if (!line.isEmpty()) {

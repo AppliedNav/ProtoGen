@@ -1723,7 +1723,7 @@ QString ProtocolField::getQtPropertyDeclaration(void) const
  * Get the declaration for this field as a property of a class derived from QObject
  * \return the declaration string
  */
-QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isArrItem) const
+QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isArrItem, int index) const
 {
     QString output;
 
@@ -1731,7 +1731,7 @@ QString ProtocolField::getQmlPropertyComponent(const QString &accessor, bool isA
         return output;
 
     const QString accessorName = accessor + "." + name;
-    const QString objId = name.at(0).toLower() + name.mid(1);
+    const QString objId = name.at(0).toLower() + name.mid(1) + QString::number(index);
     if(is2dArray()) {
         emitWarning("2D arrays are not supported to define them as QML components");
 	} else if (isArray()) {

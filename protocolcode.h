@@ -38,7 +38,7 @@ class ProtocolCode : public Encodable
     virtual QString getQtPropertyDeclaration(void) const Q_DECL_OVERRIDE {return QString();}
 
     //! Return the string that is used to declare this encodable as QML property
-    virtual QString getQmlPropertyComponent(const QString& /*accessor*/, bool /*isArrItem*/) const Q_DECL_OVERRIDE {return QString();}
+    virtual QString getQmlPropertyComponent(const QString& /*accessor*/, bool /*isArrItem*/, int /*index*/) const Q_DECL_OVERRIDE {return QString();}
 
     //! Return the signature of this field in an encode function signature
     virtual QString getEncodeSignature(void) const Q_DECL_OVERRIDE {return QString();}

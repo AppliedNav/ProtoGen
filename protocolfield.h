@@ -152,7 +152,7 @@ public:
     virtual QString getQtPropertyDeclaration(void) const Q_DECL_OVERRIDE;
 
     //! Return the string that is used to declare this encodable as component in QML
-    virtual QString getQmlPropertyComponent(const QString &accessor, bool isArrItem) const Q_DECL_OVERRIDE;
+    virtual QString getQmlPropertyComponent(const QString &accessor, bool isArrItem, int index) const Q_DECL_OVERRIDE;
 
     //! Return the include directives needed for this encodable
     virtual void getIncludeDirectives(QStringList& list) const Q_DECL_OVERRIDE;
