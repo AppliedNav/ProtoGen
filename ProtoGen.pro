@@ -33,6 +33,7 @@ macx{
 #QMAKE_CXXFLAGS_WARN_ON += -wd4100
 
 SOURCES += main.cpp \
+    prebuiltSources/floatspecial.c \
     protocolparser.cpp \
     protocolpacket.cpp \
     protocolfield.cpp \
@@ -52,6 +53,7 @@ SOURCES += main.cpp \
     xmllinelocator.cpp
 
 HEADERS += \
+    prebuiltSources/floatspecial.h \
     protocolparser.h \
     protocolpacket.h \
     protocolfield.h \

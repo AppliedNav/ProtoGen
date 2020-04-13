@@ -19,7 +19,7 @@
 #include <iostream>
 
 // The version of the protocol generator is set here
-const QString ProtocolParser::genVersion = "2.16.b";
+const QString ProtocolParser::genVersion = "2.22.b";
 
 /*!
  * \brief ProtocolParser::ProtocolParser
@@ -223,6 +223,10 @@ bool ProtocolParser::parse(QString filename, QString path, QStringList otherfile
         module->parseGlobal();
         enumfile.setLicenseText(support.licenseText);
         enumfile.setModuleNameAndPath(module->getHeaderFileName(), module->getHeaderFilePath());
+
+        if(support.supportbool)
+            enumfile.writeIncludeDirective("stdbool.h", "", true);
+
         enumfile.write(module->getOutput());
         enumfile.makeLineSeparator();
         enumfile.flush();
@@ -650,6 +654,9 @@ bool ProtocolParser::parseFile(QString xmlFilename)
     QFile xmlFile( xmlFilename );
     QFileInfo fileinfo(xmlFilename);
 
+    // We allow each xml file to alter to the global filenames used, but only for the context of that xml.
+    ProtocolSupport localsupport(support);
+
     // Don't parse the same file twice
     if(filesparsed.contains(fileinfo.absoluteFilePath()))
         return false;
@@ -702,6 +709,9 @@ bool ProtocolParser::parseFile(QString xmlFilename)
     // Iterate over each top level node in the file
     QDomNodeList nodes = top.childNodes();
 
+    // Protocol file options specified in the xml
+    localsupport.parseFileNames(top.attributes());
+
     for(int i = 0; i < nodes.size(); i++)
     {
         QDomNode node = nodes.item(i);
@@ -734,7 +744,7 @@ bool ProtocolParser::parseFile(QString xmlFilename)
         }
         else if( nodename == "struct" || nodename == "structure" )
         {
-            ProtocolStructureModule* module = new ProtocolStructureModule( this, support, api, version );
+            ProtocolStructureModule* module = new ProtocolStructureModule( this, localsupport, api, version );
 
             // Remember the XML
             module->setElement( node.toElement() );
@@ -743,7 +753,7 @@ bool ProtocolParser::parseFile(QString xmlFilename)
         }
         else if( nodename == "enum" || nodename == "enumeration" )
         {
-            EnumCreator* Enum = new EnumCreator( this, nodename, support );
+            EnumCreator* Enum = new EnumCreator( this, nodename, localsupport );
 
             Enum->setElement( node.toElement() );
 
@@ -753,7 +763,7 @@ bool ProtocolParser::parseFile(QString xmlFilename)
         // Define a packet
         else if( nodename == "packet" || nodename == "pkt" )
         {
-            ProtocolPacket* packet = new ProtocolPacket( this, support, api, version );
+            ProtocolPacket* packet = new ProtocolPacket( this, localsupport, api, version );
 
             packet->setElement( node.toElement() );
 
@@ -762,7 +772,7 @@ bool ProtocolParser::parseFile(QString xmlFilename)
         }
         else if ( nodename == "doc" || nodename == "documentation" )
         {
-            ProtocolDocumentation* document = new ProtocolDocumentation( this, nodename, support );
+            ProtocolDocumentation* document = new ProtocolDocumentation( this, nodename, localsupport );
 
             document->setElement( node.toElement() );
 
@@ -870,6 +880,9 @@ void ProtocolParser::createProtocolHeader(const QDomElement& docElem)
     header.makeLineSeparator();
 
     // Includes
+    if(support.supportbool)
+        header.writeIncludeDirective("stdbool.h", "", true);
+
     header.writeIncludeDirective("stdint.h", QString(), true);
 
     // Add other includes
@@ -877,7 +890,7 @@ void ProtocolParser::createProtocolHeader(const QDomElement& docElem)
 
     header.makeLineSeparator();
 
-    // API functions
+    // API macro
     if(!api.isEmpty())
     {
         header.makeLineSeparator();
@@ -885,13 +898,20 @@ void ProtocolParser::createProtocolHeader(const QDomElement& docElem)
         header.write("#define get" + name + "Api() " + api + "\n");
     }
 
-    // Version functions
+    // Version macro
     if(!version.isEmpty())
     {
         header.makeLineSeparator();
         header.write("//! \\return the protocol version string\n");
         header.write("#define get" + name + "Version() \""  + version + "\"\n");
     }
+
+    // Translation macro
+    header.makeLineSeparator();
+    header.write("// Translation provided externally. The macro takes a `const char *` and returns a `const char *`\n");
+    header.write("#ifndef translate" + name + "\n");
+    header.write("    #define translate" + name + "(x) x\n");
+    header.write("#endif");
 
     header.makeLineSeparator();
 
@@ -1329,22 +1349,24 @@ const EnumCreator* ProtocolParser::lookUpEnumeration(const QString& enumName) co
 
 /*!
  * Replace any text that matches an enumeration name with the value of that enumeration
- * \param text is modified to replace names with numbers
- * \return a reference to text
+ * \param text is the source text to search, which won't be modified
+ * \return A new string that replaces any enumeration names with the value of the enumeration
  */
-QString& ProtocolParser::replaceEnumerationNameWithValue(QString& text) const
+QString ProtocolParser::replaceEnumerationNameWithValue(const QString& text) const
 {
+    QString replace = text;
+
     for(int i = 0; i < globalEnums.size(); i++)
     {
-        globalEnums.at(i)->replaceEnumerationNameWithValue(text);
+        globalEnums.at(i)->replaceEnumerationNameWithValue(replace);
     }
 
     for(int i = 0; i < enums.size(); i++)
     {
-        enums.at(i)->replaceEnumerationNameWithValue(text);
+        enums.at(i)->replaceEnumerationNameWithValue(replace);
     }
 
-    return text;
+    return replace;
 }
 
 
@@ -1823,12 +1845,24 @@ bool ProtocolParser::isFieldSet(QString value)
 /*!
  * Determine if the field contains a given label, and the value is either {'false','no','0'}
  * \param e is the element from the DOM to test
- * \param label is the name of the attribute form the element to test
+ * \param label is the name of the attribute from the element to test
  * \return true if the attribute value is "false", "no", or "0"
  */
 bool ProtocolParser::isFieldClear(const QDomElement &e, QString label)
 {
     return isFieldClear(e.attribute(label).trimmed().toLower());
+}
+
+
+/*!
+ * Determine if the value of an attribute is either {'false','no','0'}
+ * \param attribname is the name of the attribute to test
+ * \param map is the list of all attributes to search
+ * \return true if the attribute value is "false", "no", or "0"
+ */
+bool ProtocolParser::isFieldClear(QString attribname, QDomNamedNodeMap map)
+{
+    return isFieldClear(ProtocolParser::getAttribute(attribname, map));
 }
 
 

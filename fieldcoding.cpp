@@ -5,11 +5,6 @@
 FieldCoding::FieldCoding(ProtocolSupport sup) :
     ProtocolScaling(sup)
 {
-    typeNames.clear();
-    typeSigNames.clear();
-    typeSizes.clear();
-    typeUnsigneds.clear();
-
     // we use 64-bit integers for floating point
     if(!support.int64)
         support.float64 = false;
@@ -106,6 +101,19 @@ bool FieldCoding::generateEncodeHeader(void)
 
     header.write("\n#define __STDC_CONSTANT_MACROS\n");
     header.write("#include <stdint.h>\n");
+
+    if(support.supportbool)
+        header.writeIncludeDirective("stdbool.h", "", true);
+
+    header.write("\n");
+    header.write("//! Macro to limit a number to be no more than a maximum value\n");
+    header.write("#define limitMax(number, max) (((number) > (max)) ? (max) : (number))\n");
+    header.write("\n");
+    header.write("//! Macro to limit a number to be no less than a minimum value\n");
+    header.write("#define limitMin(number, min) (((number) < (min)) ? (min) : (number))\n");
+    header.write("\n");
+    header.write("//! Macro to limit a number to be no less than a minimum value and no more than a maximum value\n");
+    header.write("#define limitBoth(number, min, max) (((number) > (max)) ? (max) : (limitMin((number), (min))))\n");
 
     header.write("\n");
     header.write("//! Encode a null terminated string on a byte stream\n");
@@ -483,10 +491,10 @@ QString FieldCoding::floatEncodeFunction(int type, bool bigendian)
     }
     else if(typeSizes[type] == 3)
     {
-        function += "    uint24To" + endian + "Bytes(float32ToFloat24ex((float)number, sigbits), bytes, index);\n";
+        function += "    uint24To" + endian + "Bytes(float32ToFloat24ex(number, sigbits), bytes, index);\n";
     }
     else
-        function += "    uint16To" + endian + "Bytes(float32ToFloat16ex((float)number, sigbits), bytes, index);\n";
+        function += "    uint16To" + endian + "Bytes(float32ToFloat16ex(number, sigbits), bytes, index);\n";
 
     function += "}\n";
 
@@ -600,6 +608,9 @@ bool FieldCoding::generateDecodeHeader(void)
     header.write("\n");
     header.write("#define __STDC_CONSTANT_MACROS\n");
     header.write("#include <stdint.h>\n");
+
+    if(support.supportbool)
+        header.writeIncludeDirective("stdbool.h", "", true);
 
     header.write("\n");
     header.write("//! Decode a null terminated string from a byte stream\n");

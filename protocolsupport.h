@@ -12,6 +12,9 @@ public:
     //! Parse attributes from the ProtocolTag
     void parse(const QDomNamedNodeMap& map);
 
+    //! Parse the global file names
+    void parseFileNames(const QDomNamedNodeMap& map);
+
     //! Return the list of attributes understood by ProtocolSupport
     QStringList getAttriblist(void) const;
 
@@ -24,6 +27,8 @@ public:
     bool bitfieldtest;              //!< true to output the bitfield test function
     bool disableunrecognized;       //!< true to disable warnings about unrecognized attributes
     bool bigendian;                 //!< Protocol bigendian flag
+    bool supportbool;               //!< true if support for 'bool' is included
+    bool limitonencode;             //!< true to enforce verification limits on encode
     QString globalFileName;         //!< File name to be used if a name is not given
     QString globalVerifyName;       //!< Verify file name to be used if a name is not given
     QString globalCompareName;      //!< Comparison file name to be used if a name is not given

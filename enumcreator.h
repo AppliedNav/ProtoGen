@@ -115,6 +115,9 @@ public:
     //! Return the minimum number of bits needed to encode the enumeration
     int getMinBitWidth(void) const {return minbitwidth;}
 
+    //! Return the maximum value used by the enumeration
+    int getMaximumValue(void) const {return maxvalue;}
+
     //! Return true if this enumeration is hidden from the documentation
     virtual bool isHidden (void) const Q_DECL_OVERRIDE {return hidden;}
 
@@ -165,6 +168,9 @@ protected:
     //! Minimum number of bits needed to encode the enumeration
     int minbitwidth;
 
+    //! Maximum value of this enumeration
+    int maxvalue;
+
     //! Determines if this enum will be hidden from the documentation
     bool hidden;
 
@@ -173,6 +179,9 @@ protected:
 
     //! Determines if this enumeration will support revese-lookup of title (based on value)
     bool lookupTitle;
+
+    //! Determines if this enumeration will support revese-lookup of comment (based on value)
+    bool lookupComment;
 
     //! Flag set true if parseGlobal() is called
     bool isglobal;

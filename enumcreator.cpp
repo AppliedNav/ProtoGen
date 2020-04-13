@@ -94,9 +94,11 @@ QString EnumElement::getDeclaration() const
 EnumCreator::EnumCreator(ProtocolParser* parse, QString Parent, ProtocolSupport supported) :
     ProtocolDocumentation(parse, Parent, supported),
     minbitwidth(0),
+    maxvalue(0),
     hidden(false),
     lookup(false),
     lookupTitle(false),
+    lookupComment(false),
     isglobal(false)
 {
 }
@@ -121,9 +123,11 @@ void EnumCreator::clear(void)
     filepath.clear();
     sourceOutput.clear();
     minbitwidth = 0;
+    maxvalue = 0;
     hidden = false;
     lookup = false;
     lookupTitle = false;
+    lookupComment = false;
     name.clear();
     comment.clear();
     description.clear();
@@ -184,6 +188,7 @@ void EnumCreator::parse(void)
                           << "hidden"
                           << "lookup"
                           << "lookupTitle"
+                          << "lookupComment"
                           << "prefix"
                           << "file");
 
@@ -195,6 +200,7 @@ void EnumCreator::parse(void)
     hidden = ProtocolParser::isFieldSet("hidden", map);
     lookup = ProtocolParser::isFieldSet("lookup", map);
     lookupTitle = ProtocolParser::isFieldSet("lookupTitle", map);
+    lookupComment = ProtocolParser::isFieldSet("lookupComment", map);
     file = ProtocolParser::getAttribute("file", map);
 
     // The file attribute is only supported on global enumerations
@@ -341,12 +347,13 @@ void EnumCreator::parse(void)
                 continue;
 
             sourceOutput += TAB_IN + "case " + element.getName() + ":\n";
-            sourceOutput += TAB_IN + TAB_IN + "return \"" + element.getLookupName() + "\";\n";
+            sourceOutput += TAB_IN + TAB_IN + "return translate" + support.protoName + "(\"" + element.getName() + "\");\n";
         }
 
         sourceOutput += TAB_IN + "}\n";
         sourceOutput += "}\n";
-    }
+
+    }// if name lookup
 
     if (lookupTitle)
     {
@@ -362,7 +369,7 @@ void EnumCreator::parse(void)
         sourceOutput += " * \\brief Lookup title for '" + name + "' enum entry\n";
         sourceOutput += " * \n";
         sourceOutput += " * \\param value is the integer value of the enum entry\n";
-        sourceOutput += " * \\return string title of the given entry (label name if no title given)\n";
+        sourceOutput += " * \\return string title of the given entry (comment if no title given)\n";
         sourceOutput += " */\n";
 
         sourceOutput += func + "\n";
@@ -382,15 +389,77 @@ void EnumCreator::parse(void)
                 continue;
 
             sourceOutput += TAB_IN + "case " + element.getName() + ":\n";
-            if(element.title.isEmpty())
-                sourceOutput += TAB_IN + TAB_IN + "return \"" + element.getLookupName() + "\";\n";
-            else
-                sourceOutput += TAB_IN + TAB_IN + "return \"" + element.title + "\";\n";
+
+            // Title takes first preference, if supplied
+            QString title = element.title;
+
+            // Comment takes second preference, if supplied
+            if (title.isEmpty())
+                title = element.comment;
+
+            if (title.isEmpty())
+                title = element.getLookupName();
+
+            sourceOutput += TAB_IN + TAB_IN + "return translate" + support.protoName + "(\"" + title + "\");\n";
         }
 
         sourceOutput += TAB_IN + "}\n";
         sourceOutput += "}\n";
-    }
+
+    }// if title lookup
+
+    if (lookupComment)
+    {
+        output += "\n";
+        output += "//! \\return the comment of a '" + name + "' enum entry, based on its value\n";
+
+        QString func = "const char* " + name + "_EnumComment(int value)";
+
+        output += func + ";\n";
+
+        // Add reverse-lookup code to the source file
+        sourceOutput += "\n/*!\n";
+        sourceOutput += " * \\brief Lookup comment for '" + name + "' enum entry\n";
+        sourceOutput += " * \n";
+        sourceOutput += " * \\param value is the integer value of the enum entry\n";
+        sourceOutput += " * \\return string comment of the given entry (title if no comment given)\n";
+        sourceOutput += " */\n";
+
+        sourceOutput += func + "\n";
+        sourceOutput += "{\n";
+
+        sourceOutput += TAB_IN + "switch (value)\n";
+        sourceOutput += TAB_IN + "{\n";
+        sourceOutput += TAB_IN + "default:\n";
+        sourceOutput += TAB_IN + TAB_IN + "return \"\";\n";
+
+        // Add the reverse-lookup text for each entry in the enumeration
+        for (int i=0; i<elements.size(); i++)
+        {
+            auto element = elements.at(i);
+
+            if (element.ignoresLookup)
+                continue;
+
+            sourceOutput += TAB_IN + "case " + element.getName() + ":\n";
+
+            // Title takes first preference, if supplied
+            QString _comment = element.comment;
+
+            // Title takes second preference, if supplied
+            if (_comment.isEmpty())
+                _comment = element.title;
+
+            if (_comment.isEmpty())
+                _comment = element.getLookupName();
+
+            sourceOutput += TAB_IN + TAB_IN + "return translate" + support.protoName + "(\"" + _comment + "\");\n";
+        }
+
+        sourceOutput += TAB_IN + "}\n";
+        sourceOutput += "}\n";
+
+    }// if comment lookup
 
 }// EnumCreator::parse
 
@@ -415,7 +484,7 @@ void EnumCreator::checkAgainstKeywords(void)
 void EnumCreator::computeNumberList(void)
 {
     // Attempt to get a list of numbers that represents the value of each enumeration
-    int maxValue = 1;
+    maxvalue = 1;
     int value = -1;
     QString baseString;
 
@@ -457,7 +526,7 @@ void EnumCreator::computeNumberList(void)
             if (!ok)
             {
                 replaceEnumerationNameWithValue(stringValue);
-                parser->replaceEnumerationNameWithValue(stringValue);
+                stringValue = parser->replaceEnumerationNameWithValue(stringValue);
 
                 // If this string is a composite of numbers, add them together if we can
                 stringValue = EncodedLength::collapseLengthString(stringValue, true);
@@ -482,8 +551,8 @@ void EnumCreator::computeNumberList(void)
         }// if we got a string from the xml
 
         // keep track of maximum value
-        if(value > maxValue)
-            maxValue = value;
+        if(value > maxvalue)
+            maxvalue = value;
 
         // Remember the value
         element.number = stringValue;
@@ -491,10 +560,10 @@ void EnumCreator::computeNumberList(void)
     }// for the whole list of value strings
 
     // Its possible we have no idea, so go with 8 bits in that case
-    if(maxValue > 0)
+    if(maxvalue > 0)
     {
         // Figure out the number of bits needed to encode the maximum value
-        minbitwidth = (int)ceil(log2(maxValue + 1));
+        minbitwidth = (int)ceil(log2(maxvalue + 1));
     }
     else
         minbitwidth = 8;
@@ -594,12 +663,6 @@ QString EnumCreator::getTopLevelMarkdown(bool global, const QStringList& packeti
             output += "\n\n";
         }
 
-        // Table caption, with an anchor for the enumeration name
-        if(title.isEmpty())
-            output += "[<a name=\""+name+"\"></a>" + name + " enumeration]\n";
-        else
-            output += "[<a name=\""+name+"\"></a>" + title + " enumeration]\n";
-
         // Table header
         output += "| ";
         output += spacedString("Name", firstColumnSpacing);
@@ -638,6 +701,12 @@ QString EnumCreator::getTopLevelMarkdown(bool global, const QStringList& packeti
             output += spacedString(element.comment, thirdColumnSpacing);
             output += " |\n";
         }
+
+        // Table caption, with an anchor for the enumeration name
+        if(title.isEmpty())
+            output += "[<a name=\""+name+"\"></a>" + name + " enumeration]\n";
+        else
+            output += "[<a name=\""+name+"\"></a>" + title + " enumeration]\n";
 
         output += "\n";
         output += "\n";

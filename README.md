@@ -21,7 +21,7 @@ These problems can be averted if the internal data representation is converted t
 
 ProtoGen is a tool that takes a xml protocol description and generates html for documentation, and C source code for encoding and decoding the data. This alleviates much of the challenge and bugs in protocol development. The C source code is highly portable, readable, efficient, and well commented. It is suitable for inclusion in almost any C/C++ compiler environment.
 
-This document refers to ProtoGen version 2.16. You can download the prebuilt versions for [windows, mac, and linux here](https://github.com/billvaglienti/ProtoGen/releases). Source code for ProtoGen is available on [github](https://github.com/billvaglienti/ProtoGen).
+This document refers to ProtoGen version 2.21. Source code for ProtoGen is available on [github](https://github.com/billvaglienti/ProtoGen).
 
 ---
 
@@ -76,7 +76,7 @@ Using ProtoGen as a compiler pre-build step
 
 ProtoGen will not touch an output file if the generated file is not different from what already exists. In this way you can run ProtoGen repeatedly without worrying about causing unneeded rebuild of your project. ProtoGen runs very quickly, and if you use the `-no-doxygen` switch it is typically fast enough to run it every time you compile. Note that the generated files include a comment with the ProtoGen version, so if you change ProtoGen version you will get updated output (and hence a project rebuild) even if the protocol code did not change.
 
-ProtoGen applies many checks to the protocol xml. In most cases if a problem is discovered the protocol is altered as needed and ProtoGen will output a warning on stdout. The warnings conform to the layout most IDEs will expect; so you can click directly on the warning and go straight to the offending line in the xml (I've only tesed this in Qt Creator).
+ProtoGen applies many checks to the protocol xml. In most cases if a problem is discovered the protocol is altered as needed and ProtoGen will output a warning on stdout. The warnings conform to the layout most IDEs will expect; so you can click directly on the warning and go straight to the offending line in the xml (I've only tested this in Qt Creator).
 
 Protocol ICD
 ================
@@ -93,7 +93,7 @@ The root element of the XML is "Protocol". It must be present for ProtoGen to ge
 
 The Protocol tag supports the following attributes:
 
-- `name` : The name of the protocol. This will set the name of the primary header file for this protocol, and the generic packet utility functions. In this example (and elsewhere in this file) the name is "Demolink". This attribute is mandatory, all other Protcol attributes are optional.
+- `name` : The name of the protocol. This will set the name of the primary header file for this protocol, and the generic packet utility functions. In this example (and elsewhere in this file) the name is "Demolink". This attribute is mandatory, all other attributes are optional.
 
 - `title` : The title of the protocol. This is used as the title for the first paragraph in the documentation output. If title is not given the title of the first paragraph will be `name` + "Protocol".
 
@@ -115,7 +115,7 @@ The Protocol tag supports the following attributes:
 
 - `version` : A human readable version string to describe the protocol. Calling code can access the version string.
 
-- `endian` : By default the generated code will encode to and decode from big endian byte order. Setting this attribute to "little" will cause the generated code to use little endian byte order. This attribute is *not* the byte order of the computer that executes the auto generated code. It *is* the byte order of the data *on the wire*.
+- `endian` : By default the generated code will encode to, and decode from, big endian byte order. Setting this attribute to "little" will cause the generated code to use little endian byte order. This attribute is *not* the byte order of the computer that executes the auto generated code. It *is* the byte order of the data *on the wire*.
 
 - `supportInt64` : if this attribute is set to `false` integer types greater than 32 bits will not be allowed.
 
@@ -129,6 +129,8 @@ The Protocol tag supports the following attributes:
 
 - `supportSpecialFloat` : if this attribute is set to `false` floating point types less than 32 bits will not be allowed for encoded types.
 
+- `supportBool` : if this attribute is set to `true` support for the `bool` datatype is included. This will cause `<stdbool.h>` to be inccluded in the generated files, and will allow you to specify the `bool` type for in-memory fields. Since `bool` is not guaranteed to be supported in all C/C++ environments this feature is off by default.
+
 - `packetStructureSuffix` : This attribute defines the ending of the function names used to encode and decode structures into packets. If not specified the function name ending is `PacketStructure`. For example the default name of the function that encodes a structure of date information would be `encodeDatePacketStructure()`; using this attribute the name could be changed to (for example) `encodeDatePktStruct()`.
 
 - `packetParameterSuffix` : This attribute defines the ending of the function names used to encode and decode raw parameters into packets. If not specified the function name ending is `Packet`. For example the default name of the function that encodes a parameters of date information would be `encodeDatePacket()`; using this attribute the name could be changed to (for example) `encodeDatePkt()`.
@@ -136,6 +138,8 @@ The Protocol tag supports the following attributes:
 - `comment` : The comment for the Protocol tag will be placed at the top of the main header file as a multi-line doxygen comment with a \mainpage tag.
 
 - `pointer` : By default, the generated code does not know about the structure of the packet datatype, and uses generic pointers (`void*`) to reference packet data. This behaviour can be overridden by specifying the datatype of the packet. If this parameter is specified, the protocol file must include the header file where the packet is defined (or alternatively must define the packet structure itself).
+
+- `limitOnEncode` : Set this attribute to "true" to engage functionality to limit the value of a field before encoding it. This value can be set on the `Protocol`, `Packet`, `Structure`, or `Data` tags and it will propagate to all sub elements (unless those elements specify `limitOnEncode="false"`. The limits come from the verify values that are optionally specified for protocol fields, see the section "Encoding Limits" for more details.
 
 Comments
 --------
@@ -168,7 +172,7 @@ The `file` attribute can include path information (for example "src/ProtoGen/fil
 Require tag
 -----------
 
-The Require tag is used to insert XML from an external protocol file at the specified location. The generated code will be structued as if the linked xml was written *at the location it is referenced* - this tag provides the ability to separate the protocol definition into multiple files; which is most commonly used to put common features for multiple protocols into a single file.
+The Require tag is used to insert XML from an external protocol file. This tag provides the ability to separate the protocol definition into multiple files; which is most commonly used to put common features for multiple protocols into a single file. ProtoGen will recursively parse all external protocol files before the main protocol file; so that the main protocol file can depend on elements from the external files.
 
     <Require file="../version.xml"/>
     
@@ -176,7 +180,7 @@ The Require tag supports the following attributes:
 
 - `file` : gives the name of the file to insert, relative to the path of the file which requires it. You can include the .xml file extension, or leave it off.
 
-The external protocol file must follow the same structure requirements as the base protocol file. However, any top-level attributes specified in the file (i.e. in the `Protocol` tag) will be ignored. The Require tag is similar to including protocol support files on the command line. The only difference is that the Require tag provides fine grained control of where the external protocol elements are defined. The Require tag can be used recursively by referencing a protocol file that itself references another protocol file. Note that ProtoGen will prevent a protocol file from being referenced more than once, so circular references are avoided.
+The external protocol file must follow the same structure requirements as the base protocol file. However, the only top-level attributes that are obeyed are the file attributes (`file`, `comparefile`, `printfile`, `verifyfile`, and `mapfile`). The Require tag is similar to including protocol support files on the command line. The Require tag can be used recursively by referencing a protocol file that itself references another protocol file. Note that ProtoGen will prevent a protocol file from being referenced more than once, so circular references are avoided.
 
 Include tag
 -----------
@@ -242,8 +246,9 @@ Enum tag attributes:
 
 - `lookup` : is used to specify that this enumeration allows lookup of label text based on enum values. If enabled, the label for a particular enum value can be returned as a string.
 
-- `lookupTitle` : is used to specify that this enumeration allows lookup of enum title based on enum values. If enabled, the title for a particular enum value can be returned as a string. If the enumertaion does not have a title the label text is returned.
+- `lookupTitle` : is used to specify that this enumeration allows lookup of enum title based on enum values. If enabled, the title for a particular enum value can be returned as a string. If the enumertaion does not have a title the comment text is returned. If there is no comment text the name text is returned.
 
+- `lookupComment` : is used to specify that this enumeration allows lookup of enum comment based on enum values. If enabled, the comment for a particular enum value can be returned as a string. If the enumertaion does not have a comment the title text is returned. If there is no title text the name text is returned.
 
 ### Enum : Value subtag attributes:
 
@@ -319,6 +324,8 @@ Structure tag Attributes:
 
 - `comment` : The comment for the structure will be placed at the top of the header file (or the top of the appended text if the file is used more than once).
 
+- `limitOnEncode` : Set this attribute to "true" to enable encoding range limits for Data subtags.
+
 ### Structure : Data subtags
 
 The Structure tag supports Data subtags. Each data tag represents one line in the structure definition. The data tags are explained in more detail in the section on packets.
@@ -332,6 +339,7 @@ Code subtag attributes:
 - `encode` : A verbatim code snippet that is inserted in the encode function.
 - `decode` : A verbatim code snippet that is inserted in the decode function.
 - `comment` : A one line comment above the code snippet.
+- `include` : The name of a file to #include in the source code of the function that contains the structure encoding/decoding functions. This is useful to support calling external functions from the Code subtag.
 
 Packet tag
 ----------
@@ -420,6 +428,7 @@ Data subtag attributes:
     - `float` : is a 32 bit floating point.
     - `double` : is a 64 bit floating point.
     - `bitfieldX` : is a bitfield with X bits where X can go from 1 to the number of bits in an int, or 64 bits if long bitfields are supported.
+    - `bool` : is a boolean which can only support values of `true` or `false`. The protocol must have `supportBool="true"` set to use this type.
     - `string` : is a variable length null terminated string of bytes. The maximum length is given by the attribute `array`.
     - `fixedstring` : is a fixed length null terminated string of bytes. The length is given by the attribute `array`.
     - `null` : indicates empty (i.e. reserved for future expansion) space in the packet.
@@ -484,6 +493,8 @@ Data subtag attributes:
 - `map` : If mapEncode and mapDecode functions are defined for this struct or packet, this tag can be used to specify if each individual field is encoded or decoded to the map. By default (and if this tag is not present) the field will be both encoded and decoded. If this tag is set to `encode` the field will only be encoded. If this tag is set to `decode` the field will only be decoded. If this tag is set to `false` the field will not be encoded or decoded.
 
 - `range | units | notes` : If specified, each of these attributes will be added (as single-line comments) to the packet description table in the documentation markdown. These comments will appear next to this <Data> tag, and can be used if extra specificity is required. Note that these fields apply *only* to the documentation, and will not appear anywhere in the generated code.
+
+- `limitOnEncode` : Set this attribute to "true" to enable application of the encoding range limits for this data. The range limits come from `verifyMinValue` and `verifyMaxValue`; if these are not specified this attribute does nothing.
 
 Documentation tag
 -----------------
@@ -650,6 +661,8 @@ scaledencode and scaleddecode provide routines to take an in-memory number (like
 
 If you set the protocol attribute `supportInt64="false"` support for integer types greater than 32 bits will be omitted. This removes a *lot* of functions from this module. Note that you can still encode scaled double precision floating points in this case (as long as you scale them to 32 bits or less). To disable double precision floating points set the protocol attribute `supportFloat64="false"`.
 
+scaleencode and scaledecode also provide routines for scaling integer numbers. These functions are less commonly used, but if the in-memory number is not floating point, and if the scaling and offset values are integers, the integer scaling functions are used. This prevents the use of floating point operations if they are not needed.
+
 floatspecial
 ------------
 
@@ -679,8 +692,16 @@ It is common for projects to read and write structures directly to storage or me
 
 Since the intialization and verification of structures are not related to the encoding and decoding of data for communications it is recommended that the files used for these functions be different than those used for packet encoding and deocoding. The attribute `verifyfile` can be used to change the file that the these functions are written to.
 
+Limiting on encode
+------------------
+
+Some protocols require that encoded numbers fit within ranges which are smaller than the natural limits imposed by the encoding rules. For example a signed 8 bit encoding can transport unscaled integers from -128 to 127. If a protocol used this encoding (without scaling) for a number that represented a percentage from 0% to 100% it is possible to encode a number that violates this limit. Some protocols may call this out as invalid. If protection is needed to mitigate for this you can use the attribute `limitOnEncode`. If this attribute is set to true, and if the `verifyMinValue` and/or `verifyMaxValue` is given, Protogen will add code to limit in-memory value before doing the encoding. If ProtoGen can parse the strings used for the verify values it will only apply the limit check verify limits are narrower than the natural limit. The example below shows a 4-bit bitfield with verifyMinValue=0 and verifyMaxValue=10. ProtoGen implemented the check to make sure `numCurvePoints` was limited to 10, but not the check for zero, because it is not possible for `numCurvePoints` to be less than zero.
+
+    // Range of numCurvePoints is 0 to 10.
+    _pg_data[_pg_byteindex] = (uint8_t)limitMax(_pg_user->numCurvePoints, 10) << 4;
+
 Comparison and human readable input and output
--------------------------------
+----------------------------------------------
 
 It is a common use case for the packets and structures defined by ProtoGen to be used for configuration data in an embedded system. Naturally the user interfaces that support these systems will want to provide a means of comparing two sets of configuration data to determine the differences between them. Using the `comparefile` attribute (globally or per-packet) will cause ProtoGen to emit code that takes two packet or structure pointers and compares their contents element by element, generating a text report for any differences that are found. This capability saves enormous amounts of time for developers of user interfaces. A typical embedded system (say, a fuel injection computer) may have thousands of user settable configuration values that are spread across many packets; and writing comparison code for each field would be unreasonably time consuming and prone to errors.
 

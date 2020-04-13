@@ -10,6 +10,7 @@
 #include "linkcode.h"
 #include "compareDemolink.h"
 #include "printDemolink.h"
+#include "fieldencode.h"
 
 #define PI 3.141592653589793
 #define PIf 3.141592653589793f
@@ -18,6 +19,7 @@
 #define deg2radf(x) (PIf*(x)/180.0f)
 #define rad2degf(x) (180.0f*(x)/PIf)
 
+static int testLimits(void);
 static int testConstantPacket(void);
 static int testTelemetryPacket(void);
 static int verifyTelemetryData(Telemetry_t telemetry);
@@ -37,13 +39,21 @@ static int testDefaultStringsPacket(void);
 
 static int fcompare(double input1, double input2, double epsilon);
 
-
 int main(int argc, char *argv[])
 {
     (void)argc;
     (void)argv;
 
     int Return = 1;
+
+    std::cerr << "The next line should say: \"" << translateDemolink("") << "\"" << std::endl;
+    std::cerr << packetIds_EnumComment(ENGINESETTINGS) << std::endl << std::endl;
+
+    if(testLimits() == 0)
+    {
+        std::cout << "Limits failed test" << std::endl;
+        Return = 0;
+    }
 
     if(testSpecialFloat() == 0)
     {
@@ -99,6 +109,34 @@ int main(int argc, char *argv[])
     return Return;
 }
 
+
+int testLimits(void)
+{
+    int32_t limittest = 513;
+
+    if(limitMax(limittest, 1000) != 513)
+        return 0;
+
+    if(limitMax(limittest, 100) != 100)
+        return 0;
+
+    if(limitMin(limittest, 1000) != 1000)
+        return 0;
+
+    if(limitMin(limittest, 100) != 513)
+        return 0;
+
+    if(limitBoth(limittest, -100, 1000) != 513)
+        return 0;
+
+    if(limitBoth(limittest, 1000, 2000) != 1000)
+        return 0;
+
+    if(limitBoth(limittest, -100, 100) != 100)
+        return 0;
+
+    return 1;
+}
 
 int testConstantPacket(void)
 {
@@ -609,22 +647,22 @@ void fillOutGPSTest(GPS_t& gps)
     gps.ITOW = ((((5*24) + 11)*60 + 32)*60 + 59)*1000 + 251;
     gps.Week = 1234;
     gps.PDOP = -2.13f;
-    gps.PositionLLA.altitude = 169.4;
-    gps.PositionLLA.latitude = deg2rad(45.6980142);
-    gps.PositionLLA.longitude = deg2rad(-121.5618339);
+    gps.PosLLA.altitude = 169.4;
+    gps.PosLLA.latitude = deg2rad(45.6980142);
+    gps.PosLLA.longitude = deg2rad(-121.5618339);
     gps.VelocityNED.north = 23.311f;
     gps.VelocityNED.east = -42.399f;
     gps.VelocityNED.down = -.006f;
     gps.numSvInfo = 5;
     gps.svInfo[0].azimuth = deg2radf(91);
     gps.svInfo[0].elevation = deg2radf(77);
-    gps.svInfo[0].healthy = 1;
     gps.svInfo[0].CNo[GPS_BAND_L1] = 50;
     gps.svInfo[0].CNo[GPS_BAND_L2] = 33;
     gps.svInfo[0].PRN = 12;
-    gps.svInfo[0].tracked = 1;
-    gps.svInfo[0].used = 1;
-    gps.svInfo[0].visible = 1;
+    gps.svInfo[0].healthy = true;
+    gps.svInfo[0].tracked = true;
+    gps.svInfo[0].used = true;
+    gps.svInfo[0].visible = true;
 
     // Just replicate the data
     gps.svInfo[1] = gps.svInfo[2] = gps.svInfo[3] = gps.svInfo[0];
@@ -648,22 +686,22 @@ int verifyGPSData(GPS_t gps)
     if(gps.ITOW != ((((5*24) + 11)*60 + 32)*60 + 59)*1000 + 251) return 0;
     if(gps.Week != 1234) return 0;
     if(fcompare(gps.PDOP, 0, 0.1)) return 0;
-    if(fcompare(gps.PositionLLA.altitude, 169.4, 1.0/1000)) return 0;
-    if(fcompare(gps.PositionLLA.latitude, deg2rad(45.6980142), 1.0/1367130551.152863)) return 0;
-    if(fcompare(gps.PositionLLA.longitude, deg2rad(-121.5618339), 1.0/683565275.2581217)) return 0;
+    if(fcompare(gps.PosLLA.altitude, 169.4, 1.0/1000)) return 0;
+    if(fcompare(gps.PosLLA.latitude, deg2rad(45.6980142), 1.0/1367130551.152863)) return 0;
+    if(fcompare(gps.PosLLA.longitude, deg2rad(-121.5618339), 1.0/683565275.2581217)) return 0;
     if(fcompare(gps.VelocityNED.north, 23.311, 1.0/100)) return 0;
     if(fcompare(gps.VelocityNED.east, -42.399, 1.0/100)) return 0;
     if(fcompare(gps.VelocityNED.down, -.006, 1.0/100)) return 0;
     if(gps.numSvInfo != 5) return 0;
     if(fcompare(gps.svInfo[0].azimuth, deg2rad(91), 1.0/40.42535554534142)) return 0;
     if(fcompare(gps.svInfo[0].elevation, deg2rad(77), 1.0/40.42535554534142)) return 0;
-    if(gps.svInfo[0].healthy != 1) return 0;
     if(gps.svInfo[0].CNo[GPS_BAND_L1] != 50) return 0;
     if(gps.svInfo[0].CNo[GPS_BAND_L2] != 33) return 0;
     if(gps.svInfo[0].PRN != 12) return 0;
-    if(gps.svInfo[0].tracked != 1) return 0;
-    if(gps.svInfo[0].used != 1) return 0;
-    if(gps.svInfo[0].visible != 1) return 0;
+    if(gps.svInfo[0].healthy != true) return 0;
+    if(gps.svInfo[0].tracked != true) return 0;
+    if(gps.svInfo[0].used != true) return 0;
+    if(gps.svInfo[0].visible != true) return 0;
 
     if(fcompare(gps.svInfo[1].azimuth, deg2rad(-179.99), 1.0/40.42535554534142)) return 0;
     if(fcompare(gps.svInfo[1].elevation, deg2rad(-23), 1.0/40.42535554534142)) return 0;
@@ -1083,7 +1121,7 @@ int testDefaultStringsPacket(void)
 
     encodeTestWeirdStuffPacketStructure(&pkt, &test);
 
-    if(pkt.length != 47)
+    if(pkt.length != 47 + 2*3*4)
     {
         std::cout << "Weird stuff packet length is wrong" << std::endl;
         return 0;

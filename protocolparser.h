@@ -111,7 +111,7 @@ public:
     const EnumCreator* lookUpEnumeration(const QString& enumName) const;
 
     //! Replace any text that matches an enumeration name with the value of that enumeration
-    QString& replaceEnumerationNameWithValue(QString& text) const;
+    QString replaceEnumerationNameWithValue(const QString& text) const;
 
     //! Determine if text is part of an enumeration.
     QString getEnumerationNameForEnumValue(const QString& text) const;
@@ -151,6 +151,9 @@ public:
 
     //! Return true if the value is set to {'false','no','0'}
     static bool isFieldClear(QString value);
+
+    //! Determine if the value of an attribute is either {'false','no','0'}
+    static bool isFieldClear(QString attribname, QDomNamedNodeMap map);
 
     //! Set the license text
     void setLicenseText(const QString text) { support.licenseText = text; }

@@ -120,14 +120,8 @@ void ProtocolPacket::parse(void)
     // Warning about maximum data size, only applies to packets
     if(support.maxdatasize > 0)
     {
-        // The length strings, which may include enumerated identiers such as "N3D"
-        QString maxLength = encodedLength.maxEncodedLength;
-
-        // Replace any defined enumerations with their actual value
-        parser->replaceEnumerationNameWithValue(maxLength);
-
         // maxdatasize will be zero if the length string cannot be computed
-        int maxdatasize = (int)(ShuntingYard::computeInfix(maxLength) + 0.5);
+        int maxdatasize = (int)(ShuntingYard::computeInfix(parser->replaceEnumerationNameWithValue(encodedLength.maxEncodedLength)) + 0.5);
 
         // Warn the user if the packet might be too big
         if(maxdatasize > support.maxdatasize)
@@ -1194,7 +1188,7 @@ QString ProtocolPacket::getTopLevelMarkdown(bool global, const QStringList& pack
         if(!ids.at(0).isEmpty())
         {
             // In case the packet identifer is an enumeration we know
-            parser->replaceEnumerationNameWithValue(idvalue);
+            idvalue = parser->replaceEnumerationNameWithValue(idvalue);
 
             if(id.compare(idvalue) == 0)
                 output += "- packet identifier: `" + id + "`\n";
@@ -1225,7 +1219,7 @@ QString ProtocolPacket::getTopLevelMarkdown(bool global, const QStringList& pack
             QString idvalue = id;
 
             // In case the packet identifer is an enumeration we know
-            parser->replaceEnumerationNameWithValue(idvalue);
+            idvalue = parser->replaceEnumerationNameWithValue(idvalue);
 
             // Put the link here in this case
             if(id.compare(idvalue) == 0)
@@ -1244,7 +1238,7 @@ QString ProtocolPacket::getTopLevelMarkdown(bool global, const QStringList& pack
         QString minLength = EncodedLength::collapseLengthString(encodedLength.minEncodedLength, true).replace("1*", "");
 
         // Replace any defined enumerations with their actual value
-        parser->replaceEnumerationNameWithValue(minLength);
+        minLength = parser->replaceEnumerationNameWithValue(minLength);
 
         // Re-collapse, perhaps we can solve it now
         minLength = EncodedLength::collapseLengthString(minLength, true);
@@ -1261,8 +1255,8 @@ QString ProtocolPacket::getTopLevelMarkdown(bool global, const QStringList& pack
         QString minLength = EncodedLength::collapseLengthString(encodedLength.minEncodedLength, true).replace("1*", "");
 
         // Replace any defined enumerations with their actual value
-        parser->replaceEnumerationNameWithValue(maxLength);
-        parser->replaceEnumerationNameWithValue(minLength);
+        maxLength = parser->replaceEnumerationNameWithValue(maxLength);
+        minLength = parser->replaceEnumerationNameWithValue(minLength);
 
         // Re-collapse, perhaps we can solve it now
         maxLength = EncodedLength::collapseLengthString(maxLength, true);
@@ -1368,9 +1362,6 @@ QString ProtocolPacket::getTopLevelMarkdown(bool global, const QStringList& pack
 
         output += "\n";
 
-        // Table caption
-        output += "[" + title + " packet bytes]\n";
-
         // Table header, notice the column markers lead and follow. We have to do this for merged cells
         output +=  "| ";
         output += spacedString(bytes.at(0), byteColumn);
@@ -1450,6 +1441,9 @@ QString ProtocolPacket::getTopLevelMarkdown(bool global, const QStringList& pack
             output += spacedString(comments.at(i), commentColumn);
             output += " |\n";
         }
+
+        // Table caption
+        output += "[" + title + " packet bytes]\n";
 
         output += "\n";
 

@@ -21,6 +21,7 @@ public:
     void clear(void);
 
 public:
+    bool isBool;        //!< true if type is a 'bool'
     bool isStruct;      //!< true if this is an externally defined struct
     bool isSigned;      //!< true if type is signed
     bool isBitfield;    //!< true if type is a bitfield
@@ -31,6 +32,7 @@ public:
     bool isNull;        //!< true if type is null, i.e not in memory OR not encoded
     int bits;           //!< number of bits used by type
     int sigbits;        //!< number of bits for the significand of a float16 or float24
+    int enummax;        //!< maximum value of the enumeration if isEnum is true
 
     //! Pull a positive integer value from a string
     static int extractPositiveInt(const QString& string, bool* ok = 0);
@@ -40,6 +42,21 @@ public:
 
     //! Create the type string
     QString toTypeString(QString enumName = QString(), QString structName = QString()) const;
+
+    //! Determine the signature of this field (for example uint8).
+    QString toSigString(void) const;
+
+    //! Determine the maximum floating point value this TypeData can hold
+    double getMaximumFloatValue(void) const;
+
+    //! Determine the minimum floating point value this TypeData can hold
+    double getMinimumFloatValue(void) const;
+
+    //! Determine the maximum integer value this TypeData can hold
+    uint64_t getMaximumIntegerValue(void) const;
+
+    //! Determine the minimum integer value this TypeData can hold
+    int64_t getMinimumIntegerValue(void) const;
 
 private:
     ProtocolSupport support;
@@ -160,6 +177,15 @@ public:
     //! Return the include directives needed for this encodable's init and verify functions
     virtual void getInitAndVerifyIncludeDirectives(QStringList& list) const Q_DECL_OVERRIDE;
 
+    //! Return the include directives needed for this encodable's map functions
+    virtual void getMapIncludeDirectives(QStringList& list) const Q_DECL_OVERRIDE;
+
+    //! Return the include directives needed for this encodable's compare functions
+    virtual void getCompareIncludeDirectives(QStringList& list) const Q_DECL_OVERRIDE;
+
+    //! Return the include directives needed for this encodable's print functions
+    virtual void getPrintIncludeDirectives(QStringList& list) const Q_DECL_OVERRIDE;
+
     //! Return the signature of this field in an encode function signature
     virtual QString getEncodeSignature(void) const Q_DECL_OVERRIDE;
 
@@ -225,9 +251,6 @@ public:
 
     //! True if this encodable has a direct child that uses bitfields
     virtual bool usesBitfields(void) const Q_DECL_OVERRIDE;
-
-    //! True if this field has a smaller encoded size than in memory size, which requires a size check
-    bool requiresSizeCheck(void) const;
 
     //! True if this bitfield crosses a byte boundary
     bool bitfieldCrossesByteBoundary(void) const;
@@ -327,11 +350,41 @@ protected:
     //! The string used to verify the value on the low side, for documentation purposes only
     QString verifyMinStringForDisplay;
 
+    //! Flag if we know the verify min value
+    bool hasVerifyMinValue;
+
+    //! The minimum verify value
+    double verifyMinValue;
+
+    //! The minimum value of the encoding, or the verifyMin value, whichever is min
+    double limitMinValue;
+
+    //! The string for the limit min value
+    QString limitMinString;
+
+    //! The string for the limit min value used in comments
+    QString limitMinStringForComment;
+
     //! The string used to verify the value on the high side
     QString verifyMaxString;
 
     //! The string used to verify the value on the high side, for documentation purposes only
     QString verifyMaxStringForDisplay;
+
+    //! Flag if we know the verify max value
+    bool hasVerifyMaxValue;
+
+    //! The maximum verify value
+    double verifyMaxValue;
+
+    //! The maximum value of the encoding, or the verifyMax value, whichever is less
+    double limitMaxValue;
+
+    //! The string for the limit max value
+    QString limitMaxString;
+
+    //! The string for the limit max value used in comments
+    QString limitMaxStringForComment;
 
     //! Flag to force this the decode function to verify the result against the constant value
     bool checkConstant;
@@ -385,6 +438,15 @@ protected:
     //! Get the ending bitcount for this fields bitfield
     int getEndingBitCount(void){return bitfieldData.startingBitCount + encodedType.bits;}
 
+    //! Get the comment that describes the encoded range
+    QString getRangeComment(bool limitonencode = false) const;
+
+    //! Determine if an argument should be passed to the limiting macro
+    QString getLimitedArgument(QString argument) const;
+
+    //! Get the array handling code
+    QString getArrayIterationCode(const QString& spacing, bool isStructureMember) const;
+
     //! Get the next lines(s) of source coded needed to encode a bitfield field
     QString getEncodeStringForBitfield(int* bitcount, bool isStructureMember) const;
 
@@ -417,9 +479,6 @@ protected:
 
     //! Check to see if we should be doing integer scaling on this field
     bool isIntegerScaling(void) const;
-
-    //! Compute the power of 2 raised to some bits
-    uint64_t pow2(uint8_t bits) const;
 
 };
 

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<Protocol name="Demolink" title="Demonstration of protogen" prefix="" file="linkcode" mapfile="map/mapDemolink" comparefile="compare/compareDemolink" printfile="compare/printDemolink" verifyfile="definitions/verify" pointer="testPacket_t" maxSize="1000" api="1" version="1.0.0.a" endian="little" supportLongBitfield="true" bitfieldTest="true" comment=
+<Protocol name="Demolink" title="Demonstration of protogen" prefix="" file="linkcode" mapfile="map/mapDemolink" comparefile="compare/compareDemolink" printfile="compare/printDemolink" verifyfile="definitions/verify" pointer="testPacket_t" maxSize="1000" api="1" version="1.0.0.a" endian="little" supportBool="true" supportLongBitfield="true" bitfieldTest="true" comment=
 "This is an demonstration protocol definition. This file demonstrates most things
 that the ProtoGen application can do regarding automatic protocol packing/upacking
 code generation.
@@ -9,11 +9,12 @@ ProtoGen can handle bitfields, enumerations, arrays, and can
 efficiently encode data for little or big endian architectures.">
 
     <Include name="string.h" comment="C string manipulation function header" global="true"/>
-    <Include name="indices.h" comment="indices.h is included to for array length enumerations"/>
+    <Include name="indices.h" comment="indices.h is included for array length enumerations"/>
+    <Include name="translation.h" comment="translation.h is included to provide translation functions"/>
 
     <Documentation name="Enumerations" paragraph="1"/>
 
-    <Enum name="packetIds" title="Packet identifiers" lookup="true" lookupTitle="true" comment="The list of packet identifiers" description="even more stuff!">
+    <Enum name="packetIds" title="Packet identifiers" lookup="true" lookupTitle="true" lookupComment="true" comment="The list of packet identifiers" description="even more stuff!">
         <Value name="KEEPALIVE" title="Keep alive" comment="Zero length packet used to refresh communications timeouts."/>
         <Value name="ENGINECOMMAND" title="Engine command" value="10" comment="Engine command packet"/>
         <Value name="ENGINESETTINGS" title="Engine settings" comment="Engine settings packet"/>
@@ -86,18 +87,21 @@ efficiently encode data for little or big endian architectures.">
         <Data name="api" inMemoryType="unsigned16" initialValue="0" constant="getDemolinkApi()" checkConstant="true" comment="the API of the sending side"/>
         <Data name="version" inMemoryType="fixedstring" array="16" constant="getDemolinkVersion()" checkConstant="true" comment="the version of the sending side"/>
         <Data name="reserved" inMemoryType="null" array="4" encodedType="unsigned8" comment="Reserved space for expansion"/>
+
+        <!--
+        <Data name="reserved" inMemoryType="null" encodedType="bitfield11" comment="Reserved space for expansion"/>
+        <Data name="testBitfieldIntegerScaling" inMemoryType="unsigned32" encodedType="bitfield21" min="-15" scaler="2"/>
+        <Data name="reserved" inMemoryType="null" encodedType="bitfield5" comment="Reserved space for expansion"/>
+        <Data name="testLongBitfieldIntegerScaling" inMemoryType="unsigned64" encodedType="bitfield59" min="2000" scaler="5"/>
+        -->
     </Packet>
 
     <Documentation name="More documentation" comment="Even more documentation can be added as you want" file="moredocsfile.txt"/>
 
     <Packet name="GPS" file="GPS" useInOtherPackets="true" comment="Information from a GPS including the position, velocity, and quality data.
                                            This is a generic GPS description that should suffice for most GPS devices">
-
-        <Structure name="PositionLLA" comment="Position in latitude, longitude, and altitude with respect to the WGS-84 ellipsoid">
-            <Data name="latitude" inMemoryType="float64" encodedType="signed32" max="pi/2" comment="The latitude of the position in radians, positive North"/>
-            <Data name="longitude" inMemoryType="float64" encodedType="signed32" max="pi" comment="The longitude of the position in radians, positive East"/>
-            <Data name="altitude" inMemoryType="float64" encodedType="unsigned24" min="-1000" scaler="1000" comment="The altitude above the WGS-84 ellipsoid of the position in meters"/>
-        </Structure>
+		
+		<Data name="PosLLA" struct="PositionLLA" comment="Position in geographic coordinates with respect to the WGS-84 ellipsoid"/>
 
         <Structure name="VelocityNED" comment="Velocity in North, East, Down">
             <Data name="north" inMemoryType="float32" encodedType="signed16" scaler="100" comment="velocity in the North direction"/>
@@ -114,10 +118,10 @@ efficiently encode data for little or big endian architectures.">
             <Data name="elevation" inMemoryType="float32" encodedType="signed8" max="pi" printscaler="180/pi" comment="elevation angle of the satellite in radians"/>
             <Data name="azimuth" inMemoryType="float32" encodedType="signed8" max="pi" printscaler="180/pi" comment="azimuth angle of the satellite in radians"/>
             <Data name="CNo" inMemoryType="unsigned8" array="NUM_GPS_BANDS" comment="Carrier to noise ratio in dB-Hz for each GPS frequency"/>
-            <Data name="visible" inMemoryType="bitfield1" comment="Set if the satellite should be visible"/>
-            <Data name="tracked" inMemoryType="bitfield1" comment="Set if the satellite is tracked"/>
-            <Data name="healthy" inMemoryType="bitfield1" comment="Set if the satellite is reporting itself as health"/>
-            <Data name="used" inMemoryType="bitfield1" comment="Set if the satellite is used in the current PVT solution"/>
+            <Data name="visible" inMemoryType="bool" encodedType="bitfield1" comment="Set if the satellite should be visible"/>
+            <Data name="tracked" inMemoryType="bool" encodedType="bitfield1" comment="Set if the satellite is tracked"/>
+            <Data name="healthy" inMemoryType="bool" encodedType="bitfield1" comment="Set if the satellite is reporting itself as health"/>
+            <Data name="used" inMemoryType="bool" encodedType="bitfield1" comment="Set if the satellite is used in the current PVT solution"/>
         </Structure>
 
     </Packet>
@@ -142,6 +146,7 @@ efficiently encode data for little or big endian architectures.">
         <Data name="Field2" inMemoryType="float32" default="0" encodedType="signed16" max="pi"/>
         <Data name="Field3" inMemoryType="fixedstring" array="32" default="test"/>
         <Data name="Field4" inMemoryType="string" array="32" default="secondtest"/>
+        <Data name="Field5" inMemoryType="bool" array="4" array2d="3" encodedType="unsigned16" default="false"/>
     </Packet>
 
     <Packet name="MultiDimensionTable" ID="MULTIDIMENSIONTABLE">
@@ -177,7 +182,7 @@ efficiently encode data for little or big endian architectures.">
         <Data name="mode" enum="engineModes" encodedType="unsigned8" comment="Engine control mode of operation"/>
         <Data name="gain" inMemoryType="float32" array="3" comment="proportional, integral, derivative gains from RPM error to throttle" default = "0.1"/>
         <Data name="maxRPM" inMemoryType="float32" encodedType="unsigned16" min="0" max="16000" comment="maximum RPM that can be commanded" default="10000"/>
-        <Code name="codeexample" decode="if(_pg_user->maxRPM &lt;= 0) return 0;" comment="Packet is not valid if maximum RPM is zero"/>
+        <Code name="codeexample" include="translation.h" decode="if(_pg_user->maxRPM &lt;= 0) return 0;" comment="Packet is not valid if maximum RPM is zero"/>
 
     </Packet>
 
@@ -188,7 +193,7 @@ efficiently encode data for little or big endian architectures.">
             for that throttle. The throttle to pulse width mapping can be a 
             straight line, or a linearly interpolated table with up to 10 points.">
         
-        <Data name="numCurvePoints" inMemoryType="bitfield4" initialValue="0" verifyMinValue="auto" verifyMaxValue="10" comment="Number of points in the throttle curve"/>
+        <Data name="numCurvePoints" inMemoryType="bitfield4" initialValue="0" verifyMinValue="auto" verifyMaxValue="10" limitOnEncode="true" comment="Number of points in the throttle curve"/>
         <!-- Enable this to demonstrate the bug I need to fix <Code name="CodeShouldNotInterruptBitFields" encode=";"/> -->
         <Data name="reserved" inMemoryType="null" constant="0" encodedType="bitfield27"/>
         <Data name="enableCurve" inMemoryType="bitfield1" initialValue="0" comment="Set to enable the throttle curve"/>

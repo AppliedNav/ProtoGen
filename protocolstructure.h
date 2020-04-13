@@ -157,8 +157,20 @@ public:
     //! Return the include directives needed for this encodable
     virtual void getIncludeDirectives(QStringList& list) const Q_DECL_OVERRIDE;
 
+    //! Return the include directives that go into source code for this encodable
+    virtual void getSourceIncludeDirectives(QStringList& list) const Q_DECL_OVERRIDE;
+
     //! Return the include directives needed for this encodable's init and verify functions
     virtual void getInitAndVerifyIncludeDirectives(QStringList& list) const Q_DECL_OVERRIDE;
+
+    //! Return the include directives needed for this encodable's map functions
+    virtual void getMapIncludeDirectives(QStringList& list) const Q_DECL_OVERRIDE;
+
+    //! Return the include directives needed for this encodable's compare functions
+    virtual void getCompareIncludeDirectives(QStringList& list) const Q_DECL_OVERRIDE;
+
+    //! Return the include directives needed for this encodable's print functions
+    virtual void getPrintIncludeDirectives(QStringList& list) const Q_DECL_OVERRIDE;
 
     //! Get the declaration for this structure as a member of another
     virtual QString getDeclaration(void) const Q_DECL_OVERRIDE;
@@ -179,16 +191,16 @@ public:
     virtual QString getQmlStructureComponent(int index) const Q_DECL_OVERRIDE;
 
     //! Return the string that gives the prototype of the function used to encode this encodable, may be empty
-    virtual QString getPrototypeEncodeString(bool isBigEndian, bool includeChildren = true) const Q_DECL_OVERRIDE;
+    virtual QString getPrototypeEncodeString(bool isBigEndian, bool includeChildren = true) const;
 
     //! Return the string that gives the prototype of the function used to decode this encodable, may be empty
-    virtual QString getPrototypeDecodeString(bool isBigEndian, bool includeChildren = true) const Q_DECL_OVERRIDE;
+    virtual QString getPrototypeDecodeString(bool isBigEndian, bool includeChildren = true) const;
 
     //! Return the string that gives the function used to encode this encodable, may be empty
-    virtual QString getFunctionEncodeString(bool isBigEndian, bool includeChildren = true) const Q_DECL_OVERRIDE;
+    virtual QString getFunctionEncodeString(bool isBigEndian, bool includeChildren = true) const;
 
     //! Return the string that gives the function used to decode this encodable, may be empty
-    virtual QString getFunctionDecodeString(bool isBigEndian, bool includeChildren = true) const Q_DECL_OVERRIDE;
+    virtual QString getFunctionDecodeString(bool isBigEndian, bool includeChildren = true) const;
 
     //! Return the string that is used to prototype the encode routine for this encodable
     virtual QString getFunctionEncodePrototype() const;

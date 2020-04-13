@@ -31,18 +31,6 @@ public:
     //! The hierarchical name of this object
     virtual QString getHierarchicalName(void) const = 0;
 
-    //! Return the string that gives the prototype of the function used to encode this encodable, may be empty
-    virtual QString getPrototypeEncodeString(bool isBigEndian, bool includeChildren = true) const {Q_UNUSED(isBigEndian); Q_UNUSED(includeChildren); return QString();}
-
-    //! Return the string that gives the prototype of the function used to decode this encodable, may be empty
-    virtual QString getPrototypeDecodeString(bool isBigEndian, bool includeChildren = true) const {Q_UNUSED(isBigEndian); Q_UNUSED(includeChildren); return QString();}
-
-    //! Return the string that gives the function used to encode this encodable, may be empty
-    virtual QString getFunctionEncodeString(bool isBigEndian, bool includeChildren = true) const {Q_UNUSED(isBigEndian); Q_UNUSED(includeChildren); return QString();}
-
-    //! Return the string that gives the function used to decode this encodable, may be empty
-    virtual QString getFunctionDecodeString(bool isBigEndian, bool includeChildren = true) const {Q_UNUSED(isBigEndian); Q_UNUSED(includeChildren); return QString();}
-
     //! Return the string that is used to encode this encodable
     virtual QString getEncodeString(bool isBigEndian, int* bitcount, bool isStructureMember) const = 0;
 
@@ -61,8 +49,20 @@ public:
     //! Return the include directives needed for this encodable
     virtual void getIncludeDirectives(QStringList& list) const {Q_UNUSED(list);}
 
+    //! Return the include directives that go into source code needed for this encodable
+    virtual void getSourceIncludeDirectives(QStringList& list) const {Q_UNUSED(list);}
+
     //! Return the include directives needed for this encodable's init and verify functions
     virtual void getInitAndVerifyIncludeDirectives(QStringList& list) const {Q_UNUSED(list);}
+
+    //! Return the include directives needed for this encodable's map functions
+    virtual void getMapIncludeDirectives(QStringList& list) const {Q_UNUSED(list);}
+
+    //! Return the include directives needed for this encodable's compare functions
+    virtual void getCompareIncludeDirectives(QStringList& list) const {Q_UNUSED(list);}
+
+    //! Return the include directives needed for this encodable's print functions
+    virtual void getPrintIncludeDirectives(QStringList& list) const {Q_UNUSED(list);}
 
     //! Return the string that declares the whole structure
     virtual QString getStructureDeclaration(bool alwaysCreate) const {Q_UNUSED(alwaysCreate); return QString();}

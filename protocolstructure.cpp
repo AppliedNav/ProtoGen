@@ -112,7 +112,6 @@ void ProtocolStructure::parse(void)
     dependsOn = ProtocolParser::getAttribute("dependsOn", map);
     dependsOnValue = ProtocolParser::getAttribute("dependsOnValue", map);
     dependsOnCompare = ProtocolParser::getAttribute("dependsOnCompare", map);
-
     comment = ProtocolParser::reflowComment(ProtocolParser::getAttribute("comment", map));
     hidden = ProtocolParser::isFieldSet("hidden", map);
 
@@ -124,6 +123,12 @@ void ProtocolStructure::parse(void)
 
     if(title.isEmpty())
         title = name;
+
+    // This will propagate to any of the children we create
+    if(ProtocolParser::isFieldSet("limitOnEncode", map))
+        support.limitonencode = true;
+    else if(ProtocolParser::isFieldClear("limitOnEncode", map))
+        support.limitonencode = false;
 
     testAndWarnAttributes(map, attriblist);
 
@@ -581,6 +586,22 @@ void ProtocolStructure::getIncludeDirectives(QStringList& list) const
     }
 
     list.removeDuplicates();
+
+}// ProtocolStructure::getIncludeDirectives
+
+
+/*!
+ * Append the include directives in source code for this encodable. Mostly this is empty,
+ * but code encodables may have source code includes.
+ * \param list is appended with any directives this encodable requires.
+ */
+void ProtocolStructure::getSourceIncludeDirectives(QStringList& list) const
+{
+    // Includes that our encodable members may need
+    for(int i = 0; i < encodables.length(); i++)
+        encodables.at(i)->getSourceIncludeDirectives(list);
+
+    list.removeDuplicates();
 }
 
 
@@ -593,6 +614,48 @@ void ProtocolStructure::getInitAndVerifyIncludeDirectives(QStringList& list) con
     // Includes that our encodable members may need
     for(int i = 0; i < encodables.length(); i++)
         encodables.at(i)->getInitAndVerifyIncludeDirectives(list);
+
+    list.removeDuplicates();
+}
+
+
+/*!
+ * Return the include directives needed for this encodable's map functions
+ * \param list is appended with any directives this encodable requires.
+ */
+void ProtocolStructure::getMapIncludeDirectives(QStringList& list) const
+{
+    // Includes that our encodable members may need
+    for(int i = 0; i < encodables.length(); i++)
+        encodables.at(i)->getMapIncludeDirectives(list);
+
+    list.removeDuplicates();
+}
+
+
+/*!
+ * Return the include directives needed for this encodable's compare functions
+ * \param list is appended with any directives this encodable requires.
+ */
+void ProtocolStructure::getCompareIncludeDirectives(QStringList& list) const
+{
+    // Includes that our encodable members may need
+    for(int i = 0; i < encodables.length(); i++)
+        encodables.at(i)->getCompareIncludeDirectives(list);
+
+    list.removeDuplicates();
+}
+
+
+/*!
+ * Return the include directives needed for this encodable's print functions
+ * \param list is appended with any directives this encodable requires.
+ */
+void ProtocolStructure::getPrintIncludeDirectives(QStringList& list) const
+{
+    // Includes that our encodable members may need
+    for(int i = 0; i < encodables.length(); i++)
+        encodables.at(i)->getPrintIncludeDirectives(list);
 
     list.removeDuplicates();
 }
@@ -1127,11 +1190,14 @@ QString ProtocolStructure::getPrototypeEncodeString(bool isBigEndian, bool inclu
     {
         for(int i = 0; i < encodables.length(); i++)
         {
-            if(encodables.at(i)->isPrimitive())
+            // Is this encodable a structure?
+            ProtocolStructure* structure = dynamic_cast<ProtocolStructure*>(encodables.at(i));
+
+            if(structure == nullptr)
                 continue;
 
             ProtocolFile::makeLineSeparator(output);
-            output += encodables.at(i)->getPrototypeEncodeString(isBigEndian, includeChildren);
+            output += structure->getPrototypeEncodeString(isBigEndian, includeChildren);
         }
         ProtocolFile::makeLineSeparator(output);
     }
@@ -1161,11 +1227,14 @@ QString ProtocolStructure::getFunctionEncodeString(bool isBigEndian, bool includ
     {
         for(int i = 0; i < encodables.length(); i++)
         {
-            if(encodables.at(i)->isPrimitive())
+            // Is this encodable a structure?
+            ProtocolStructure* structure = dynamic_cast<ProtocolStructure*>(encodables.at(i));
+
+            if(structure == nullptr)
                 continue;
 
             ProtocolFile::makeLineSeparator(output);
-            output += encodables.at(i)->getFunctionEncodeString(isBigEndian, includeChildren);
+            output += structure->getFunctionEncodeString(isBigEndian, includeChildren);
         }
         ProtocolFile::makeLineSeparator(output);
     }
@@ -1254,11 +1323,14 @@ QString ProtocolStructure::getPrototypeDecodeString(bool isBigEndian, bool inclu
     {
         for(int i = 0; i < encodables.length(); i++)
         {
-            if(encodables.at(i)->isPrimitive())
+            // Is this encodable a structure?
+            ProtocolStructure* structure = dynamic_cast<ProtocolStructure*>(encodables.at(i));
+
+            if(structure == nullptr)
                 continue;
 
             ProtocolFile::makeLineSeparator(output);
-            output += encodables.at(i)->getPrototypeDecodeString(isBigEndian);
+            output += structure->getPrototypeDecodeString(isBigEndian);
         }
         ProtocolFile::makeLineSeparator(output);
     }
@@ -1287,11 +1359,14 @@ QString ProtocolStructure::getFunctionDecodeString(bool isBigEndian, bool includ
     {
         for(int i = 0; i < encodables.length(); i++)
         {
-            if(encodables.at(i)->isPrimitive())
+            // Is this encodable a structure?
+            ProtocolStructure* structure = dynamic_cast<ProtocolStructure*>(encodables.at(i));
+
+            if(structure == nullptr)
                 continue;
 
             ProtocolFile::makeLineSeparator(output);
-            output += encodables.at(i)->getFunctionDecodeString(isBigEndian);
+            output += structure->getFunctionDecodeString(isBigEndian);
         }
         ProtocolFile::makeLineSeparator(output);
     }
@@ -1355,9 +1430,8 @@ QString ProtocolStructure::getFunctionDecodeString(bool isBigEndian, bool includ
 
 /*!
  * Return the string that is used to encode this structure
- * \param isBigEndian should be true for big endian encoding.
- * \param encLength is appended for length information of this field.
- * \param bitcount points to the running count of bits in a bitfields and should persist between calls
+ * \param isBigEndian should be true for big endian encoding, ignored
+ * \param bitcount points to the running count of bits in a bitfields and should persist between calls, ignored
  * \param isStructureMember is true if this encodable is accessed by structure pointer
  * \return the string to add to the source to encode this structure
  */
@@ -1797,10 +1871,10 @@ QString ProtocolStructure::getVerifyFunctionString(bool includeChildren) const
     output += TAB_IN + "int _pg_good = 1;\n";
 
     if(needsVerifyIterator)
-        output += TAB_IN + "int _pg_i = 0;\n";
+        output += TAB_IN + "unsigned _pg_i = 0;\n";
 
     if(needs2ndVerifyIterator)
-        output += TAB_IN + "int _pg_j = 0;\n";
+        output += TAB_IN + "unsigned _pg_j = 0;\n";
 
     for(int i = 0; i < encodables.length(); i++)
     {
@@ -2839,7 +2913,7 @@ void ProtocolStructure::getDocumentationDetails(QList<int>& outline, QString& st
     QString maxEncodedLength = encodedLength.maxEncodedLength;
 
     // See if we can replace any enumeration names with values
-    parser->replaceEnumerationNameWithValue(maxEncodedLength);
+    maxEncodedLength = parser->replaceEnumerationNameWithValue(maxEncodedLength);
 
     // The byte after this one
     QString nextStartByte = EncodedLength::collapseLengthString(startByte + "+" + maxEncodedLength);
