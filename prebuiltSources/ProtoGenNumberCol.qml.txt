@@ -10,8 +10,18 @@ Column {
     property alias units: protoGenNumberUnits.text
     property string comment: ""
 
+    property real scaler: 1.0
+
     height: protoGenNumberLabel.height + protoGenNumberValue.height + control.spacing
     spacing: controlRow.visible ? 5 : 0
+
+    Component.onCompleted: {
+        if (control.units.startsWith("rad"))
+        {
+            scaler = 180.0/Math.PI
+            control.units = control.units.replace("rad", "deg")
+        }
+    }
 
     Item {
         height: controlRow.visible ? 0 : 10
@@ -84,9 +94,9 @@ Column {
         }
         inputMethodHints: Qt.ImhFormattedNumbersOnly
         selectByMouse: true
-        text: control.val.toFixed(globalProps.precision)
+        text: (control.val*control.scaler).toFixed(globalProps.precision)
         onAccepted: focus = false
-        onEditingFinished: control.val = Number(text)
+        onEditingFinished: control.val = Number(text)/control.scaler
         onActiveFocusChanged: {if (activeFocus) selectAll()}
     }
 }

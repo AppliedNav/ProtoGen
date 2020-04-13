@@ -5,73 +5,31 @@ import QtQuick.Dialogs 1.2
 Grid {
     id: control
 
-    property bool inSync: true
+    property bool inSync: false
     readonly property int buttonWidth: 100
     readonly property int buttonHeight: 40
-    readonly property int fontSize: 10
 
-    columns: 3
+    signal openingFilePage(string fileName, int index)
+    signal savingFilePage(string fileName, int index)
+
+    signal requestingDataPage(int index)
+    signal sendingDataPage(int index)
+
+    signal comparingPage(string fileName, int index)
+
+    signal openingFileAll(string fileName)
+    signal savingFileAll(string fileName)
+
+    signal requestingDataAll()
+    signal sendingDataAll()
+
+    columns: 5
     spacing: 4
     height: buttonHeight*2 + spacing*3
     width: parent.width
 
     Rectangle {
-        width: parent.width/3-parent.spacing
-        height: buttonHeight
-        color: "transparent"
-    }
-
-    FileDialog {
-        id: openFileDialog
-        visible: false
-        title: qsTr("Open an XML file")
-        folder: shortcuts.home
-        selectExisting: true
-        selectFolder: false
-        selectMultiple: false
-        nameFilters: [ "XML files (*.xml)", "All files (*)" ]
-        onAccepted: {
-            controller.openFile(openFileDialog.fileUrl)
-            openFileDialog.visible = false
-        }
-        onRejected: openFileDialog.visible = false
-    }
-    Button {
-        id: btnOpen
-        text: "Open..."
-        font.pointSize: fontSize
-        implicitWidth: parent.width/3-parent.spacing
-        implicitHeight: buttonHeight
-        onClicked: openFileDialog.visible = true
-    }
-
-    FileDialog {
-        id: saveFileDialog
-        visible: false
-        title: qsTr("Save to XML file")
-        folder: shortcuts.home
-        selectExisting: false
-        selectFolder: false
-        selectMultiple: false
-        nameFilters: [ "XML files (*.xml)", "All files (*)" ]
-        onAccepted: {
-            controller.saveFile(saveFileDialog.fileUrl)
-            saveFileDialog.visible = false
-        }
-        onRejected: saveFileDialog.visible = false
-    }
-    Button {
-        id: btnSave
-        text: "Save..."
-        font.pointSize: fontSize
-        implicitWidth: parent.width/3-parent.spacing
-        implicitHeight: buttonHeight
-
-        onClicked: saveFileDialog.visible = true
-    }
-
-    Rectangle {
-        width: parent.width/3-parent.spacing
+        width: parent.width/5-parent.spacing
         height: buttonHeight
         color: "transparent"
 
@@ -86,7 +44,7 @@ Grid {
                 id: syncIndicator
                 text: "IN SYNC"
                 color:control.inSync ? "white" : "black"
-                font.pointSize: fontSize
+                font.pointSize: globalProps.fontSize
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 anchors.centerIn: parent
@@ -97,29 +55,165 @@ Grid {
     }
 
     Button {
-        id: btnRequest
-        text: "Request"
-        font.pointSize: fontSize
-        implicitWidth: parent.width/3-parent.spacing
+        id: btnRequestPage
+        text: "Request page"
+        font.pointSize: globalProps.fontSize
+        implicitWidth: parent.width/5-parent.spacing
         implicitHeight: buttonHeight
 
         onClicked: {
             control.inSync = false
-            controller.requestData(categoryView.currentIndex)
+            control.requestingDataPage(categoryView.currentIndex)
         }
     }
 
     Button {
-        id: btnSend
-        text: "Send"
-        font.pointSize: fontSize
-        implicitWidth: parent.width/3-parent.spacing
+        id: btnRequestAll
+        text: "Request all"
+        font.pointSize: globalProps.fontSize
+        implicitWidth: parent.width/5-parent.spacing
         implicitHeight: buttonHeight
 
         onClicked: {
-            control.inSync = true
-            controller.sendData(categoryView.currentIndex)
+            control.inSync = false
+            control.requestingDataAll()
         }
+    }
+
+    Button {
+        id: btnOpenPage
+        text: "Open page..."
+        font.pointSize: globalProps.fontSize
+        implicitWidth: parent.width/5-parent.spacing
+        implicitHeight: buttonHeight
+
+        FileDialog {
+            id: openPageDialog
+            visible: false
+            title: qsTr("Open a JSON file")
+            folder: shortcuts.home
+            selectExisting: true
+            selectFolder: false
+            selectMultiple: false
+            nameFilters: [ "JSON files (*.json)", "All files (*)" ]
+            onAccepted: control.openingFilePage(fileUrl, categoryView.currentIndex)
+        }
+
+        onClicked: openPageDialog.open()
+    }
+
+    Button {
+        id: btnOpenAll
+        text: "Open all..."
+        font.pointSize: globalProps.fontSize
+        implicitWidth: parent.width/5-parent.spacing
+        implicitHeight: buttonHeight
+
+        FileDialog {
+            id: openAllDialog
+            visible: false
+            title: qsTr("Open a JSON file")
+            folder: shortcuts.home
+            selectExisting: true
+            selectFolder: false
+            selectMultiple: false
+            nameFilters: [ "JSON files (*.json)", "All files (*)" ]
+            onAccepted: control.openingFileAll(fileUrl)
+        }
+
+        onClicked: openAllDialog.open()
+    }
+
+    Button {
+        id: btnComparePage
+        text: "Compare page..."
+        font.pointSize: globalProps.fontSize
+        implicitWidth: parent.width/5-parent.spacing
+        implicitHeight: buttonHeight
+
+        FileDialog {
+            id: comparePageDialog
+            visible: false
+            title: qsTr("Open a JSON file")
+            folder: shortcuts.home
+            selectExisting: true
+            selectFolder: false
+            selectMultiple: false
+            nameFilters: [ "JSON files (*.json)", "All files (*)" ]
+            onAccepted: control.comparingPage(fileUrl, categoryView.currentIndex)
+        }
+
+        onClicked: comparePageDialog.open()
+    }
+
+    Button {
+        id: btnSendPage
+        text: "Send page"
+        font.pointSize: globalProps.fontSize
+        implicitWidth: parent.width/5-parent.spacing
+        implicitHeight: buttonHeight
+
+        onClicked: {
+            control.inSync = false
+            control.sendingDataPage(categoryView.currentIndex)
+        }
+    }
+
+    Button {
+        id: btnSendAll
+        text: "Send all"
+        font.pointSize: globalProps.fontSize
+        implicitWidth: parent.width/5-parent.spacing
+        implicitHeight: buttonHeight
+
+        onClicked: {
+            control.inSync = false
+            control.sendingDataAll()
+        }
+    }
+
+    Button {
+        id: btnSavePage
+        text: "Save page..."
+        font.pointSize: globalProps.fontSize
+        implicitWidth: parent.width/5-parent.spacing
+        implicitHeight: buttonHeight
+
+        FileDialog {
+            id: savePageDialog
+            visible: false
+            title: qsTr("Save to JSON file")
+            folder: shortcuts.home
+            selectExisting: false
+            selectFolder: false
+            selectMultiple: false
+            nameFilters: [ "JSON files (*.json)", "All files (*)" ]
+            onAccepted: control.savingFilePage(fileUrl, categoryView.currentIndex)
+        }
+
+        onClicked: savePageDialog.open()
+    }
+
+    Button {
+        id: btnSaveAll
+        text: "Save all..."
+        font.pointSize: globalProps.fontSize
+        implicitWidth: parent.width/5-parent.spacing
+        implicitHeight: buttonHeight
+
+        FileDialog {
+            id: saveAllDialog
+            visible: false
+            title: qsTr("Save to JSON file")
+            folder: shortcuts.home
+            selectExisting: false
+            selectFolder: false
+            selectMultiple: false
+            nameFilters: [ "JSON files (*.json)", "All files (*)" ]
+            onAccepted: control.savingFileAll(fileUrl)
+        }
+
+        onClicked: saveAllDialog.open()
     }
 }
 

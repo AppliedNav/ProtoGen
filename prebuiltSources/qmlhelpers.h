@@ -21,6 +21,22 @@
     private: \
         type m_##name = 0;
 
+#define QML_WRITABLE_PROPERTY_NOINIT(type, name, setter) \
+    protected: \
+        Q_PROPERTY(type name MEMBER m_##name WRITE setter NOTIFY name##Changed) \
+    public: \
+        void setter(const type &value) { \
+            if (value != m_##name) { \
+                m_##name = value; \
+                emit name##Changed(); \
+            } \
+        } \
+        const type& name() const { return m_##name; } \
+    Q_SIGNALS: \
+        void name##Changed(); \
+    private: \
+        type m_##name;
+
 #define QML_WRITABLE_PROPERTY_INIT(type, name, setter, defaultValue) \
     protected: \
         Q_PROPERTY(type name MEMBER m_##name WRITE setter NOTIFY name##Changed) \
@@ -64,6 +80,96 @@
             } \
         } \
         const type& name() const { return m_##name; } \
+    Q_SIGNALS: \
+        void name##Changed(); \
+    private: \
+		type m_##name = defaultValue;
+
+#define QML_READABLE_PROPERTY(type, name, setter) \
+    protected: \
+        Q_PROPERTY(type name MEMBER m_##name NOTIFY name##Changed) \
+    public: \
+        void setter(const type &value) { \
+            if (value != m_##name) { \
+                m_##name = value; \
+                emit name##Changed(); \
+            } \
+        } \
+    Q_SIGNALS: \
+        void name##Changed(); \
+    private: \
+        type m_##name = 0;
+
+#define QML_READABLE_PROPERTY_NOINIT(type, name, setter) \
+    protected: \
+        Q_PROPERTY(type name MEMBER m_##name NOTIFY name##Changed) \
+    public: \
+        void setter(const type &value) { \
+            if (value != m_##name) { \
+                m_##name = value; \
+                emit name##Changed(); \
+            } \
+        } \
+    Q_SIGNALS: \
+        void name##Changed(); \
+    private: \
+        type m_##name;
+
+#define QML_READABLE_PROPERTY_INIT(type, name, setter, defaultValue) \
+    protected: \
+        Q_PROPERTY(type name MEMBER m_##name NOTIFY name##Changed) \
+    public: \
+        void setter(const type &value) { \
+            if (value != m_##name) { \
+                m_##name = value; \
+                emit name##Changed(); \
+            } \
+        } \
+    Q_SIGNALS: \
+        void name##Changed(); \
+    private: \
+        type m_##name = defaultValue;
+
+#define QML_READABLE_PROPERTY_FLOAT(type, name, setter) \
+    protected: \
+        Q_PROPERTY(type name MEMBER m_##name NOTIFY name##Changed) \
+    public: \
+        void setter(const type &value) { \
+            if (!qFuzzyCompare(value, m_##name)) { \
+                m_##name = value; \
+                emit name##Changed(); \
+            } \
+        } \
+    Q_SIGNALS: \
+        void name##Changed(); \
+    private: \
+        type m_##name = 0;
+
+#define QML_READABLE_PROPERTY_FLOAT_NOINIT(type, name, setter) \
+    protected: \
+        Q_PROPERTY(type name MEMBER m_##name NOTIFY name##Changed) \
+    public: \
+        void setter(const type &value) { \
+            if (!qFuzzyCompare(value, m_##name)) { \
+                m_##name = value; \
+                emit name##Changed(); \
+            } \
+        } \
+    Q_SIGNALS: \
+        void name##Changed(); \
+    private: \
+        type m_##name;
+
+#define QML_READABLE_PROPERTY_FLOAT_INIT(type, name, setter, defaultValue) \
+    protected: \
+        Q_PROPERTY(type name MEMBER m_##name NOTIFY name##Changed) \
+    public: \
+        void setter(const type &value) { \
+            if (!qFuzzyCompare(value, m_##name)) { \
+                m_##name = value; \
+                emit name##Changed(); \
+            } \
+        } \
     Q_SIGNALS: \
         void name##Changed(); \
     private: \

@@ -9,9 +9,19 @@ Row {
     property alias units: protoGenNumberArrayUnits.text
     property string comment: ""
 
+    property real scaler: 1.0
+
     width: parent.width
     height: 44
     spacing: 10
+
+    Component.onCompleted: {
+        if (control.units.startsWith("rad"))
+        {
+            scaler = 180.0/Math.PI
+            control.units = control.units.replace("rad", "deg")
+        }
+    }
 
     Label {
         id: protoGenNumberArrayLabel
@@ -40,7 +50,7 @@ Row {
             TextField {
                 id: protoGenNumberArrayValue
                 width: 60
-                text: control.val[index].toFixed(globalProps.precision)
+                text: (control.val[index]*control.scaler).toFixed(globalProps.precision)
                 validator: globalProps.doubleValidator
                 font: globalProps.fontRegular
                 verticalAlignment: Text.AlignVCenter
@@ -55,7 +65,7 @@ Row {
                 selectByMouse: true
                 onAccepted: focus = false
                 onEditingFinished: {
-                    control.val[index] = Number(text)
+                    control.val[index] = Number(text)/control.scaler
                     control.valChanged()
                 }
                 onActiveFocusChanged: {if (activeFocus) selectAll()}
